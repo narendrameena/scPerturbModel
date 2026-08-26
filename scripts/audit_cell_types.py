@@ -26,7 +26,7 @@ from perturbmodel.utils import save_figure
 ROOT = Path(__file__).resolve().parent.parent
 TS = ROOT / "data" / "external" / "tabula_sapiens"
 PB = ROOT / "data" / "processed" / "pseudobulk_dev47"
-FIG = ROOT / "results" / "figures"
+FIG = ROOT / "results" / "figures" / "05_audit"
 TAB = ROOT / "results" / "tables"
 MIN_CELLS = 50
 MAX_CELLS = 400

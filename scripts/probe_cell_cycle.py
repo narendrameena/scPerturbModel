@@ -26,7 +26,7 @@ from perturbmodel.utils import save_figure
 
 ROOT = Path(__file__).resolve().parent.parent
 META = ROOT / "data" / "metadata" / "metadata"
-FIG = ROOT / "results" / "figures"
+FIG = ROOT / "results" / "figures" / "01_paper_replication"
 TAB = ROOT / "results" / "tables"
 FIG.mkdir(parents=True, exist_ok=True)
 TAB.mkdir(parents=True, exist_ok=True)

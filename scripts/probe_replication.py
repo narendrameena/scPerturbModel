@@ -19,7 +19,7 @@ from perturbmodel.utils import save_figure
 
 ROOT = Path(__file__).resolve().parent.parent
 PB = ROOT / "data" / "processed" / "pseudobulk_dev"
-FIG = ROOT / "results" / "figures"
+FIG = ROOT / "results" / "figures" / "01_paper_replication"
 TAB = ROOT / "results" / "tables"
 MIN_CELLS = 50
 RNG = np.random.default_rng(0)

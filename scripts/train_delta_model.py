@@ -33,7 +33,7 @@ from perturbmodel.models.context_residual import ContextResidualDelta
 from perturbmodel.utils import save_figure
 
 ROOT = Path(__file__).resolve().parent.parent
-FIG = ROOT / "results" / "figures"
+FIG = ROOT / "results" / "figures" / "03_models"
 TAB = ROOT / "results" / "tables"
 COLORS = {"additive": "#eb6834", "no_line": "#eda100", "full": "#2a78d6"}
 SEED = 0

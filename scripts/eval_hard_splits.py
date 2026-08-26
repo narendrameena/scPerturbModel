@@ -31,7 +31,7 @@ from perturbmodel.models.context_residual import (ContextResidualDelta,
 from perturbmodel.utils import save_figure
 
 ROOT = Path(__file__).resolve().parent.parent
-FIG = ROOT / "results" / "figures"
+FIG = ROOT / "results" / "figures" / "04_generalization"
 TAB = ROOT / "results" / "tables"
 COLORS = {"additive": "#eb6834", "covariate": "#2a78d6",
           "nn_drug": "#eda100", "ecfp_model": "#2a78d6"}

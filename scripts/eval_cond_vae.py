@@ -30,7 +30,7 @@ from perturbmodel.utils import save_figure
 
 ROOT = Path(__file__).resolve().parent.parent
 PROC = ROOT / "data" / "processed"
-FIG = ROOT / "results" / "figures"
+FIG = ROOT / "results" / "figures" / "03_models"
 TAB = ROOT / "results" / "tables"
 N_CELLS = 300
 BLUE, ORANGE, AQUA = "#2a78d6", "#eb6834", "#1baf7a"

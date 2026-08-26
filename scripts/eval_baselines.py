@@ -35,7 +35,7 @@ from perturbmodel.utils import save_figure
 
 ROOT = Path(__file__).resolve().parent.parent
 PB = ROOT / "data" / "processed" / "pseudobulk_dev"
-FIG = ROOT / "results" / "figures"
+FIG = ROOT / "results" / "figures" / "02_baselines"
 TAB = ROOT / "results" / "tables"
 MIN_CELLS = 50
 N_HVG = 2000

@@ -32,7 +32,7 @@ from perturbmodel.utils import save_figure
 
 ROOT = Path(__file__).resolve().parent.parent
 PROC = ROOT / "data" / "processed"
-FIG = ROOT / "results" / "figures"
+FIG = ROOT / "results" / "figures" / "02_baselines"
 TAB = ROOT / "results" / "tables"
 MIN_CELLS = 50
 N_RESP = 2000          # "most responsive" genes for r_hvg
