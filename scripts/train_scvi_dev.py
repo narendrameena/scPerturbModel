@@ -14,6 +14,7 @@ Outputs:
 Usage: python scripts/train_scvi_dev.py [--max-cells 1500000] [--epochs 10]
 """
 import argparse
+import os
 from pathlib import Path
 
 import anndata as ad
@@ -36,7 +37,7 @@ def main():
 
     import scvi  # local import: heavy
 
-    torch.set_num_threads(max(1, (torch.get_num_threads() or 8)))
+    torch.set_num_threads(min(32, os.cpu_count() or 8))
     adata = ad.read_h5ad(H5AD)
     print(f"loaded {adata.shape[0]:,} cells x {adata.shape[1]} genes")
 
