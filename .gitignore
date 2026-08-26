@@ -10,8 +10,8 @@
 /data/interim/dev_subset/*
 !/data/interim/dev_subset/selection.yaml
 !/data/interim/dev_subset/condition_counts.csv
-/results/*
-!/results/tables/
+/results/checkpoints/
+/results/benchmarks/
 /papers/
 /manuscripts/
 /logs/
