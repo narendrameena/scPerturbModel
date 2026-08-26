@@ -33,6 +33,9 @@ def main():
     ap.add_argument("--epochs", type=int, default=10)
     ap.add_argument("--n-latent", type=int, default=10)
     ap.add_argument("--batch-size", type=int, default=4096)
+    ap.add_argument("--litlogger", action="store_true",
+                    help="log metrics to Lightning.ai via litlogger "
+                         "(needs a Lightning account / API key)")
     args = ap.parse_args()
 
     import scvi  # local import: heavy
@@ -48,10 +51,20 @@ def main():
     sub = adata[np.sort(idx)].copy()
     print(f"training on {sub.shape[0]:,} cells")
 
+    trainer_kwargs = {}
+    if args.litlogger:
+        try:
+            from litlogger import LightningLogger
+            trainer_kwargs["logger"] = LightningLogger(name="scvi_dev")
+            print("litlogger enabled -> Lightning.ai experiments")
+        except Exception as exc:  # no account/API key or offline
+            print(f"litlogger unavailable ({exc}); continuing without it")
+
     scvi.model.SCVI.setup_anndata(sub)
     model = scvi.model.SCVI(sub, n_latent=args.n_latent, gene_likelihood="nb")
     model.train(max_epochs=args.epochs, batch_size=args.batch_size,
-                early_stopping=True, enable_progress_bar=False)
+                early_stopping=True, enable_progress_bar=False,
+                **trainer_kwargs)
     CKPT.parent.mkdir(parents=True, exist_ok=True)
     model.save(str(CKPT), overwrite=True)
     print(f"model -> {CKPT}")

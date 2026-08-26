@@ -32,3 +32,4 @@ dependencies:
       - rdkit
       # experiment tracking (optional; or use tensorboard)
       - wandb
+      - litlogger          # Lightning.ai experiment logging (opt-in via --litlogger)
