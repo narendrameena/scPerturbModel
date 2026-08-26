@@ -15,6 +15,7 @@ Outputs: results/tables/phase3_delta_eval.csv,
          results/figures/phase3_delta_eval/ (bundle),
          results/checkpoints/phase3_delta/{full,no_line}.pt
 """
+import argparse
 from pathlib import Path
 
 import matplotlib
@@ -34,15 +35,21 @@ from perturbmodel.utils import save_figure
 ROOT = Path(__file__).resolve().parent.parent
 FIG = ROOT / "results" / "figures"
 TAB = ROOT / "results" / "tables"
-CKPT = ROOT / "results" / "checkpoints" / "phase3_delta"
 COLORS = {"additive": "#eb6834", "no_line": "#eda100", "full": "#2a78d6"}
 SEED = 0
+
+ap = argparse.ArgumentParser()
+ap.add_argument("--pb-dir", default="data/processed/pseudobulk_dev")
+ap.add_argument("--tag", default="", help="suffix for outputs, e.g. dev47")
+cli = ap.parse_args()
+SUF = f"_{cli.tag}" if cli.tag else ""
+CKPT = ROOT / "results" / "checkpoints" / f"phase3_delta{SUF}"
 
 torch.manual_seed(SEED)
 np.random.seed(SEED)
 
 # ---------------- data ----------------
-X, cond = load_pseudobulk(ROOT / "data" / "processed" / "pseudobulk_dev")
+X, cond = load_pseudobulk(ROOT / cli.pb_dir)
 G, DELTA = build_deltas(X, cond)
 test_triples = held_out_condition_triples(G, seed=0, test_frac=0.2)
 is_test = np.array([(l, d, c) in test_triples
@@ -135,7 +142,7 @@ for i in test_idx:
                      "conc": G.conc[i], "model": tag,
                      **delta_metrics(pred, true, resp)})
 res = pd.DataFrame(recs)
-res.to_csv(TAB / "phase3_delta_eval.csv", index=False)
+res.to_csv(TAB / f"phase3_delta_eval{SUF}.csv", index=False)
 order = ["additive", "no_line", "full"]
 print(res.groupby("model")[["r_hvg", "r_de100", "rmse_hvg"]]
       .agg(["mean", "median"]).round(3).reindex(order).to_string())
@@ -168,5 +175,6 @@ for ax, metric, title in ((axes[0], "r_hvg", "A  r on 2,000 most responsive gene
     ax.set_title(title, loc="left", fontweight="bold", fontsize=10)
 fig.suptitle("Phase 3: context-residual model vs additive baseline "
              "(held-out conditions)", fontsize=11, x=0.01, ha="left")
-d = save_figure(fig, "phase3_delta_eval", FIG, source_data=res, script=__file__)
+d = save_figure(fig, f"phase3_delta_eval{SUF}", FIG, source_data=res,
+                script=__file__)
 print(f"figure bundle -> {d}")

@@ -77,10 +77,13 @@ def fit(model, ctx, fp, ld, P, Y, fit_idx, val_idx, prior_dropout=0.0,
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--mode", choices=["line", "drug", "both"], default="both")
+    ap.add_argument("--pb-dir", default="data/processed/pseudobulk_dev")
+    ap.add_argument("--tag", default="", help="suffix for outputs, e.g. dev47")
     args = ap.parse_args()
+    suf = f"_{args.tag}" if args.tag else ""
     torch.manual_seed(SEED)
 
-    X, cond = load_pseudobulk(ROOT / "data" / "processed" / "pseudobulk_dev")
+    X, cond = load_pseudobulk(ROOT / args.pb_dir)
     G, DELTA = build_deltas(X, cond)
     lf = np.load(ROOT / "data/processed/line_features.npz", allow_pickle=True)
     line_feat_of = dict(zip(lf["lines"].tolist(), lf["feat"]))
@@ -174,7 +177,7 @@ def main():
             print(f"[drug fold {k}] {len(held)} drugs held out", flush=True)
 
     res = pd.DataFrame(recs)
-    res.to_csv(TAB / "hard_splits_eval.csv", index=False)
+    res.to_csv(TAB / f"hard_splits_eval{suf}.csv", index=False)
     for mode in res["mode"].unique():
         print(f"\n== {mode} ==")
         print(res[res["mode"] == mode].groupby("model")
@@ -209,7 +212,7 @@ def main():
         ax.set_title(title, loc="left", fontweight="bold", fontsize=10)
     fig.suptitle("Phase 3: hard generalization splits (dev subset)",
                  fontsize=11, x=0.01, ha="left")
-    d = save_figure(fig, "hard_splits_eval", FIG, source_data=res,
+    d = save_figure(fig, f"hard_splits_eval{suf}", FIG, source_data=res,
                     script=__file__)
     print(f"figure bundle -> {d}")
 

@@ -27,7 +27,7 @@ import yaml
 ROOT = Path(__file__).resolve().parent.parent
 RAW = ROOT / "data" / "raw" / "tahoe-100m" / "data"
 META = ROOT / "data" / "metadata" / "metadata"
-OUT = ROOT / "data" / "interim" / "dev_subset"
+OUT = ROOT / "data" / "interim" / "dev_subset"   # overridden by --subset-dir
 OUT_DATA = OUT / "data"
 OUT_MARK = OUT / ".done"  # empty-output markers for resumability
 
@@ -78,10 +78,15 @@ def process_shard(args):
 
 
 def main():
+    global OUT, OUT_DATA, OUT_MARK
     ap = argparse.ArgumentParser()
     ap.add_argument("--workers", type=int, default=32)
     ap.add_argument("--limit", type=int, default=None, help="debug: only N shards")
+    ap.add_argument("--subset-dir", default="data/interim/dev_subset",
+                    help="dir containing selection.yaml; outputs go under it")
     args = ap.parse_args()
+    OUT = ROOT / args.subset_dir
+    OUT_DATA, OUT_MARK = OUT / "data", OUT / ".done"
 
     OUT_DATA.mkdir(parents=True, exist_ok=True)
     OUT_MARK.mkdir(parents=True, exist_ok=True)
