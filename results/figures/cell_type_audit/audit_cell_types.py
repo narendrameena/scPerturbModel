@@ -174,35 +174,50 @@ def main():
     plt.rcParams.update({"font.size": 8, "axes.grid": False,
                          "figure.facecolor": "white"})
     order_lines = np.argsort([res.organ[i] for i in range(len(lines))])
-    fig, axes = plt.subplots(1, 2, figsize=(13, 9), constrained_layout=True,
-                             gridspec_kw={"width_ratios": [3, 1]})
+    fig, axes = plt.subplots(1, 3, figsize=(19, 9), constrained_layout=True,
+                             gridspec_kw={"width_ratios": [3, 3, 1]})
+
+    def organ_boxes(ax):
+        for row, i in enumerate(order_lines):
+            for k, t in enumerate(tissues):
+                if organ_of.get(lines[i]) in tissue_organs[t]:
+                    ax.add_patch(plt.Rectangle((k - .5, row - .5), 1, 1,
+                                               fill=False, edgecolor="#eb6834",
+                                               lw=1.2))
+        ax.set_xticks(range(len(tissues)), tissues, rotation=45, ha="right")
+
     im = axes[0].imshow(heat[order_lines], aspect="auto", cmap="Blues")
-    axes[0].set_xticks(range(len(tissues)), tissues, rotation=45, ha="right")
+    organ_boxes(axes[0])
     axes[0].set_yticks(range(len(lines)),
                        [f"{res.cell_name[i]} ({res.organ[i]})"
                         for i in order_lines], fontsize=6.5)
-    for row, i in enumerate(order_lines):
-        for k, t in enumerate(tissues):
-            if organ_of.get(lines[i]) in tissue_organs[t]:
-                axes[0].add_patch(plt.Rectangle((k - .5, row - .5), 1, 1,
-                                                fill=False, edgecolor="#eb6834",
-                                                lw=1.2))
     fig.colorbar(im, ax=axes[0], label="max Spearman rho vs tissue cell types",
                  shrink=0.5)
-    axes[0].set_title("A  Line vs reference tissue (orange = annotated organ)",
+    axes[0].set_title("A  Raw similarity (orange = annotated organ)",
+                      loc="left", fontweight="bold", fontsize=10)
+
+    zmax = float(np.nanmax(np.abs(Z.to_numpy())))
+    imz = axes[1].imshow(Z.to_numpy()[order_lines], aspect="auto",
+                         cmap="RdBu_r", vmin=-zmax, vmax=zmax)
+    organ_boxes(axes[1])
+    axes[1].set_yticks([])
+    fig.colorbar(imz, ax=axes[1],
+                 label="z-score within tissue column (across lines)",
+                 shrink=0.5)
+    axes[1].set_title("B  Column-normalized (removes generic-epithelium pull)",
                       loc="left", fontweight="bold", fontsize=10)
 
     rates = [with_ref.match_top1.mean(), with_ref.match_top3.mean(),
              with_ref.zmatch_top1.mean(), with_ref.zmatch_top3.mean()]
     cols = ["#9ec4ea", "#9ec4ea", "#2a78d6", "#2a78d6"]
-    axes[1].bar(range(4), rates, width=0.6, color=cols)
+    axes[2].bar(range(4), rates, width=0.6, color=cols)
     for x, v in enumerate(rates):
-        axes[1].text(x, v + 0.02, f"{v:.0%}", ha="center", fontsize=9)
-    axes[1].set_xticks(range(4), ["raw\ntop-1", "raw\ntop-3",
+        axes[2].text(x, v + 0.02, f"{v:.0%}", ha="center", fontsize=9)
+    axes[2].set_xticks(range(4), ["raw\ntop-1", "raw\ntop-3",
                                   "znorm\ntop-1", "znorm\ntop-3"], fontsize=8)
-    axes[1].set_ylim(0, 1.05)
-    axes[1].set_ylabel("organ concordance")
-    axes[1].set_title("B  Concordance", loc="left", fontweight="bold",
+    axes[2].set_ylim(0, 1.05)
+    axes[2].set_ylabel("organ concordance")
+    axes[2].set_title("C  Concordance", loc="left", fontweight="bold",
                       fontsize=10)
     fig.suptitle("Cell-type audit: Tahoe lines vs Tabula Sapiens "
                  f"({len(S)} signatures, {len(with_ref)} auditable lines)",
@@ -210,7 +225,9 @@ def main():
     d = save_figure(fig, "cell_type_audit", FIG,
                     source_data={"audit": res,
                                  "heatmap": Hdf.iloc[order_lines].reset_index(
-                                     names="cell_name")},
+                                     names="cell_name"),
+                                 "heatmap_znorm": Z.iloc[order_lines]
+                                 .reset_index(names="cell_name")},
                     script=__file__)
     print(f"figure bundle -> {d}")
 
