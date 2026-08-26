@@ -1,0 +1,1671 @@
+cell_line_id,drug,conc,plate,n_cells,e_distance,moa-fine
+CVCL_1285,Chlorhexidine (diacetate),0.05,plate4,2583,0.1812982559204101,unclear
+CVCL_1285,Berbamine,0.05,plate4,3190,1.3157835006713867,unclear
+CVCL_1285,Retinoic acid,0.05,plate4,2636,3.3688364028930664,Retinoic receptor agonist
+CVCL_1285,Tucidinostat,0.05,plate4,2627,0.3619890213012695,HDAC inhibitor
+CVCL_1285,Homoharringtonine,0.05,plate4,2359,1.4114561080932615,Protein synthesis inhibitor
+CVCL_1285,Artesunate,0.05,plate4,2874,0.3024463653564453,JAK/STAT inhibitor
+CVCL_1285,Clonidine (hydrochloride),0.05,plate4,3487,0.8627996444702148,Adrenoceptor agonist
+CVCL_1285,Adagrasib,0.05,plate4,3337,1.1891069412231443,RAS inhibitor
+CVCL_1285,Chlorhexidine (diacetate),0.5,plate5,3078,0.246978759765625,unclear
+CVCL_1285,Berbamine,0.5,plate5,2956,0.7501239776611328,unclear
+CVCL_1285,Retinoic acid,0.5,plate5,2220,0.2911758422851562,Retinoic receptor agonist
+CVCL_1285,Tucidinostat,0.5,plate5,1840,2.66422176361084,HDAC inhibitor
+CVCL_1285,Homoharringtonine,0.5,plate5,1730,18.38394927978516,Protein synthesis inhibitor
+CVCL_1285,Artesunate,0.5,plate5,3907,0.3531169891357422,JAK/STAT inhibitor
+CVCL_1285,Clonidine (hydrochloride),0.5,plate5,3460,0.0599737167358398,Adrenoceptor agonist
+CVCL_1285,Adagrasib,0.05,plate5,3021,1.6638975143432615,RAS inhibitor
+CVCL_1285,Chlorhexidine (diacetate),5.0,plate6,3301,0.4887065887451172,unclear
+CVCL_1285,Berbamine,5.0,plate6,3537,1.4103031158447266,unclear
+CVCL_1285,Retinoic acid,5.0,plate6,2850,0.4368247985839844,Retinoic receptor agonist
+CVCL_1285,Tucidinostat,5.0,plate6,1634,5.032388687133789,HDAC inhibitor
+CVCL_1285,Homoharringtonine,5.0,plate6,1777,27.948381423950195,Protein synthesis inhibitor
+CVCL_1285,Artesunate,5.0,plate6,3770,0.3539104461669922,JAK/STAT inhibitor
+CVCL_1285,Clonidine (hydrochloride),5.0,plate6,5355,1.2163333892822266,Adrenoceptor agonist
+CVCL_1285,Adagrasib,0.05,plate6,3808,1.5632190704345703,RAS inhibitor
+CVCL_1285,Entecavir (monohydrate),0.05,plate7,1761,0.4070119857788086,unclear
+CVCL_1285,Berbamine (dihydrochloride),0.05,plate7,1977,0.7424917221069336,unclear
+CVCL_1285,Daidzin,0.05,plate7,2071,1.4164190292358398,unclear
+CVCL_1285,Fumaric acid,0.05,plate7,2010,0.5598382949829102,unclear
+CVCL_1285,Pravastatin (sodium),0.05,plate7,1715,0.5116739273071289,unclear
+CVCL_1285,Dinaciclib,0.05,plate7,744,13.239346504211426,CDK inhibitor
+CVCL_1285,Belumosudil,0.05,plate7,2213,0.7762155532836914,unclear
+CVCL_1285,Flumatinib (mesylate),0.05,plate7,2132,0.3366193771362304,Other TK inhibitor
+CVCL_1285,Cytarabine,0.05,plate7,2594,1.7165288925170898,DNA synthesis/repair inhibitor
+CVCL_1285,Afatinib,0.05,plate7,2066,0.1696710586547851,EGFR/ERBB inhibitor
+CVCL_1285,Naproxen,0.05,plate7,1204,0.3277959823608398,Cyclooxygenase inhibitor
+CVCL_1285,Harringtonine,0.05,plate7,1024,0.8659639358520508,Protein synthesis inhibitor
+CVCL_1285,Adagrasib,0.05,plate7,4719,0.8158807754516602,RAS inhibitor
+CVCL_1285,Entecavir (monohydrate),0.5,plate8,6125,0.9152660369873048,unclear
+CVCL_1285,Berbamine (dihydrochloride),0.5,plate8,5487,0.5691471099853516,unclear
+CVCL_1285,Daidzin,0.5,plate8,5039,1.2183456420898438,unclear
+CVCL_1285,Fumaric acid,0.5,plate8,4424,0.5557956695556641,unclear
+CVCL_1285,Pravastatin (sodium),0.5,plate8,4284,0.2398052215576172,unclear
+CVCL_1285,Dinaciclib,0.5,plate8,1878,23.43685340881348,CDK inhibitor
+CVCL_1285,Belumosudil,0.5,plate8,4707,0.4317493438720703,unclear
+CVCL_1285,Flumatinib (mesylate),0.5,plate8,4119,0.7927913665771484,Other TK inhibitor
+CVCL_1285,Cytarabine,0.5,plate8,4879,0.8559131622314453,DNA synthesis/repair inhibitor
+CVCL_1285,Afatinib,0.5,plate8,3886,0.1824245452880859,EGFR/ERBB inhibitor
+CVCL_1285,Naproxen,0.5,plate8,4642,0.5153636932373047,Cyclooxygenase inhibitor
+CVCL_1285,Harringtonine,0.5,plate8,3982,5.492986679077148,Protein synthesis inhibitor
+CVCL_1285,Adagrasib,0.5,plate8,1500,2.2441539764404297,RAS inhibitor
+CVCL_1285,Adagrasib,0.05,plate8,2847,0.5599555969238281,RAS inhibitor
+CVCL_1285,Entecavir (monohydrate),5.0,plate9,4225,1.085367202758789,unclear
+CVCL_1285,Berbamine (dihydrochloride),5.0,plate9,2845,1.315961837768555,unclear
+CVCL_1285,Daidzin,5.0,plate9,3372,2.322744369506836,unclear
+CVCL_1285,Fumaric acid,5.0,plate9,3632,1.8846912384033203,unclear
+CVCL_1285,Pravastatin (sodium),5.0,plate9,4102,1.2313385009765625,unclear
+CVCL_1285,Dinaciclib,5.0,plate9,724,16.92878532409668,CDK inhibitor
+CVCL_1285,Belumosudil,5.0,plate9,1576,1.0567760467529297,unclear
+CVCL_1285,Flumatinib (mesylate),5.0,plate9,1942,1.0442962646484375,Other TK inhibitor
+CVCL_1285,Cytarabine,5.0,plate9,1067,3.901460647583008,DNA synthesis/repair inhibitor
+CVCL_1285,Afatinib,5.0,plate9,1619,0.0805091857910156,EGFR/ERBB inhibitor
+CVCL_1285,Naproxen,5.0,plate9,1584,0.0652828216552734,Cyclooxygenase inhibitor
+CVCL_1285,Harringtonine,5.0,plate9,4340,17.620939254760742,Protein synthesis inhibitor
+CVCL_1285,Adagrasib,5.0,plate9,2586,2.340179443359375,RAS inhibitor
+CVCL_1285,Adagrasib,0.05,plate9,1549,1.0326423645019531,RAS inhibitor
+CVCL_1285,Ataluren,0.05,plate10,3865,0.8594799041748047,unclear
+CVCL_1285,Esmolol (hydrochloride),0.05,plate10,4784,0.5391120910644531,unclear
+CVCL_1285,Omeprazole,0.05,plate10,4776,0.3526363372802734,unclear
+CVCL_1285,Bicalutamide,0.05,plate10,3631,0.8726406097412109,Androgen receptor antagonist
+CVCL_1285,Belinostat,0.05,plate10,2657,1.0278854370117188,HDAC inhibitor
+CVCL_1285,Carbamazepine,0.05,plate10,2335,0.6984958648681641,HDAC inhibitor
+CVCL_1285,Allopurinol,0.05,plate10,5301,1.6958274841308594,unclear
+CVCL_1285,Clopidogrel,0.05,plate10,4734,2.16058349609375,unclear
+CVCL_1285,Dexamethasone,0.05,plate10,2058,1.650503158569336,Glucocorticoid receptor agonist
+CVCL_1285,Malotilate,0.05,plate10,3144,2.81375503540039,unclear
+CVCL_1285,γ-Oryzanol,0.05,plate10,3814,0.2781543731689453,DNA methyltransferase inhibitor
+CVCL_1285,Methylthiouracil,0.05,plate10,6498,0.2689323425292969,unclear
+CVCL_1285,Binimetinib,0.05,plate10,5591,1.4082012176513672,MEK inhibitor
+CVCL_1285,Perindopril (erbumine),0.05,plate10,4904,0.3820686340332031,unclear
+CVCL_1285,Dapagliflozin,0.05,plate10,3247,0.8077354431152344,Glucose transporter inhibitor
+CVCL_1285,Panobinostat,0.05,plate10,3477,1.9891510009765625,HDAC inhibitor
+CVCL_1285,Uridine,0.05,plate10,3410,0.6011924743652344,unclear
+CVCL_1285,Adagrasib,0.05,plate10,3771,1.5537242889404297,RAS inhibitor
+CVCL_1285,Ataluren,0.5,plate11,2418,0.0750751495361328,unclear
+CVCL_1285,Esmolol (hydrochloride),0.5,plate11,2284,0.0905494689941406,unclear
+CVCL_1285,Omeprazole,0.5,plate11,1546,0.1564273834228515,unclear
+CVCL_1285,Bicalutamide,0.5,plate11,2216,0.3224658966064453,Androgen receptor antagonist
+CVCL_1285,Belinostat,0.5,plate11,1516,1.2097530364990234,HDAC inhibitor
+CVCL_1285,Carbamazepine,0.5,plate11,1978,0.1140308380126953,HDAC inhibitor
+CVCL_1285,Allopurinol,0.5,plate11,2778,1.08740234375,unclear
+CVCL_1285,Clopidogrel,0.5,plate11,3967,0.1779899597167968,unclear
+CVCL_1285,Dexamethasone,0.5,plate11,2885,0.7916164398193359,Glucocorticoid receptor agonist
+CVCL_1285,Malotilate,0.5,plate11,3072,0.8896045684814453,unclear
+CVCL_1285,γ-Oryzanol,0.5,plate11,2589,0.4029102325439453,DNA methyltransferase inhibitor
+CVCL_1285,Methylthiouracil,0.5,plate11,3585,0.2425041198730468,unclear
+CVCL_1285,Binimetinib,0.5,plate11,3798,1.8039283752441408,MEK inhibitor
+CVCL_1285,Perindopril (erbumine),0.5,plate11,4714,0.5244598388671875,unclear
+CVCL_1285,Dapagliflozin,0.5,plate11,4867,0.6717472076416016,Glucose transporter inhibitor
+CVCL_1285,Panobinostat,0.5,plate11,3172,8.057722091674805,HDAC inhibitor
+CVCL_1285,Uridine,0.5,plate11,4380,0.9502182006835938,unclear
+CVCL_1285,Adagrasib,0.05,plate11,3538,1.2600936889648438,RAS inhibitor
+CVCL_1285,Ataluren,5.0,plate12,7327,0.3293991088867187,unclear
+CVCL_1285,Esmolol (hydrochloride),5.0,plate12,5925,0.5093021392822266,unclear
+CVCL_1285,Omeprazole,5.0,plate12,6159,0.1142902374267578,unclear
+CVCL_1285,Bicalutamide,5.0,plate12,5791,0.4378604888916015,Androgen receptor antagonist
+CVCL_1285,Belinostat,5.0,plate12,3665,8.624124526977539,HDAC inhibitor
+CVCL_1285,Carbamazepine,5.0,plate12,2127,0.7881717681884766,HDAC inhibitor
+CVCL_1285,Allopurinol,5.0,plate12,5057,0.6420764923095703,unclear
+CVCL_1285,Clopidogrel,5.0,plate12,3701,0.8635597229003906,unclear
+CVCL_1285,Dexamethasone,5.0,plate12,2514,1.3811988830566406,Glucocorticoid receptor agonist
+CVCL_1285,Malotilate,5.0,plate12,3844,1.5357189178466797,unclear
+CVCL_1285,γ-Oryzanol,5.0,plate12,3588,0.3111019134521484,DNA methyltransferase inhibitor
+CVCL_1285,Methylthiouracil,5.0,plate12,7217,0.3087978363037109,unclear
+CVCL_1285,Binimetinib,5.0,plate12,7547,2.7164268493652344,MEK inhibitor
+CVCL_1285,Perindopril (erbumine),5.0,plate12,4456,0.5174884796142578,unclear
+CVCL_1285,Dapagliflozin,5.0,plate12,4803,0.5135898590087891,Glucose transporter inhibitor
+CVCL_1285,Panobinostat,5.0,plate12,2244,9.310178756713867,HDAC inhibitor
+CVCL_1285,Uridine,5.0,plate12,7761,0.3893661499023437,unclear
+CVCL_1285,Adagrasib,0.05,plate12,3139,1.1543521881103516,RAS inhibitor
+CVCL_1285,Abemaciclib,0.05,plate13,3187,1.0758895874023438,CDK inhibitor
+CVCL_1285,PF-06260933,0.05,plate13,3971,0.3874530792236328,Other MAPK inhibitor
+CVCL_1285,Chlorhexidine (diacetate),0.5,plate13,2395,1.4761199951171875,unclear
+CVCL_1285,Berbamine,0.5,plate13,3111,1.087236404418945,unclear
+CVCL_1285,Malotilate,0.05,plate13,2444,0.4656887054443359,unclear
+CVCL_1285,Adagrasib,0.05,plate13,4880,1.1945266723632812,RAS inhibitor
+CVCL_1285,Berbamine (dihydrochloride),5.0,plate13,771,0.5686721801757812,unclear
+CVCL_1285,Daidzin,5.0,plate13,819,1.6374225616455078,unclear
+CVCL_1285,Fumaric acid,5.0,plate13,2529,0.7932777404785156,unclear
+CVCL_1285,Pravastatin (sodium),5.0,plate13,1544,1.7097454071044922,unclear
+CVCL_1285,Belumosudil,5.0,plate13,1751,1.1171855926513672,unclear
+CVCL_1285,Flumatinib (mesylate),5.0,plate13,2755,0.7758350372314453,Other TK inhibitor
+CVCL_1285,Cytarabine,5.0,plate13,3353,0.2900676727294922,DNA synthesis/repair inhibitor
+CVCL_1285,Afatinib,5.0,plate13,2201,0.1972980499267578,EGFR/ERBB inhibitor
+CVCL_1285,Naproxen,5.0,plate13,2152,0.0746688842773437,Cyclooxygenase inhibitor
+CVCL_1285,Berbamine (dihydrochloride),0.5,plate13,3171,0.7288036346435547,unclear
+CVCL_1285,Daidzin,0.5,plate13,2873,0.6566276550292969,unclear
+CVCL_1285,Fumaric acid,0.5,plate13,3591,0.200296401977539,unclear
+CVCL_1285,Pravastatin (sodium),0.5,plate13,3510,1.055093765258789,unclear
+CVCL_1285,Belumosudil,0.5,plate13,4061,0.3065509796142578,unclear
+CVCL_1285,Flumatinib (mesylate),0.5,plate13,3820,0.2467288970947265,Other TK inhibitor
+CVCL_1285,Cytarabine,0.5,plate13,3163,0.2038631439208984,DNA synthesis/repair inhibitor
+CVCL_1285,Afatinib,0.5,plate13,2710,0.147287368774414,EGFR/ERBB inhibitor
+CVCL_1285,Naproxen,0.5,plate13,4368,0.224252700805664,Cyclooxygenase inhibitor
+CVCL_1285,Berbamine (dihydrochloride),0.05,plate13,3975,0.388132095336914,unclear
+CVCL_1285,Daidzin,0.05,plate13,2566,0.3613014221191406,unclear
+CVCL_1285,Fumaric acid,0.05,plate13,3485,0.447021484375,unclear
+CVCL_1285,Pravastatin (sodium),0.05,plate13,2840,1.035879135131836,unclear
+CVCL_1285,Belumosudil,0.05,plate13,3581,0.1793594360351562,unclear
+CVCL_1285,Flumatinib (mesylate),0.05,plate13,3383,0.5930595397949219,Other TK inhibitor
+CVCL_1285,Cytarabine,0.05,plate13,3752,0.2095623016357422,DNA synthesis/repair inhibitor
+CVCL_1285,Afatinib,0.05,plate13,2772,0.5471992492675781,EGFR/ERBB inhibitor
+CVCL_1285,Naproxen,0.05,plate13,3256,0.2569751739501953,Cyclooxygenase inhibitor
+CVCL_1285,Glasdegib,5.0,plate13,2360,0.4125270843505859,Sonic inhibitor
+CVCL_1285,Regorafenib,5.0,plate13,3175,0.2273292541503906,Multi-TK inhibitor
+CVCL_1285,Ribociclib,5.0,plate13,3596,0.2240962982177734,CDK inhibitor
+CVCL_1285,Glasdegib,0.5,plate13,3136,0.5030117034912109,Sonic inhibitor
+CVCL_1285,Regorafenib,0.5,plate13,1824,0.1849136352539062,Multi-TK inhibitor
+CVCL_1285,Ribociclib,0.5,plate13,2850,0.1183280944824218,CDK inhibitor
+CVCL_1285,Glasdegib,0.05,plate13,3323,0.9218711853027344,Sonic inhibitor
+CVCL_1285,Regorafenib,0.05,plate13,3765,0.2929821014404297,Multi-TK inhibitor
+CVCL_1285,Ribociclib,0.05,plate13,3740,0.2682323455810547,CDK inhibitor
+CVCL_1285,Chlorhexidine (diacetate),5.0,plate14,2751,0.2087202072143554,unclear
+CVCL_1285,Berbamine,5.0,plate14,2134,0.1098175048828125,unclear
+CVCL_1285,Retinoic acid,5.0,plate14,2529,0.8080673217773438,Retinoic receptor agonist
+CVCL_1285,Tucidinostat,5.0,plate14,2459,0.2851104736328125,HDAC inhibitor
+CVCL_1285,Homoharringtonine,5.0,plate14,2230,25.07322120666504,Protein synthesis inhibitor
+CVCL_1285,Artesunate,5.0,plate14,2243,0.5279607772827148,JAK/STAT inhibitor
+CVCL_1285,Clonidine (hydrochloride),5.0,plate14,2150,0.2378997802734375,Adrenoceptor agonist
+CVCL_1285,Adagrasib,0.05,plate14,2088,2.2353572845458984,RAS inhibitor
+CVCL_1285,Everolimus,0.05,plate1,3015,0.3644676208496094,MTOR inhibitor
+CVCL_1285,palbociclib,0.05,plate1,1272,0.7191686630249023,CDK inhibitor
+CVCL_1285,Regorafenib,0.05,plate1,1438,0.2172517776489257,Multi-TK inhibitor
+CVCL_1285,Binimetinib,0.05,plate1,1861,2.5114450454711914,MEK inhibitor
+CVCL_1285,Dabrafenib,0.05,plate1,1840,0.3611211776733398,RAF inhibitor
+CVCL_1285,Paclitaxel,0.05,plate1,2304,0.759272575378418,Microtubule inhibitor
+CVCL_1285,RMC-6236,0.05,plate1,1614,0.7968988418579102,RAS inhibitor
+CVCL_1285,Afatinib,0.05,plate1,1298,0.3500080108642578,EGFR/ERBB inhibitor
+CVCL_1285,BAY1125976,0.05,plate1,2275,0.2217473983764648,PI3K/AKT inhibitor
+CVCL_1285,9-ING-41,0.05,plate1,2450,0.3304624557495117,GSK3 inhibitor
+CVCL_1285,Bortezomib,0.05,plate1,1219,8.549120903015137,Proteasome inhibitor
+CVCL_1285,Adagrasib,0.05,plate1,1672,1.351029396057129,RAS inhibitor
+CVCL_1285,Everolimus,0.5,plate2,5099,0.5833854675292969,MTOR inhibitor
+CVCL_1285,Abemaciclib,0.5,plate2,2799,1.918306350708008,CDK inhibitor
+CVCL_1285,palbociclib,0.5,plate2,2890,1.2874813079833984,CDK inhibitor
+CVCL_1285,Regorafenib,0.5,plate2,4027,0.8962955474853516,Multi-TK inhibitor
+CVCL_1285,Binimetinib,0.5,plate2,2698,6.460554122924805,MEK inhibitor
+CVCL_1285,Dabrafenib,0.5,plate2,2336,1.0058822631835938,RAF inhibitor
+CVCL_1285,Paclitaxel,0.5,plate2,4974,1.0305843353271484,Microtubule inhibitor
+CVCL_1285,RMC-6236,0.5,plate2,4511,1.7859134674072266,RAS inhibitor
+CVCL_1285,Afatinib,0.5,plate2,3753,0.5324363708496094,EGFR/ERBB inhibitor
+CVCL_1285,BAY1125976,0.5,plate2,1272,4.48248291015625,PI3K/AKT inhibitor
+CVCL_1285,9-ING-41,0.5,plate2,1351,8.130067825317383,GSK3 inhibitor
+CVCL_1285,PF-06260933,0.5,plate2,1961,1.6361312866210938,Other MAPK inhibitor
+CVCL_1285,Bortezomib,0.5,plate2,2480,5.7596588134765625,Proteasome inhibitor
+CVCL_1285,Adagrasib,0.05,plate2,4908,0.5269145965576172,RAS inhibitor
+CVCL_1285,Everolimus,5.0,plate3,3727,0.2995147705078125,MTOR inhibitor
+CVCL_1285,Abemaciclib,5.0,plate3,1328,3.462031364440918,CDK inhibitor
+CVCL_1285,palbociclib,5.0,plate3,1158,2.4724321365356445,CDK inhibitor
+CVCL_1285,Regorafenib,5.0,plate3,1367,2.085820198059082,Multi-TK inhibitor
+CVCL_1285,Binimetinib,5.0,plate3,789,3.4406003952026367,MEK inhibitor
+CVCL_1285,Dabrafenib,5.0,plate3,4503,3.822890281677246,RAF inhibitor
+CVCL_1285,Paclitaxel,5.0,plate3,3795,4.269713401794434,Microtubule inhibitor
+CVCL_1285,RMC-6236,5.0,plate3,3589,4.981781959533691,RAS inhibitor
+CVCL_1285,Afatinib,5.0,plate3,2909,6.065918922424316,EGFR/ERBB inhibitor
+CVCL_1285,BAY1125976,5.0,plate3,2843,5.083060264587402,PI3K/AKT inhibitor
+CVCL_1285,9-ING-41,5.0,plate3,3226,1.4102563858032229,GSK3 inhibitor
+CVCL_1285,PF-06260933,5.0,plate3,610,2.64707088470459,Other MAPK inhibitor
+CVCL_1285,Bortezomib,5.0,plate3,393,8.240391731262207,Proteasome inhibitor
+CVCL_1285,Adagrasib,0.05,plate3,689,0.9898042678833008,RAS inhibitor
+CVCL_0428,Chlorhexidine (diacetate),0.05,plate4,1118,0.4650745391845703,unclear
+CVCL_0428,Berbamine,0.05,plate4,1432,1.2697687149047852,unclear
+CVCL_0428,Retinoic acid,0.05,plate4,1040,3.875243186950684,Retinoic receptor agonist
+CVCL_0428,Tucidinostat,0.05,plate4,1213,0.7339973449707031,HDAC inhibitor
+CVCL_0428,Homoharringtonine,0.05,plate4,656,5.812865257263184,Protein synthesis inhibitor
+CVCL_0428,Artesunate,0.05,plate4,1172,0.938246726989746,JAK/STAT inhibitor
+CVCL_0428,Clonidine (hydrochloride),0.05,plate4,1295,1.9786672592163088,Adrenoceptor agonist
+CVCL_0428,Adagrasib,0.05,plate4,1123,1.6859369277954102,RAS inhibitor
+CVCL_0428,Chlorhexidine (diacetate),0.5,plate5,1306,0.2978162765502929,unclear
+CVCL_0428,Berbamine,0.5,plate5,1271,1.2956523895263672,unclear
+CVCL_0428,Retinoic acid,0.5,plate5,932,0.2694473266601562,Retinoic receptor agonist
+CVCL_0428,Tucidinostat,0.5,plate5,1002,1.2819318771362305,HDAC inhibitor
+CVCL_0428,Homoharringtonine,0.5,plate5,123,15.94845485687256,Protein synthesis inhibitor
+CVCL_0428,Artesunate,0.5,plate5,1622,1.0228891372680664,JAK/STAT inhibitor
+CVCL_0428,Clonidine (hydrochloride),0.5,plate5,1404,0.3315839767456054,Adrenoceptor agonist
+CVCL_0428,Adagrasib,0.05,plate5,1206,2.513190269470215,RAS inhibitor
+CVCL_0428,Chlorhexidine (diacetate),5.0,plate6,1209,1.951573371887207,unclear
+CVCL_0428,Berbamine,5.0,plate6,1400,0.8856925964355469,unclear
+CVCL_0428,Retinoic acid,5.0,plate6,1244,0.6026630401611328,Retinoic receptor agonist
+CVCL_0428,Tucidinostat,5.0,plate6,984,2.700589179992676,HDAC inhibitor
+CVCL_0428,Artesunate,5.0,plate6,1489,1.1590585708618164,JAK/STAT inhibitor
+CVCL_0428,Clonidine (hydrochloride),5.0,plate6,2198,1.9128198623657229,Adrenoceptor agonist
+CVCL_0428,Adagrasib,0.05,plate6,1468,2.3494386672973637,RAS inhibitor
+CVCL_0428,Homoharringtonine,5.0,plate6,118,18.52637481689453,Protein synthesis inhibitor
+CVCL_0428,Entecavir (monohydrate),0.05,plate7,1673,0.3899784088134765,unclear
+CVCL_0428,Berbamine (dihydrochloride),0.05,plate7,1872,1.129133224487305,unclear
+CVCL_0428,Daidzin,0.05,plate7,1940,1.966054916381836,unclear
+CVCL_0428,Fumaric acid,0.05,plate7,1995,0.8532485961914062,unclear
+CVCL_0428,Pravastatin (sodium),0.05,plate7,1900,0.2117271423339843,unclear
+CVCL_0428,Dinaciclib,0.05,plate7,435,15.583459854125977,CDK inhibitor
+CVCL_0428,Belumosudil,0.05,plate7,2445,1.1752910614013672,unclear
+CVCL_0428,Flumatinib (mesylate),0.05,plate7,2112,0.2204647064208984,Other TK inhibitor
+CVCL_0428,Cytarabine,0.05,plate7,2569,2.3207969665527344,DNA synthesis/repair inhibitor
+CVCL_0428,Afatinib,0.05,plate7,2311,0.3050575256347656,EGFR/ERBB inhibitor
+CVCL_0428,Naproxen,0.05,plate7,1363,0.8832645416259766,Cyclooxygenase inhibitor
+CVCL_0428,Harringtonine,0.05,plate7,910,2.027791976928711,Protein synthesis inhibitor
+CVCL_0428,Adagrasib,0.05,plate7,4752,2.1948070526123047,RAS inhibitor
+CVCL_0428,Entecavir (monohydrate),0.5,plate8,5404,0.4357337951660156,unclear
+CVCL_0428,Berbamine (dihydrochloride),0.5,plate8,5923,0.2259674072265625,unclear
+CVCL_0428,Daidzin,0.5,plate8,5342,0.9122581481933594,unclear
+CVCL_0428,Fumaric acid,0.5,plate8,4480,0.3177547454833984,unclear
+CVCL_0428,Pravastatin (sodium),0.5,plate8,4612,0.1508083343505859,unclear
+CVCL_0428,Dinaciclib,0.5,plate8,864,24.559852600097656,CDK inhibitor
+CVCL_0428,Belumosudil,0.5,plate8,5215,0.2935676574707031,unclear
+CVCL_0428,Flumatinib (mesylate),0.5,plate8,4133,0.3552131652832031,Other TK inhibitor
+CVCL_0428,Cytarabine,0.5,plate8,4880,0.6590557098388672,DNA synthesis/repair inhibitor
+CVCL_0428,Afatinib,0.5,plate8,4363,0.3284473419189453,EGFR/ERBB inhibitor
+CVCL_0428,Naproxen,0.5,plate8,4949,0.5286846160888672,Cyclooxygenase inhibitor
+CVCL_0428,Harringtonine,0.5,plate8,1144,7.350770950317383,Protein synthesis inhibitor
+CVCL_0428,Adagrasib,0.5,plate8,2477,2.876626968383789,RAS inhibitor
+CVCL_0428,Adagrasib,0.05,plate8,3624,1.9813003540039065,RAS inhibitor
+CVCL_0428,Entecavir (monohydrate),5.0,plate9,3313,2.473726272583008,unclear
+CVCL_0428,Berbamine (dihydrochloride),5.0,plate9,2606,2.310821533203125,unclear
+CVCL_0428,Daidzin,5.0,plate9,3157,2.82661247253418,unclear
+CVCL_0428,Fumaric acid,5.0,plate9,2965,1.5500221252441406,unclear
+CVCL_0428,Pravastatin (sodium),5.0,plate9,3787,1.009908676147461,unclear
+CVCL_0428,Belumosudil,5.0,plate9,550,1.7045555114746094,unclear
+CVCL_0428,Flumatinib (mesylate),5.0,plate9,2259,0.8835525512695312,Other TK inhibitor
+CVCL_0428,Cytarabine,5.0,plate9,1217,4.404184341430664,DNA synthesis/repair inhibitor
+CVCL_0428,Afatinib,5.0,plate9,1530,0.2721138000488281,EGFR/ERBB inhibitor
+CVCL_0428,Naproxen,5.0,plate9,1800,0.0935077667236328,Cyclooxygenase inhibitor
+CVCL_0428,Harringtonine,5.0,plate9,635,12.211078643798828,Protein synthesis inhibitor
+CVCL_0428,Adagrasib,5.0,plate9,2173,1.8395462036132808,RAS inhibitor
+CVCL_0428,Adagrasib,0.05,plate9,1704,1.4737415313720703,RAS inhibitor
+CVCL_0428,Dinaciclib,5.0,plate9,248,17.546096801757812,CDK inhibitor
+CVCL_0428,Ataluren,0.05,plate10,4003,0.8604650497436523,unclear
+CVCL_0428,Esmolol (hydrochloride),0.05,plate10,3850,0.7456445693969727,unclear
+CVCL_0428,Omeprazole,0.05,plate10,3937,0.2893304824829101,unclear
+CVCL_0428,Bicalutamide,0.05,plate10,3175,0.6054239273071289,Androgen receptor antagonist
+CVCL_0428,Belinostat,0.05,plate10,2750,0.9505643844604492,HDAC inhibitor
+CVCL_0428,Carbamazepine,0.05,plate10,2457,1.0592584609985352,HDAC inhibitor
+CVCL_0428,Allopurinol,0.05,plate10,4354,1.421828269958496,unclear
+CVCL_0428,Clopidogrel,0.05,plate10,4076,1.780970573425293,unclear
+CVCL_0428,Dexamethasone,0.05,plate10,2418,1.0372533798217771,Glucocorticoid receptor agonist
+CVCL_0428,Malotilate,0.05,plate10,2918,2.549300193786621,unclear
+CVCL_0428,γ-Oryzanol,0.05,plate10,3652,0.3984842300415039,DNA methyltransferase inhibitor
+CVCL_0428,Methylthiouracil,0.05,plate10,5235,0.2632551193237304,unclear
+CVCL_0428,Binimetinib,0.05,plate10,4288,2.001236915588379,MEK inhibitor
+CVCL_0428,Perindopril (erbumine),0.05,plate10,4243,0.4433126449584961,unclear
+CVCL_0428,Dapagliflozin,0.05,plate10,3089,0.9297075271606444,Glucose transporter inhibitor
+CVCL_0428,Panobinostat,0.05,plate10,3660,1.1230974197387695,HDAC inhibitor
+CVCL_0428,Uridine,0.05,plate10,3427,0.4835958480834961,unclear
+CVCL_0428,Adagrasib,0.05,plate10,3623,2.879757881164551,RAS inhibitor
+CVCL_0428,Ataluren,0.5,plate11,2175,0.179971694946289,unclear
+CVCL_0428,Esmolol (hydrochloride),0.5,plate11,1979,0.3651351928710937,unclear
+CVCL_0428,Omeprazole,0.5,plate11,1337,0.3007869720458984,unclear
+CVCL_0428,Bicalutamide,0.5,plate11,1811,0.1955928802490234,Androgen receptor antagonist
+CVCL_0428,Belinostat,0.5,plate11,1556,0.9849300384521484,HDAC inhibitor
+CVCL_0428,Carbamazepine,0.5,plate11,2119,0.2778205871582031,HDAC inhibitor
+CVCL_0428,Allopurinol,0.5,plate11,2538,0.5953807830810547,unclear
+CVCL_0428,Clopidogrel,0.5,plate11,3372,0.2652130126953125,unclear
+CVCL_0428,Dexamethasone,0.5,plate11,2792,0.1009254455566406,Glucocorticoid receptor agonist
+CVCL_0428,Malotilate,0.5,plate11,2405,1.6046600341796875,unclear
+CVCL_0428,γ-Oryzanol,0.5,plate11,2129,0.0782737731933593,DNA methyltransferase inhibitor
+CVCL_0428,Methylthiouracil,0.5,plate11,3138,0.3526782989501953,unclear
+CVCL_0428,Binimetinib,0.5,plate11,3027,2.459989547729492,MEK inhibitor
+CVCL_0428,Perindopril (erbumine),0.5,plate11,3436,0.6906318664550781,unclear
+CVCL_0428,Dapagliflozin,0.5,plate11,3933,0.4909591674804687,Glucose transporter inhibitor
+CVCL_0428,Panobinostat,0.5,plate11,2656,5.404890060424805,HDAC inhibitor
+CVCL_0428,Uridine,0.5,plate11,3474,0.4058990478515625,unclear
+CVCL_0428,Adagrasib,0.05,plate11,2781,1.853046417236328,RAS inhibitor
+CVCL_0428,Ataluren,5.0,plate12,5813,0.1475563049316406,unclear
+CVCL_0428,Esmolol (hydrochloride),5.0,plate12,5136,0.4195480346679687,unclear
+CVCL_0428,Omeprazole,5.0,plate12,5498,0.3324260711669922,unclear
+CVCL_0428,Bicalutamide,5.0,plate12,5080,0.4955501556396484,Androgen receptor antagonist
+CVCL_0428,Belinostat,5.0,plate12,3827,5.669898986816406,HDAC inhibitor
+CVCL_0428,Carbamazepine,5.0,plate12,2191,0.7694091796875,HDAC inhibitor
+CVCL_0428,Allopurinol,5.0,plate12,4414,0.1738948822021484,unclear
+CVCL_0428,Clopidogrel,5.0,plate12,3473,1.050336837768555,unclear
+CVCL_0428,Dexamethasone,5.0,plate12,3139,0.6250381469726562,Glucocorticoid receptor agonist
+CVCL_0428,Malotilate,5.0,plate12,4022,1.5015525817871094,unclear
+CVCL_0428,γ-Oryzanol,5.0,plate12,4053,0.3839111328125,DNA methyltransferase inhibitor
+CVCL_0428,Methylthiouracil,5.0,plate12,6600,0.1617870330810547,unclear
+CVCL_0428,Binimetinib,5.0,plate12,6430,4.140472412109375,MEK inhibitor
+CVCL_0428,Perindopril (erbumine),5.0,plate12,4838,0.6016521453857422,unclear
+CVCL_0428,Dapagliflozin,5.0,plate12,5611,0.221923828125,Glucose transporter inhibitor
+CVCL_0428,Panobinostat,5.0,plate12,2692,8.740371704101562,HDAC inhibitor
+CVCL_0428,Uridine,5.0,plate12,7475,0.3327541351318359,unclear
+CVCL_0428,Adagrasib,0.05,plate12,3880,2.2857208251953125,RAS inhibitor
+CVCL_0428,Abemaciclib,0.05,plate13,3130,1.1313552856445312,CDK inhibitor
+CVCL_0428,PF-06260933,0.05,plate13,3585,0.9539566040039062,Other MAPK inhibitor
+CVCL_0428,Chlorhexidine (diacetate),0.5,plate13,2867,1.468984603881836,unclear
+CVCL_0428,Berbamine,0.5,plate13,3432,0.8906059265136719,unclear
+CVCL_0428,Malotilate,0.05,plate13,2278,1.3052425384521484,unclear
+CVCL_0428,Adagrasib,0.05,plate13,5354,2.39554214477539,RAS inhibitor
+CVCL_0428,Berbamine (dihydrochloride),5.0,plate13,865,1.248554229736328,unclear
+CVCL_0428,Daidzin,5.0,plate13,922,2.372016906738281,unclear
+CVCL_0428,Fumaric acid,5.0,plate13,2239,1.7249088287353516,unclear
+CVCL_0428,Pravastatin (sodium),5.0,plate13,1550,2.5697479248046875,unclear
+CVCL_0428,Belumosudil,5.0,plate13,1811,2.001932144165039,unclear
+CVCL_0428,Flumatinib (mesylate),5.0,plate13,2862,0.8000431060791016,Other TK inhibitor
+CVCL_0428,Cytarabine,5.0,plate13,3127,0.4586811065673828,DNA synthesis/repair inhibitor
+CVCL_0428,Afatinib,5.0,plate13,2711,0.2388210296630859,EGFR/ERBB inhibitor
+CVCL_0428,Naproxen,5.0,plate13,2577,0.0491847991943359,Cyclooxygenase inhibitor
+CVCL_0428,Berbamine (dihydrochloride),0.5,plate13,3412,1.042865753173828,unclear
+CVCL_0428,Daidzin,0.5,plate13,3073,1.5639095306396484,unclear
+CVCL_0428,Fumaric acid,0.5,plate13,3725,0.3403606414794922,unclear
+CVCL_0428,Pravastatin (sodium),0.5,plate13,3552,1.5769805908203125,unclear
+CVCL_0428,Belumosudil,0.5,plate13,3270,0.83709716796875,unclear
+CVCL_0428,Flumatinib (mesylate),0.5,plate13,3328,0.9673995971679688,Other TK inhibitor
+CVCL_0428,Cytarabine,0.5,plate13,2797,1.025808334350586,DNA synthesis/repair inhibitor
+CVCL_0428,Afatinib,0.5,plate13,2747,0.4369373321533203,EGFR/ERBB inhibitor
+CVCL_0428,Naproxen,0.5,plate13,4029,0.4131526947021484,Cyclooxygenase inhibitor
+CVCL_0428,Berbamine (dihydrochloride),0.05,plate13,3977,0.623138427734375,unclear
+CVCL_0428,Daidzin,0.05,plate13,2755,0.7605171203613281,unclear
+CVCL_0428,Fumaric acid,0.05,plate13,3514,0.6769771575927734,unclear
+CVCL_0428,Pravastatin (sodium),0.05,plate13,2985,1.8636131286621092,unclear
+CVCL_0428,Belumosudil,0.05,plate13,3444,0.5254230499267578,unclear
+CVCL_0428,Flumatinib (mesylate),0.05,plate13,3014,1.3263206481933594,Other TK inhibitor
+CVCL_0428,Cytarabine,0.05,plate13,3650,0.3234672546386719,DNA synthesis/repair inhibitor
+CVCL_0428,Afatinib,0.05,plate13,2607,0.8365211486816406,EGFR/ERBB inhibitor
+CVCL_0428,Naproxen,0.05,plate13,3688,0.520111083984375,Cyclooxygenase inhibitor
+CVCL_0428,Glasdegib,5.0,plate13,2940,0.39117431640625,Sonic inhibitor
+CVCL_0428,Regorafenib,5.0,plate13,3382,0.4064712524414062,Multi-TK inhibitor
+CVCL_0428,Ribociclib,5.0,plate13,3534,0.5576953887939453,CDK inhibitor
+CVCL_0428,Glasdegib,0.5,plate13,3414,0.6057949066162109,Sonic inhibitor
+CVCL_0428,Regorafenib,0.5,plate13,2155,0.6094245910644531,Multi-TK inhibitor
+CVCL_0428,Ribociclib,0.5,plate13,2713,0.391387939453125,CDK inhibitor
+CVCL_0428,Glasdegib,0.05,plate13,2940,1.2146720886230469,Sonic inhibitor
+CVCL_0428,Regorafenib,0.05,plate13,3526,0.5363483428955078,Multi-TK inhibitor
+CVCL_0428,Ribociclib,0.05,plate13,3454,1.1224651336669922,CDK inhibitor
+CVCL_0428,Chlorhexidine (diacetate),5.0,plate14,757,0.7158021926879883,unclear
+CVCL_0428,Berbamine,5.0,plate14,635,0.2004756927490234,unclear
+CVCL_0428,Retinoic acid,5.0,plate14,863,0.7207603454589844,Retinoic receptor agonist
+CVCL_0428,Tucidinostat,5.0,plate14,722,0.4181947708129883,HDAC inhibitor
+CVCL_0428,Homoharringtonine,5.0,plate14,140,15.219432830810549,Protein synthesis inhibitor
+CVCL_0428,Artesunate,5.0,plate14,780,1.0473976135253906,JAK/STAT inhibitor
+CVCL_0428,Clonidine (hydrochloride),5.0,plate14,705,0.6807060241699219,Adrenoceptor agonist
+CVCL_0428,Adagrasib,0.05,plate14,671,2.99087142944336,RAS inhibitor
+CVCL_0428,Everolimus,0.05,plate1,1055,0.2736120223999023,MTOR inhibitor
+CVCL_0428,palbociclib,0.05,plate1,489,0.7373027801513672,CDK inhibitor
+CVCL_0428,Regorafenib,0.05,plate1,471,0.626338005065918,Multi-TK inhibitor
+CVCL_0428,Binimetinib,0.05,plate1,687,3.1539525985717773,MEK inhibitor
+CVCL_0428,Dabrafenib,0.05,plate1,642,0.8677492141723633,RAF inhibitor
+CVCL_0428,Paclitaxel,0.05,plate1,625,1.0010805130004885,Microtubule inhibitor
+CVCL_0428,RMC-6236,0.05,plate1,406,0.709559440612793,RAS inhibitor
+CVCL_0428,Afatinib,0.05,plate1,461,0.1733589172363281,EGFR/ERBB inhibitor
+CVCL_0428,BAY1125976,0.05,plate1,739,0.5123939514160156,PI3K/AKT inhibitor
+CVCL_0428,9-ING-41,0.05,plate1,738,0.3432722091674804,GSK3 inhibitor
+CVCL_0428,Bortezomib,0.05,plate1,607,6.9253034591674805,Proteasome inhibitor
+CVCL_0428,Adagrasib,0.05,plate1,574,1.874632835388184,RAS inhibitor
+CVCL_0428,Everolimus,0.5,plate2,1778,0.8419075012207031,MTOR inhibitor
+CVCL_0428,Abemaciclib,0.5,plate2,1170,3.136215209960937,CDK inhibitor
+CVCL_0428,palbociclib,0.5,plate2,962,1.3752803802490234,CDK inhibitor
+CVCL_0428,Regorafenib,0.5,plate2,1526,1.4493064880371094,Multi-TK inhibitor
+CVCL_0428,Binimetinib,0.5,plate2,684,7.661867141723633,MEK inhibitor
+CVCL_0428,Dabrafenib,0.5,plate2,827,1.5751304626464844,RAF inhibitor
+CVCL_0428,Paclitaxel,0.5,plate2,1596,0.876133918762207,Microtubule inhibitor
+CVCL_0428,RMC-6236,0.5,plate2,1356,1.5979728698730469,RAS inhibitor
+CVCL_0428,Afatinib,0.5,plate2,1396,0.5702047348022461,EGFR/ERBB inhibitor
+CVCL_0428,BAY1125976,0.5,plate2,638,6.502643585205078,PI3K/AKT inhibitor
+CVCL_0428,9-ING-41,0.5,plate2,534,10.32428741455078,GSK3 inhibitor
+CVCL_0428,PF-06260933,0.5,plate2,564,2.1539173126220703,Other MAPK inhibitor
+CVCL_0428,Bortezomib,0.5,plate2,1038,6.992210388183594,Proteasome inhibitor
+CVCL_0428,Adagrasib,0.05,plate2,1604,1.6354522705078125,RAS inhibitor
+CVCL_0428,Everolimus,5.0,plate3,1588,0.4899435043334961,MTOR inhibitor
+CVCL_0428,Abemaciclib,5.0,plate3,487,8.693689346313477,CDK inhibitor
+CVCL_0428,palbociclib,5.0,plate3,341,2.329684257507324,CDK inhibitor
+CVCL_0428,Regorafenib,5.0,plate3,490,0.4241476058959961,Multi-TK inhibitor
+CVCL_0428,Binimetinib,5.0,plate3,273,3.3130035400390625,MEK inhibitor
+CVCL_0428,Dabrafenib,5.0,plate3,1693,8.718118667602539,RAF inhibitor
+CVCL_0428,Paclitaxel,5.0,plate3,1233,7.358186721801758,Microtubule inhibitor
+CVCL_0428,RMC-6236,5.0,plate3,991,6.350851058959961,RAS inhibitor
+CVCL_0428,Afatinib,5.0,plate3,983,7.96760368347168,EGFR/ERBB inhibitor
+CVCL_0428,BAY1125976,5.0,plate3,1007,9.308134078979492,PI3K/AKT inhibitor
+CVCL_0428,9-ING-41,5.0,plate3,1448,2.890634536743164,GSK3 inhibitor
+CVCL_0428,PF-06260933,5.0,plate3,319,3.022714614868164,Other MAPK inhibitor
+CVCL_0428,Bortezomib,5.0,plate3,246,7.144540786743164,Proteasome inhibitor
+CVCL_0428,Adagrasib,0.05,plate3,447,2.11666202545166,RAS inhibitor
+CVCL_0546,Chlorhexidine (diacetate),0.05,plate4,4383,0.3027667999267578,unclear
+CVCL_0546,Berbamine,0.05,plate4,4893,0.6358566284179688,unclear
+CVCL_0546,Retinoic acid,0.05,plate4,4647,2.776887893676758,Retinoic receptor agonist
+CVCL_0546,Tucidinostat,0.05,plate4,4504,0.51727294921875,HDAC inhibitor
+CVCL_0546,Homoharringtonine,0.05,plate4,4271,1.1967735290527344,Protein synthesis inhibitor
+CVCL_0546,Artesunate,0.05,plate4,5679,0.5487232208251953,JAK/STAT inhibitor
+CVCL_0546,Clonidine (hydrochloride),0.05,plate4,7113,1.1851215362548828,Adrenoceptor agonist
+CVCL_0546,Adagrasib,0.05,plate4,6632,0.1551761627197265,RAS inhibitor
+CVCL_0546,Chlorhexidine (diacetate),0.5,plate5,4131,0.1049060821533203,unclear
+CVCL_0546,Berbamine,0.5,plate5,3341,0.4273185729980469,unclear
+CVCL_0546,Retinoic acid,0.5,plate5,2837,0.1343841552734375,Retinoic receptor agonist
+CVCL_0546,Tucidinostat,0.5,plate5,2482,1.7215023040771484,HDAC inhibitor
+CVCL_0546,Homoharringtonine,0.5,plate5,3234,8.797176361083984,Protein synthesis inhibitor
+CVCL_0546,Artesunate,0.5,plate5,5614,0.5535316467285156,JAK/STAT inhibitor
+CVCL_0546,Clonidine (hydrochloride),0.5,plate5,4509,0.1235542297363281,Adrenoceptor agonist
+CVCL_0546,Adagrasib,0.05,plate5,4059,0.2373466491699218,RAS inhibitor
+CVCL_0546,Chlorhexidine (diacetate),5.0,plate6,5949,0.3566513061523437,unclear
+CVCL_0546,Berbamine,5.0,plate6,6656,0.5489959716796875,unclear
+CVCL_0546,Retinoic acid,5.0,plate6,5702,0.23980712890625,Retinoic receptor agonist
+CVCL_0546,Tucidinostat,5.0,plate6,3618,4.152368545532227,HDAC inhibitor
+CVCL_0546,Homoharringtonine,5.0,plate6,4229,11.702665328979492,Protein synthesis inhibitor
+CVCL_0546,Artesunate,5.0,plate6,6898,0.5666675567626953,JAK/STAT inhibitor
+CVCL_0546,Clonidine (hydrochloride),5.0,plate6,10363,1.4071083068847656,Adrenoceptor agonist
+CVCL_0546,Adagrasib,0.05,plate6,7566,0.1876430511474609,RAS inhibitor
+CVCL_0546,Entecavir (monohydrate),0.05,plate7,2782,0.3252506256103515,unclear
+CVCL_0546,Berbamine (dihydrochloride),0.05,plate7,3021,0.6130886077880859,unclear
+CVCL_0546,Daidzin,0.05,plate7,3126,1.2571678161621094,unclear
+CVCL_0546,Fumaric acid,0.05,plate7,3135,0.3705959320068359,unclear
+CVCL_0546,Pravastatin (sodium),0.05,plate7,2668,0.3987483978271484,unclear
+CVCL_0546,Dinaciclib,0.05,plate7,322,11.033975601196287,CDK inhibitor
+CVCL_0546,Belumosudil,0.05,plate7,3809,0.7873497009277344,unclear
+CVCL_0546,Flumatinib (mesylate),0.05,plate7,3066,0.3689022064208984,Other TK inhibitor
+CVCL_0546,Cytarabine,0.05,plate7,3464,1.678018569946289,DNA synthesis/repair inhibitor
+CVCL_0546,Afatinib,0.05,plate7,2720,0.1914024353027343,EGFR/ERBB inhibitor
+CVCL_0546,Naproxen,0.05,plate7,1724,0.1932830810546875,Cyclooxygenase inhibitor
+CVCL_0546,Harringtonine,0.05,plate7,1684,0.4525012969970703,Protein synthesis inhibitor
+CVCL_0546,Adagrasib,0.05,plate7,6928,0.1533393859863281,RAS inhibitor
+CVCL_0546,Entecavir (monohydrate),0.5,plate8,9908,0.3589401245117187,unclear
+CVCL_0546,Berbamine (dihydrochloride),0.5,plate8,10839,0.2079658508300781,unclear
+CVCL_0546,Daidzin,0.5,plate8,10852,0.9030418395996094,unclear
+CVCL_0546,Fumaric acid,0.5,plate8,8375,0.5345325469970703,unclear
+CVCL_0546,Pravastatin (sodium),0.5,plate8,9662,0.2561016082763672,unclear
+CVCL_0546,Dinaciclib,0.5,plate8,738,19.771278381347656,CDK inhibitor
+CVCL_0546,Belumosudil,0.5,plate8,9842,0.4452667236328125,unclear
+CVCL_0546,Flumatinib (mesylate),0.5,plate8,7782,0.5664730072021484,Other TK inhibitor
+CVCL_0546,Cytarabine,0.5,plate8,9228,1.4102210998535156,DNA synthesis/repair inhibitor
+CVCL_0546,Afatinib,0.5,plate8,8099,0.1093196868896484,EGFR/ERBB inhibitor
+CVCL_0546,Naproxen,0.5,plate8,9094,0.3093128204345703,Cyclooxygenase inhibitor
+CVCL_0546,Harringtonine,0.5,plate8,8156,4.363321304321289,Protein synthesis inhibitor
+CVCL_0546,Adagrasib,0.5,plate8,5736,0.7374916076660156,RAS inhibitor
+CVCL_0546,Adagrasib,0.05,plate8,6390,0.0820083618164062,RAS inhibitor
+CVCL_0546,Entecavir (monohydrate),5.0,plate9,7207,0.8392009735107422,unclear
+CVCL_0546,Berbamine (dihydrochloride),5.0,plate9,5475,1.018842697143555,unclear
+CVCL_0546,Daidzin,5.0,plate9,5928,1.8548450469970703,unclear
+CVCL_0546,Fumaric acid,5.0,plate9,6398,1.2184562683105469,unclear
+CVCL_0546,Pravastatin (sodium),5.0,plate9,7708,0.7171401977539062,unclear
+CVCL_0546,Dinaciclib,5.0,plate9,229,13.418846130371094,CDK inhibitor
+CVCL_0546,Belumosudil,5.0,plate9,4316,1.0700950622558594,unclear
+CVCL_0546,Flumatinib (mesylate),5.0,plate9,4070,0.6612758636474609,Other TK inhibitor
+CVCL_0546,Cytarabine,5.0,plate9,2391,4.514669418334961,DNA synthesis/repair inhibitor
+CVCL_0546,Afatinib,5.0,plate9,2568,0.1922626495361328,EGFR/ERBB inhibitor
+CVCL_0546,Naproxen,5.0,plate9,2628,0.044656753540039,Cyclooxygenase inhibitor
+CVCL_0546,Harringtonine,5.0,plate9,7317,8.448934555053711,Protein synthesis inhibitor
+CVCL_0546,Adagrasib,5.0,plate9,5107,0.5113182067871094,RAS inhibitor
+CVCL_0546,Adagrasib,0.05,plate9,2825,-0.0010147094726562,RAS inhibitor
+CVCL_0546,Ataluren,0.05,plate10,6751,0.2343826293945312,unclear
+CVCL_0546,Esmolol (hydrochloride),0.05,plate10,8512,0.3494129180908203,unclear
+CVCL_0546,Omeprazole,0.05,plate10,9048,0.2708206176757812,unclear
+CVCL_0546,Bicalutamide,0.05,plate10,6171,0.701812744140625,Androgen receptor antagonist
+CVCL_0546,Belinostat,0.05,plate10,4966,0.3824367523193359,HDAC inhibitor
+CVCL_0546,Carbamazepine,0.05,plate10,4721,0.2596569061279297,HDAC inhibitor
+CVCL_0546,Allopurinol,0.05,plate10,9003,0.7053089141845703,unclear
+CVCL_0546,Clopidogrel,0.05,plate10,7793,0.8907718658447266,unclear
+CVCL_0546,Dexamethasone,0.05,plate10,4952,0.2063407897949218,Glucocorticoid receptor agonist
+CVCL_0546,Malotilate,0.05,plate10,4126,1.7577629089355469,unclear
+CVCL_0546,γ-Oryzanol,0.05,plate10,6292,0.1623344421386718,DNA methyltransferase inhibitor
+CVCL_0546,Methylthiouracil,0.05,plate10,10520,0.0743846893310546,unclear
+CVCL_0546,Binimetinib,0.05,plate10,8313,1.7976112365722656,MEK inhibitor
+CVCL_0546,Perindopril (erbumine),0.05,plate10,10112,0.4685039520263672,unclear
+CVCL_0546,Dapagliflozin,0.05,plate10,7294,0.9695682525634766,Glucose transporter inhibitor
+CVCL_0546,Panobinostat,0.05,plate10,6025,3.8190689086914062,HDAC inhibitor
+CVCL_0546,Uridine,0.05,plate10,6759,0.1358146667480468,unclear
+CVCL_0546,Adagrasib,0.05,plate10,7226,0.0718975067138671,RAS inhibitor
+CVCL_0546,Ataluren,0.5,plate11,4006,0.0953617095947265,unclear
+CVCL_0546,Esmolol (hydrochloride),0.5,plate11,3630,0.1682262420654297,unclear
+CVCL_0546,Omeprazole,0.5,plate11,2433,0.254495620727539,unclear
+CVCL_0546,Bicalutamide,0.5,plate11,3275,0.0695838928222656,Androgen receptor antagonist
+CVCL_0546,Belinostat,0.5,plate11,2141,1.3721065521240234,HDAC inhibitor
+CVCL_0546,Carbamazepine,0.5,plate11,3580,0.0397205352783203,HDAC inhibitor
+CVCL_0546,Allopurinol,0.5,plate11,5339,0.721771240234375,unclear
+CVCL_0546,Clopidogrel,0.5,plate11,6119,0.2492866516113281,unclear
+CVCL_0546,Dexamethasone,0.5,plate11,6095,0.1187248229980468,Glucocorticoid receptor agonist
+CVCL_0546,Malotilate,0.5,plate11,4309,1.1513175964355469,unclear
+CVCL_0546,γ-Oryzanol,0.5,plate11,3886,0.1241359710693359,DNA methyltransferase inhibitor
+CVCL_0546,Methylthiouracil,0.5,plate11,5720,0.2394542694091797,unclear
+CVCL_0546,Binimetinib,0.5,plate11,5145,2.1342639923095703,MEK inhibitor
+CVCL_0546,Perindopril (erbumine),0.5,plate11,7645,0.5610618591308594,unclear
+CVCL_0546,Dapagliflozin,0.5,plate11,8262,0.3927631378173828,Glucose transporter inhibitor
+CVCL_0546,Panobinostat,0.5,plate11,4896,10.302364349365234,HDAC inhibitor
+CVCL_0546,Uridine,0.5,plate11,7751,0.4675521850585937,unclear
+CVCL_0546,Adagrasib,0.05,plate11,5338,0.2061195373535156,RAS inhibitor
+CVCL_0546,Ataluren,5.0,plate12,10854,0.0839157104492187,unclear
+CVCL_0546,Esmolol (hydrochloride),5.0,plate12,9650,0.0945644378662109,unclear
+CVCL_0546,Omeprazole,5.0,plate12,9717,0.0214614868164062,unclear
+CVCL_0546,Bicalutamide,5.0,plate12,10170,0.233255386352539,Androgen receptor antagonist
+CVCL_0546,Belinostat,5.0,plate12,5224,12.19487190246582,HDAC inhibitor
+CVCL_0546,Carbamazepine,5.0,plate12,3467,0.6850051879882812,HDAC inhibitor
+CVCL_0546,Allopurinol,5.0,plate12,8302,0.2038154602050781,unclear
+CVCL_0546,Clopidogrel,5.0,plate12,5908,1.019418716430664,unclear
+CVCL_0546,Dexamethasone,5.0,plate12,6143,0.2614994049072265,Glucocorticoid receptor agonist
+CVCL_0546,Malotilate,5.0,plate12,7200,1.9087982177734373,unclear
+CVCL_0546,γ-Oryzanol,5.0,plate12,6674,0.4180183410644531,DNA methyltransferase inhibitor
+CVCL_0546,Methylthiouracil,5.0,plate12,11868,0.158212661743164,unclear
+CVCL_0546,Binimetinib,5.0,plate12,10667,2.3135337829589844,MEK inhibitor
+CVCL_0546,Perindopril (erbumine),5.0,plate12,8514,0.7077293395996094,unclear
+CVCL_0546,Dapagliflozin,5.0,plate12,9618,0.3850364685058594,Glucose transporter inhibitor
+CVCL_0546,Panobinostat,5.0,plate12,5913,14.329410552978516,HDAC inhibitor
+CVCL_0546,Uridine,5.0,plate12,12670,0.1742572784423828,unclear
+CVCL_0546,Adagrasib,0.05,plate12,7886,0.0275001525878906,RAS inhibitor
+CVCL_0546,Abemaciclib,0.05,plate13,6297,0.9772319793701172,CDK inhibitor
+CVCL_0546,PF-06260933,0.05,plate13,8167,0.4991683959960937,Other MAPK inhibitor
+CVCL_0546,Chlorhexidine (diacetate),0.5,plate13,6278,1.6695938110351562,unclear
+CVCL_0546,Berbamine,0.5,plate13,7452,0.9747581481933594,unclear
+CVCL_0546,Malotilate,0.05,plate13,3644,0.159881591796875,unclear
+CVCL_0546,Adagrasib,0.05,plate13,10780,0.3638935089111328,RAS inhibitor
+CVCL_0546,Berbamine (dihydrochloride),5.0,plate13,1561,1.051727294921875,unclear
+CVCL_0546,Daidzin,5.0,plate13,1403,1.589578628540039,unclear
+CVCL_0546,Fumaric acid,5.0,plate13,4505,0.5719089508056641,unclear
+CVCL_0546,Pravastatin (sodium),5.0,plate13,2814,1.0767192840576172,unclear
+CVCL_0546,Belumosudil,5.0,plate13,2790,0.8410224914550781,unclear
+CVCL_0546,Flumatinib (mesylate),5.0,plate13,4554,0.6346035003662109,Other TK inhibitor
+CVCL_0546,Cytarabine,5.0,plate13,6717,0.2356319427490234,DNA synthesis/repair inhibitor
+CVCL_0546,Afatinib,5.0,plate13,6249,0.280679702758789,EGFR/ERBB inhibitor
+CVCL_0546,Naproxen,5.0,plate13,4429,0.1819324493408203,Cyclooxygenase inhibitor
+CVCL_0546,Berbamine (dihydrochloride),0.5,plate13,4896,0.4424362182617187,unclear
+CVCL_0546,Daidzin,0.5,plate13,4523,0.6726951599121094,unclear
+CVCL_0546,Fumaric acid,0.5,plate13,5728,0.1547222137451172,unclear
+CVCL_0546,Pravastatin (sodium),0.5,plate13,6199,0.8720493316650391,unclear
+CVCL_0546,Belumosudil,0.5,plate13,8237,0.234527587890625,unclear
+CVCL_0546,Flumatinib (mesylate),0.5,plate13,7853,0.3648967742919922,Other TK inhibitor
+CVCL_0546,Cytarabine,0.5,plate13,7163,0.2001152038574218,DNA synthesis/repair inhibitor
+CVCL_0546,Afatinib,0.5,plate13,5639,0.2707672119140625,EGFR/ERBB inhibitor
+CVCL_0546,Naproxen,0.5,plate13,7678,0.2042102813720703,Cyclooxygenase inhibitor
+CVCL_0546,Berbamine (dihydrochloride),0.05,plate13,6631,0.2992725372314453,unclear
+CVCL_0546,Daidzin,0.05,plate13,5524,0.486520767211914,unclear
+CVCL_0546,Fumaric acid,0.05,plate13,6403,0.3633251190185547,unclear
+CVCL_0546,Pravastatin (sodium),0.05,plate13,5574,1.1438312530517578,unclear
+CVCL_0546,Belumosudil,0.05,plate13,7628,0.4970722198486328,unclear
+CVCL_0546,Flumatinib (mesylate),0.05,plate13,5796,0.5949745178222656,Other TK inhibitor
+CVCL_0546,Cytarabine,0.05,plate13,7808,0.1171417236328125,DNA synthesis/repair inhibitor
+CVCL_0546,Afatinib,0.05,plate13,6226,0.3900814056396484,EGFR/ERBB inhibitor
+CVCL_0546,Naproxen,0.05,plate13,5705,0.4025745391845703,Cyclooxygenase inhibitor
+CVCL_0546,Glasdegib,5.0,plate13,6593,0.4539356231689453,Sonic inhibitor
+CVCL_0546,Regorafenib,5.0,plate13,6800,0.250467300415039,Multi-TK inhibitor
+CVCL_0546,Ribociclib,5.0,plate13,5804,0.2696304321289062,CDK inhibitor
+CVCL_0546,Glasdegib,0.5,plate13,6617,0.6580791473388672,Sonic inhibitor
+CVCL_0546,Regorafenib,0.5,plate13,3685,0.4423828125,Multi-TK inhibitor
+CVCL_0546,Ribociclib,0.5,plate13,5750,0.2238426208496093,CDK inhibitor
+CVCL_0546,Glasdegib,0.05,plate13,5713,0.8348426818847656,Sonic inhibitor
+CVCL_0546,Regorafenib,0.05,plate13,7063,0.2724342346191406,Multi-TK inhibitor
+CVCL_0546,Ribociclib,0.05,plate13,5732,0.2907752990722656,CDK inhibitor
+CVCL_0546,Chlorhexidine (diacetate),5.0,plate14,4608,0.1139736175537109,unclear
+CVCL_0546,Berbamine,5.0,plate14,3777,0.1332283020019531,unclear
+CVCL_0546,Retinoic acid,5.0,plate14,4944,0.6383228302001953,Retinoic receptor agonist
+CVCL_0546,Tucidinostat,5.0,plate14,4626,0.3651771545410156,HDAC inhibitor
+CVCL_0546,Homoharringtonine,5.0,plate14,4674,9.21076202392578,Protein synthesis inhibitor
+CVCL_0546,Artesunate,5.0,plate14,3850,0.7246723175048828,JAK/STAT inhibitor
+CVCL_0546,Clonidine (hydrochloride),5.0,plate14,3961,0.6884803771972656,Adrenoceptor agonist
+CVCL_0546,Adagrasib,0.05,plate14,3192,0.6369228363037109,RAS inhibitor
+CVCL_0546,Everolimus,0.05,plate1,6011,0.1114158630371093,MTOR inhibitor
+CVCL_0546,palbociclib,0.05,plate1,2626,0.2126102447509765,CDK inhibitor
+CVCL_0546,Regorafenib,0.05,plate1,2777,0.4163475036621094,Multi-TK inhibitor
+CVCL_0546,Binimetinib,0.05,plate1,2849,1.7629737854003906,MEK inhibitor
+CVCL_0546,Dabrafenib,0.05,plate1,4256,0.9706764221191406,RAF inhibitor
+CVCL_0546,Paclitaxel,0.05,plate1,4413,1.4497318267822266,Microtubule inhibitor
+CVCL_0546,RMC-6236,0.05,plate1,3477,1.122732162475586,RAS inhibitor
+CVCL_0546,Afatinib,0.05,plate1,2407,0.604248046875,EGFR/ERBB inhibitor
+CVCL_0546,BAY1125976,0.05,plate1,4720,0.3443145751953125,PI3K/AKT inhibitor
+CVCL_0546,9-ING-41,0.05,plate1,4787,0.4584484100341797,GSK3 inhibitor
+CVCL_0546,Bortezomib,0.05,plate1,2345,4.384754180908203,Proteasome inhibitor
+CVCL_0546,Adagrasib,0.05,plate1,3777,0.1081962585449218,RAS inhibitor
+CVCL_0546,Everolimus,0.5,plate2,9685,0.5095653533935547,MTOR inhibitor
+CVCL_0546,Abemaciclib,0.5,plate2,5443,0.8516407012939453,CDK inhibitor
+CVCL_0546,palbociclib,0.5,plate2,5894,0.5699901580810547,CDK inhibitor
+CVCL_0546,Regorafenib,0.5,plate2,7991,0.3333969116210937,Multi-TK inhibitor
+CVCL_0546,Binimetinib,0.5,plate2,4242,3.893999099731445,MEK inhibitor
+CVCL_0546,Dabrafenib,0.5,plate2,4682,0.5562553405761719,RAF inhibitor
+CVCL_0546,Paclitaxel,0.5,plate2,9334,0.6550712585449219,Microtubule inhibitor
+CVCL_0546,RMC-6236,0.5,plate2,8584,1.0596237182617188,RAS inhibitor
+CVCL_0546,Afatinib,0.5,plate2,7612,0.3786563873291015,EGFR/ERBB inhibitor
+CVCL_0546,BAY1125976,0.5,plate2,2586,3.1803741455078125,PI3K/AKT inhibitor
+CVCL_0546,9-ING-41,0.5,plate2,2225,6.035560607910156,GSK3 inhibitor
+CVCL_0546,PF-06260933,0.5,plate2,3843,1.0639495849609375,Other MAPK inhibitor
+CVCL_0546,Bortezomib,0.5,plate2,4685,2.685527801513672,Proteasome inhibitor
+CVCL_0546,Adagrasib,0.05,plate2,8678,0.1547317504882812,RAS inhibitor
+CVCL_0546,Everolimus,5.0,plate3,4937,0.4845647811889648,MTOR inhibitor
+CVCL_0546,Abemaciclib,5.0,plate3,2834,3.211390495300293,CDK inhibitor
+CVCL_0546,palbociclib,5.0,plate3,1553,1.5056676864624023,CDK inhibitor
+CVCL_0546,Regorafenib,5.0,plate3,2139,0.8494796752929688,Multi-TK inhibitor
+CVCL_0546,Binimetinib,5.0,plate3,1022,1.4605283737182615,MEK inhibitor
+CVCL_0546,Dabrafenib,5.0,plate3,7044,3.4519834518432617,RAF inhibitor
+CVCL_0546,Paclitaxel,5.0,plate3,6791,5.977250099182129,Microtubule inhibitor
+CVCL_0546,RMC-6236,5.0,plate3,5374,4.679018974304199,RAS inhibitor
+CVCL_0546,Afatinib,5.0,plate3,5032,6.233340263366699,EGFR/ERBB inhibitor
+CVCL_0546,BAY1125976,5.0,plate3,6944,5.436509132385254,PI3K/AKT inhibitor
+CVCL_0546,9-ING-41,5.0,plate3,5290,2.850592613220215,GSK3 inhibitor
+CVCL_0546,PF-06260933,5.0,plate3,1224,3.9004735946655273,Other MAPK inhibitor
+CVCL_0546,Bortezomib,5.0,plate3,965,3.829737663269043,Proteasome inhibitor
+CVCL_0546,Adagrasib,0.05,plate3,1115,0.1606607437133789,RAS inhibitor
+CVCL_0459,Chlorhexidine (diacetate),0.05,plate4,4201,0.1148033142089843,unclear
+CVCL_0459,Berbamine,0.05,plate4,4170,1.3445396423339844,unclear
+CVCL_0459,Retinoic acid,0.05,plate4,4351,2.7403221130371094,Retinoic receptor agonist
+CVCL_0459,Tucidinostat,0.05,plate4,4259,0.251840591430664,HDAC inhibitor
+CVCL_0459,Homoharringtonine,0.05,plate4,2904,12.725334167480469,Protein synthesis inhibitor
+CVCL_0459,Artesunate,0.05,plate4,4553,0.5515117645263672,JAK/STAT inhibitor
+CVCL_0459,Clonidine (hydrochloride),0.05,plate4,6436,1.821250915527344,Adrenoceptor agonist
+CVCL_0459,Adagrasib,0.05,plate4,6115,0.2329578399658203,RAS inhibitor
+CVCL_0459,Chlorhexidine (diacetate),0.5,plate5,3501,0.0760612487792968,unclear
+CVCL_0459,Berbamine,0.5,plate5,2852,0.5063438415527344,unclear
+CVCL_0459,Retinoic acid,0.5,plate5,2247,0.2273397445678711,Retinoic receptor agonist
+CVCL_0459,Tucidinostat,0.5,plate5,2195,1.6503429412841797,HDAC inhibitor
+CVCL_0459,Homoharringtonine,0.5,plate5,2114,23.24525451660156,Protein synthesis inhibitor
+CVCL_0459,Artesunate,0.5,plate5,4971,0.3034400939941406,JAK/STAT inhibitor
+CVCL_0459,Clonidine (hydrochloride),0.5,plate5,3883,0.0908489227294921,Adrenoceptor agonist
+CVCL_0459,Adagrasib,0.05,plate5,3262,0.1779565811157226,RAS inhibitor
+CVCL_0459,Chlorhexidine (diacetate),5.0,plate6,4990,2.1122589111328125,unclear
+CVCL_0459,Berbamine,5.0,plate6,5767,0.9004344940185547,unclear
+CVCL_0459,Retinoic acid,5.0,plate6,5010,0.7575397491455078,Retinoic receptor agonist
+CVCL_0459,Tucidinostat,5.0,plate6,3533,4.509830474853516,HDAC inhibitor
+CVCL_0459,Homoharringtonine,5.0,plate6,2805,26.73596954345703,Protein synthesis inhibitor
+CVCL_0459,Artesunate,5.0,plate6,6145,0.3566265106201172,JAK/STAT inhibitor
+CVCL_0459,Clonidine (hydrochloride),5.0,plate6,8803,1.2413997650146484,Adrenoceptor agonist
+CVCL_0459,Adagrasib,0.05,plate6,5960,0.223703384399414,RAS inhibitor
+CVCL_0459,Entecavir (monohydrate),0.05,plate7,2883,0.2469348907470703,unclear
+CVCL_0459,Berbamine (dihydrochloride),0.05,plate7,3072,0.8583850860595703,unclear
+CVCL_0459,Daidzin,0.05,plate7,3480,1.529653549194336,unclear
+CVCL_0459,Fumaric acid,0.05,plate7,3175,0.3418922424316406,unclear
+CVCL_0459,Pravastatin (sodium),0.05,plate7,2704,0.3635158538818359,unclear
+CVCL_0459,Dinaciclib,0.05,plate7,500,10.043390274047852,CDK inhibitor
+CVCL_0459,Belumosudil,0.05,plate7,3712,0.972759246826172,unclear
+CVCL_0459,Flumatinib (mesylate),0.05,plate7,2978,0.4514007568359375,Other TK inhibitor
+CVCL_0459,Cytarabine,0.05,plate7,3999,2.271474838256836,DNA synthesis/repair inhibitor
+CVCL_0459,Afatinib,0.05,plate7,3072,0.1819038391113281,EGFR/ERBB inhibitor
+CVCL_0459,Naproxen,0.05,plate7,1614,0.487457275390625,Cyclooxygenase inhibitor
+CVCL_0459,Harringtonine,0.05,plate7,1458,4.735834121704102,Protein synthesis inhibitor
+CVCL_0459,Adagrasib,0.05,plate7,7179,0.2604084014892578,RAS inhibitor
+CVCL_0459,Entecavir (monohydrate),0.5,plate8,12613,0.5616207122802734,unclear
+CVCL_0459,Berbamine (dihydrochloride),0.5,plate8,10589,0.3801517486572265,unclear
+CVCL_0459,Daidzin,0.5,plate8,10999,1.0612564086914062,unclear
+CVCL_0459,Fumaric acid,0.5,plate8,8846,0.4986743927001953,unclear
+CVCL_0459,Pravastatin (sodium),0.5,plate8,8763,0.3103771209716797,unclear
+CVCL_0459,Dinaciclib,0.5,plate8,816,23.73091697692871,CDK inhibitor
+CVCL_0459,Belumosudil,0.5,plate8,9353,0.4610347747802734,unclear
+CVCL_0459,Flumatinib (mesylate),0.5,plate8,8277,1.0057640075683594,Other TK inhibitor
+CVCL_0459,Cytarabine,0.5,plate8,8847,1.1817550659179688,DNA synthesis/repair inhibitor
+CVCL_0459,Afatinib,0.5,plate8,8113,0.069833755493164,EGFR/ERBB inhibitor
+CVCL_0459,Naproxen,0.5,plate8,8560,0.5108146667480469,Cyclooxygenase inhibitor
+CVCL_0459,Harringtonine,0.5,plate8,7920,16.208158493041992,Protein synthesis inhibitor
+CVCL_0459,Adagrasib,0.5,plate8,3341,0.9356842041015624,RAS inhibitor
+CVCL_0459,Adagrasib,0.05,plate8,4768,-0.0178508758544921,RAS inhibitor
+CVCL_0459,Entecavir (monohydrate),5.0,plate9,9083,1.997873306274414,unclear
+CVCL_0459,Berbamine (dihydrochloride),5.0,plate9,5056,1.753374099731445,unclear
+CVCL_0459,Daidzin,5.0,plate9,7112,2.7095870971679688,unclear
+CVCL_0459,Fumaric acid,5.0,plate9,7190,1.451398849487305,unclear
+CVCL_0459,Pravastatin (sodium),5.0,plate9,8461,1.4582061767578125,unclear
+CVCL_0459,Dinaciclib,5.0,plate9,260,15.910699844360352,CDK inhibitor
+CVCL_0459,Belumosudil,5.0,plate9,2724,0.5814990997314453,unclear
+CVCL_0459,Flumatinib (mesylate),5.0,plate9,3557,0.84381103515625,Other TK inhibitor
+CVCL_0459,Cytarabine,5.0,plate9,2522,4.290197372436523,DNA synthesis/repair inhibitor
+CVCL_0459,Afatinib,5.0,plate9,2757,0.1617469787597656,EGFR/ERBB inhibitor
+CVCL_0459,Naproxen,5.0,plate9,3023,0.1498584747314453,Cyclooxygenase inhibitor
+CVCL_0459,Harringtonine,5.0,plate9,7919,17.678537368774414,Protein synthesis inhibitor
+CVCL_0459,Adagrasib,5.0,plate9,5385,0.5284671783447266,RAS inhibitor
+CVCL_0459,Adagrasib,0.05,plate9,2965,0.22528076171875,RAS inhibitor
+CVCL_0459,Ataluren,0.05,plate10,6449,0.8184127807617188,unclear
+CVCL_0459,Esmolol (hydrochloride),0.05,plate10,9234,0.8897171020507812,unclear
+CVCL_0459,Omeprazole,0.05,plate10,10742,0.4894332885742187,unclear
+CVCL_0459,Bicalutamide,0.05,plate10,7070,0.8232784271240234,Androgen receptor antagonist
+CVCL_0459,Belinostat,0.05,plate10,5174,0.7550525665283203,HDAC inhibitor
+CVCL_0459,Carbamazepine,0.05,plate10,4106,0.6061363220214844,HDAC inhibitor
+CVCL_0459,Allopurinol,0.05,plate10,11646,2.0820980072021484,unclear
+CVCL_0459,Clopidogrel,0.05,plate10,10687,1.9197883605957031,unclear
+CVCL_0459,Dexamethasone,0.05,plate10,3629,1.7193851470947266,Glucocorticoid receptor agonist
+CVCL_0459,Malotilate,0.05,plate10,5340,3.050914764404297,unclear
+CVCL_0459,γ-Oryzanol,0.05,plate10,7715,0.4684429168701172,DNA methyltransferase inhibitor
+CVCL_0459,Methylthiouracil,0.05,plate10,12927,0.3082561492919922,unclear
+CVCL_0459,Binimetinib,0.05,plate10,10721,0.922565460205078,MEK inhibitor
+CVCL_0459,Perindopril (erbumine),0.05,plate10,11235,0.4120826721191406,unclear
+CVCL_0459,Dapagliflozin,0.05,plate10,6673,1.045663833618164,Glucose transporter inhibitor
+CVCL_0459,Panobinostat,0.05,plate10,6802,2.13886833190918,HDAC inhibitor
+CVCL_0459,Uridine,0.05,plate10,5736,0.490152359008789,unclear
+CVCL_0459,Adagrasib,0.05,plate10,7401,0.1871204376220703,RAS inhibitor
+CVCL_0459,Ataluren,0.5,plate11,4483,0.143136978149414,unclear
+CVCL_0459,Esmolol (hydrochloride),0.5,plate11,4596,0.301431655883789,unclear
+CVCL_0459,Omeprazole,0.5,plate11,2904,0.253122329711914,unclear
+CVCL_0459,Bicalutamide,0.5,plate11,4171,0.2563209533691406,Androgen receptor antagonist
+CVCL_0459,Belinostat,0.5,plate11,3033,0.6701641082763672,HDAC inhibitor
+CVCL_0459,Carbamazepine,0.5,plate11,3495,0.23712158203125,HDAC inhibitor
+CVCL_0459,Allopurinol,0.5,plate11,5906,0.6429004669189453,unclear
+CVCL_0459,Clopidogrel,0.5,plate11,8294,0.2847499847412109,unclear
+CVCL_0459,Dexamethasone,0.5,plate11,5497,0.6357059478759766,Glucocorticoid receptor agonist
+CVCL_0459,Malotilate,0.5,plate11,5867,1.3452625274658203,unclear
+CVCL_0459,γ-Oryzanol,0.5,plate11,4997,0.0634651184082031,DNA methyltransferase inhibitor
+CVCL_0459,Methylthiouracil,0.5,plate11,6071,0.2483081817626953,unclear
+CVCL_0459,Binimetinib,0.5,plate11,6837,1.159830093383789,MEK inhibitor
+CVCL_0459,Perindopril (erbumine),0.5,plate11,10144,0.7681674957275391,unclear
+CVCL_0459,Dapagliflozin,0.5,plate11,11193,0.5863533020019531,Glucose transporter inhibitor
+CVCL_0459,Panobinostat,0.5,plate11,6943,6.679224014282227,HDAC inhibitor
+CVCL_0459,Uridine,0.5,plate11,10032,0.5281829833984375,unclear
+CVCL_0459,Adagrasib,0.05,plate11,6963,0.1566333770751953,RAS inhibitor
+CVCL_0459,Ataluren,5.0,plate12,14001,0.6076450347900391,unclear
+CVCL_0459,Esmolol (hydrochloride),5.0,plate12,10752,0.2515373229980469,unclear
+CVCL_0459,Omeprazole,5.0,plate12,10832,0.1567916870117187,unclear
+CVCL_0459,Bicalutamide,5.0,plate12,11423,0.535186767578125,Androgen receptor antagonist
+CVCL_0459,Belinostat,5.0,plate12,6161,8.435771942138672,HDAC inhibitor
+CVCL_0459,Carbamazepine,5.0,plate12,3369,0.5552310943603516,HDAC inhibitor
+CVCL_0459,Allopurinol,5.0,plate12,7998,0.3269252777099609,unclear
+CVCL_0459,Clopidogrel,5.0,plate12,5717,0.8708705902099609,unclear
+CVCL_0459,Dexamethasone,5.0,plate12,4268,1.278463363647461,Glucocorticoid receptor agonist
+CVCL_0459,Malotilate,5.0,plate12,6812,1.8246307373046875,unclear
+CVCL_0459,γ-Oryzanol,5.0,plate12,5873,0.5326824188232422,DNA methyltransferase inhibitor
+CVCL_0459,Methylthiouracil,5.0,plate12,13502,0.6246852874755859,unclear
+CVCL_0459,Binimetinib,5.0,plate12,12072,2.561603546142578,MEK inhibitor
+CVCL_0459,Perindopril (erbumine),5.0,plate12,6771,0.3456478118896484,unclear
+CVCL_0459,Dapagliflozin,5.0,plate12,8802,0.7352371215820312,Glucose transporter inhibitor
+CVCL_0459,Panobinostat,5.0,plate12,5042,10.703208923339844,HDAC inhibitor
+CVCL_0459,Uridine,5.0,plate12,14051,0.7497806549072266,unclear
+CVCL_0459,Adagrasib,0.05,plate12,5309,0.1058425903320312,RAS inhibitor
+CVCL_0459,Abemaciclib,0.05,plate13,6436,0.8461799621582031,CDK inhibitor
+CVCL_0459,PF-06260933,0.05,plate13,7739,0.6515464782714844,Other MAPK inhibitor
+CVCL_0459,Chlorhexidine (diacetate),0.5,plate13,4824,1.397085189819336,unclear
+CVCL_0459,Berbamine,0.5,plate13,5921,0.9119644165039062,unclear
+CVCL_0459,Malotilate,0.05,plate13,3431,0.7191219329833984,unclear
+CVCL_0459,Adagrasib,0.05,plate13,8877,0.1563987731933593,RAS inhibitor
+CVCL_0459,Berbamine (dihydrochloride),5.0,plate13,1294,0.5507545471191406,unclear
+CVCL_0459,Daidzin,5.0,plate13,1266,1.4540691375732422,unclear
+CVCL_0459,Fumaric acid,5.0,plate13,4116,0.6441764831542969,unclear
+CVCL_0459,Pravastatin (sodium),5.0,plate13,2379,1.4263687133789062,unclear
+CVCL_0459,Belumosudil,5.0,plate13,2588,0.8834877014160156,unclear
+CVCL_0459,Flumatinib (mesylate),5.0,plate13,4181,0.2860851287841797,Other TK inhibitor
+CVCL_0459,Cytarabine,5.0,plate13,5549,0.1926746368408203,DNA synthesis/repair inhibitor
+CVCL_0459,Afatinib,5.0,plate13,4362,0.211090087890625,EGFR/ERBB inhibitor
+CVCL_0459,Naproxen,5.0,plate13,3575,0.0500259399414062,Cyclooxygenase inhibitor
+CVCL_0459,Berbamine (dihydrochloride),0.5,plate13,4928,0.3855113983154297,unclear
+CVCL_0459,Daidzin,0.5,plate13,4625,0.6540565490722656,unclear
+CVCL_0459,Fumaric acid,0.5,plate13,5072,0.2246570587158203,unclear
+CVCL_0459,Pravastatin (sodium),0.5,plate13,5394,0.7791004180908203,unclear
+CVCL_0459,Belumosudil,0.5,plate13,7790,0.1198902130126953,unclear
+CVCL_0459,Flumatinib (mesylate),0.5,plate13,7679,0.2275314331054687,Other TK inhibitor
+CVCL_0459,Cytarabine,0.5,plate13,6404,0.1484184265136718,DNA synthesis/repair inhibitor
+CVCL_0459,Afatinib,0.5,plate13,4933,0.0760116577148437,EGFR/ERBB inhibitor
+CVCL_0459,Naproxen,0.5,plate13,7478,0.088409423828125,Cyclooxygenase inhibitor
+CVCL_0459,Berbamine (dihydrochloride),0.05,plate13,6682,0.3000297546386719,unclear
+CVCL_0459,Daidzin,0.05,plate13,4283,0.316507339477539,unclear
+CVCL_0459,Fumaric acid,0.05,plate13,5722,0.344064712524414,unclear
+CVCL_0459,Pravastatin (sodium),0.05,plate13,4724,1.113847732543945,unclear
+CVCL_0459,Belumosudil,0.05,plate13,6483,0.1945152282714843,unclear
+CVCL_0459,Flumatinib (mesylate),0.05,plate13,5687,0.8426132202148438,Other TK inhibitor
+CVCL_0459,Cytarabine,0.05,plate13,6525,0.1194953918457031,DNA synthesis/repair inhibitor
+CVCL_0459,Afatinib,0.05,plate13,4944,0.0871086120605468,EGFR/ERBB inhibitor
+CVCL_0459,Naproxen,0.05,plate13,4882,0.020273208618164,Cyclooxygenase inhibitor
+CVCL_0459,Glasdegib,5.0,plate13,4646,0.1551494598388672,Sonic inhibitor
+CVCL_0459,Regorafenib,5.0,plate13,5602,0.2120342254638672,Multi-TK inhibitor
+CVCL_0459,Ribociclib,5.0,plate13,5880,0.2262554168701172,CDK inhibitor
+CVCL_0459,Glasdegib,0.5,plate13,5704,0.8631134033203125,Sonic inhibitor
+CVCL_0459,Regorafenib,0.5,plate13,2976,0.2103519439697265,Multi-TK inhibitor
+CVCL_0459,Ribociclib,0.5,plate13,5103,0.1235065460205078,CDK inhibitor
+CVCL_0459,Glasdegib,0.05,plate13,5679,1.202615737915039,Sonic inhibitor
+CVCL_0459,Regorafenib,0.05,plate13,6243,0.305999755859375,Multi-TK inhibitor
+CVCL_0459,Ribociclib,0.05,plate13,5549,0.5663604736328125,CDK inhibitor
+CVCL_0459,Chlorhexidine (diacetate),5.0,plate14,4350,0.8109340667724609,unclear
+CVCL_0459,Berbamine,5.0,plate14,3604,0.0244178771972656,unclear
+CVCL_0459,Retinoic acid,5.0,plate14,4295,0.63525390625,Retinoic receptor agonist
+CVCL_0459,Tucidinostat,5.0,plate14,4631,0.2353057861328125,HDAC inhibitor
+CVCL_0459,Homoharringtonine,5.0,plate14,3255,24.029376983642575,Protein synthesis inhibitor
+CVCL_0459,Artesunate,5.0,plate14,3821,0.3333358764648437,JAK/STAT inhibitor
+CVCL_0459,Clonidine (hydrochloride),5.0,plate14,3989,0.4599075317382812,Adrenoceptor agonist
+CVCL_0459,Adagrasib,0.05,plate14,4025,1.8134937286376955,RAS inhibitor
+CVCL_0459,Everolimus,0.05,plate1,5609,0.1540908813476562,MTOR inhibitor
+CVCL_0459,palbociclib,0.05,plate1,2376,0.6873359680175781,CDK inhibitor
+CVCL_0459,Regorafenib,0.05,plate1,2876,0.4363059997558594,Multi-TK inhibitor
+CVCL_0459,Binimetinib,0.05,plate1,2130,1.5003013610839844,MEK inhibitor
+CVCL_0459,Dabrafenib,0.05,plate1,4478,0.2725086212158203,RAF inhibitor
+CVCL_0459,Paclitaxel,0.05,plate1,4445,0.9345130920410156,Microtubule inhibitor
+CVCL_0459,RMC-6236,0.05,plate1,3322,0.6225128173828125,RAS inhibitor
+CVCL_0459,Afatinib,0.05,plate1,2230,0.2795209884643554,EGFR/ERBB inhibitor
+CVCL_0459,BAY1125976,0.05,plate1,4586,0.2863979339599609,PI3K/AKT inhibitor
+CVCL_0459,9-ING-41,0.05,plate1,5020,0.2610492706298828,GSK3 inhibitor
+CVCL_0459,Bortezomib,0.05,plate1,2413,6.563457489013672,Proteasome inhibitor
+CVCL_0459,Adagrasib,0.05,plate1,3448,0.0746107101440429,RAS inhibitor
+CVCL_0459,Everolimus,0.5,plate2,9273,0.5445365905761719,MTOR inhibitor
+CVCL_0459,Abemaciclib,0.5,plate2,6037,4.801105499267578,CDK inhibitor
+CVCL_0459,palbociclib,0.5,plate2,6255,0.8909492492675781,CDK inhibitor
+CVCL_0459,Regorafenib,0.5,plate2,7717,0.53192138671875,Multi-TK inhibitor
+CVCL_0459,Binimetinib,0.5,plate2,4164,5.319498062133789,MEK inhibitor
+CVCL_0459,Dabrafenib,0.5,plate2,4619,1.121660232543945,RAF inhibitor
+CVCL_0459,Paclitaxel,0.5,plate2,9283,1.068441390991211,Microtubule inhibitor
+CVCL_0459,RMC-6236,0.5,plate2,7814,2.0999622344970703,RAS inhibitor
+CVCL_0459,Afatinib,0.5,plate2,8113,0.3679637908935547,EGFR/ERBB inhibitor
+CVCL_0459,BAY1125976,0.5,plate2,2045,4.656099319458008,PI3K/AKT inhibitor
+CVCL_0459,9-ING-41,0.5,plate2,1982,7.796792984008789,GSK3 inhibitor
+CVCL_0459,PF-06260933,0.5,plate2,3811,1.834516525268555,Other MAPK inhibitor
+CVCL_0459,Bortezomib,0.5,plate2,4302,3.9959468841552734,Proteasome inhibitor
+CVCL_0459,Adagrasib,0.05,plate2,9483,0.1273479461669922,RAS inhibitor
+CVCL_0459,Everolimus,5.0,plate3,4875,0.5037593841552734,MTOR inhibitor
+CVCL_0459,Abemaciclib,5.0,plate3,2583,8.285831451416016,CDK inhibitor
+CVCL_0459,palbociclib,5.0,plate3,1411,1.418622970581055,CDK inhibitor
+CVCL_0459,Regorafenib,5.0,plate3,2114,0.4617252349853515,Multi-TK inhibitor
+CVCL_0459,Binimetinib,5.0,plate3,933,2.644742965698242,MEK inhibitor
+CVCL_0459,Dabrafenib,5.0,plate3,7701,3.7403793334960938,RAF inhibitor
+CVCL_0459,Paclitaxel,5.0,plate3,7248,5.022542953491211,Microtubule inhibitor
+CVCL_0459,RMC-6236,5.0,plate3,4704,5.918405532836914,RAS inhibitor
+CVCL_0459,Afatinib,5.0,plate3,4230,5.533161163330078,EGFR/ERBB inhibitor
+CVCL_0459,BAY1125976,5.0,plate3,6268,4.603170394897461,PI3K/AKT inhibitor
+CVCL_0459,9-ING-41,5.0,plate3,5146,1.8443717956542969,GSK3 inhibitor
+CVCL_0459,PF-06260933,5.0,plate3,1009,1.2185707092285156,Other MAPK inhibitor
+CVCL_0459,Bortezomib,5.0,plate3,559,6.102043151855469,Proteasome inhibitor
+CVCL_0459,Adagrasib,0.05,plate3,798,0.2082376480102539,RAS inhibitor
+CVCL_0504,Chlorhexidine (diacetate),0.05,plate4,1946,0.3188352584838867,unclear
+CVCL_0504,Berbamine,0.05,plate4,2523,0.5443363189697266,unclear
+CVCL_0504,Retinoic acid,0.05,plate4,2115,2.509332656860352,Retinoic receptor agonist
+CVCL_0504,Tucidinostat,0.05,plate4,2189,0.6972970962524414,HDAC inhibitor
+CVCL_0504,Homoharringtonine,0.05,plate4,1233,3.032240867614746,Protein synthesis inhibitor
+CVCL_0504,Artesunate,0.05,plate4,2414,0.7239179611206055,JAK/STAT inhibitor
+CVCL_0504,Clonidine (hydrochloride),0.05,plate4,2779,2.288736343383789,Adrenoceptor agonist
+CVCL_0504,Adagrasib,0.05,plate4,2845,0.3193273544311523,RAS inhibitor
+CVCL_0504,Chlorhexidine (diacetate),0.5,plate5,2282,0.0835084915161132,unclear
+CVCL_0504,Berbamine,0.5,plate5,1817,1.060380935668945,unclear
+CVCL_0504,Retinoic acid,0.5,plate5,1426,0.1767759323120117,Retinoic receptor agonist
+CVCL_0504,Tucidinostat,0.5,plate5,1575,2.2498836517333984,HDAC inhibitor
+CVCL_0504,Artesunate,0.5,plate5,2708,0.9928302764892578,JAK/STAT inhibitor
+CVCL_0504,Clonidine (hydrochloride),0.5,plate5,2397,0.1542167663574218,Adrenoceptor agonist
+CVCL_0504,Adagrasib,0.05,plate5,2216,0.2076263427734375,RAS inhibitor
+CVCL_0504,Homoharringtonine,0.5,plate5,369,14.87674045562744,Protein synthesis inhibitor
+CVCL_0504,Chlorhexidine (diacetate),5.0,plate6,2971,0.508976936340332,unclear
+CVCL_0504,Berbamine,5.0,plate6,3017,0.6763706207275391,unclear
+CVCL_0504,Retinoic acid,5.0,plate6,2621,0.6064376831054688,Retinoic receptor agonist
+CVCL_0504,Tucidinostat,5.0,plate6,1850,5.0648040771484375,HDAC inhibitor
+CVCL_0504,Artesunate,5.0,plate6,2980,0.9927339553833008,JAK/STAT inhibitor
+CVCL_0504,Clonidine (hydrochloride),5.0,plate6,4294,2.3991012573242188,Adrenoceptor agonist
+CVCL_0504,Adagrasib,0.05,plate6,3376,0.248291015625,RAS inhibitor
+CVCL_0504,Homoharringtonine,5.0,plate6,124,18.476411819458008,Protein synthesis inhibitor
+CVCL_0504,Entecavir (monohydrate),0.05,plate7,883,0.5859594345092773,unclear
+CVCL_0504,Berbamine (dihydrochloride),0.05,plate7,1091,1.2077560424804688,unclear
+CVCL_0504,Daidzin,0.05,plate7,1160,1.934964179992676,unclear
+CVCL_0504,Fumaric acid,0.05,plate7,1143,0.54949951171875,unclear
+CVCL_0504,Pravastatin (sodium),0.05,plate7,826,0.5138282775878906,unclear
+CVCL_0504,Belumosudil,0.05,plate7,1261,1.1526641845703125,unclear
+CVCL_0504,Flumatinib (mesylate),0.05,plate7,1051,0.3493766784667969,Other TK inhibitor
+CVCL_0504,Cytarabine,0.05,plate7,1346,2.320341110229492,DNA synthesis/repair inhibitor
+CVCL_0504,Afatinib,0.05,plate7,1046,0.3270530700683594,EGFR/ERBB inhibitor
+CVCL_0504,Naproxen,0.05,plate7,510,0.5298709869384766,Cyclooxygenase inhibitor
+CVCL_0504,Harringtonine,0.05,plate7,470,0.9625072479248048,Protein synthesis inhibitor
+CVCL_0504,Adagrasib,0.05,plate7,2329,0.4705648422241211,RAS inhibitor
+CVCL_0504,Entecavir (monohydrate),0.5,plate8,3186,0.2758769989013672,unclear
+CVCL_0504,Berbamine (dihydrochloride),0.5,plate8,3618,0.3111038208007812,unclear
+CVCL_0504,Daidzin,0.5,plate8,3688,1.0169954299926758,unclear
+CVCL_0504,Fumaric acid,0.5,plate8,2739,0.5944137573242188,unclear
+CVCL_0504,Pravastatin (sodium),0.5,plate8,2888,0.1705121994018554,unclear
+CVCL_0504,Belumosudil,0.5,plate8,2881,0.7603988647460938,unclear
+CVCL_0504,Flumatinib (mesylate),0.5,plate8,2345,0.4271764755249023,Other TK inhibitor
+CVCL_0504,Cytarabine,0.5,plate8,2931,1.310943603515625,DNA synthesis/repair inhibitor
+CVCL_0504,Afatinib,0.5,plate8,2704,0.2330961227416992,EGFR/ERBB inhibitor
+CVCL_0504,Naproxen,0.5,plate8,3005,0.3221817016601562,Cyclooxygenase inhibitor
+CVCL_0504,Harringtonine,0.5,plate8,1016,6.192563056945801,Protein synthesis inhibitor
+CVCL_0504,Adagrasib,0.5,plate8,1901,1.1045255661010742,RAS inhibitor
+CVCL_0504,Adagrasib,0.05,plate8,2220,0.1241559982299804,RAS inhibitor
+CVCL_0504,Dinaciclib,0.5,plate8,58,19.573570251464844,CDK inhibitor
+CVCL_0504,Entecavir (monohydrate),5.0,plate9,2440,1.1299285888671875,unclear
+CVCL_0504,Berbamine (dihydrochloride),5.0,plate9,1886,1.296463966369629,unclear
+CVCL_0504,Daidzin,5.0,plate9,2076,2.7816171646118164,unclear
+CVCL_0504,Fumaric acid,5.0,plate9,2039,1.6482677459716797,unclear
+CVCL_0504,Pravastatin (sodium),5.0,plate9,2331,1.0650606155395508,unclear
+CVCL_0504,Belumosudil,5.0,plate9,546,2.054464340209961,unclear
+CVCL_0504,Flumatinib (mesylate),5.0,plate9,1123,1.514754295349121,Other TK inhibitor
+CVCL_0504,Cytarabine,5.0,plate9,816,5.315781593322754,DNA synthesis/repair inhibitor
+CVCL_0504,Afatinib,5.0,plate9,762,0.1205291748046875,EGFR/ERBB inhibitor
+CVCL_0504,Naproxen,5.0,plate9,791,0.072366714477539,Cyclooxygenase inhibitor
+CVCL_0504,Harringtonine,5.0,plate9,664,12.00235080718994,Protein synthesis inhibitor
+CVCL_0504,Adagrasib,5.0,plate9,1574,1.2463579177856443,RAS inhibitor
+CVCL_0504,Adagrasib,0.05,plate9,935,0.0168275833129882,RAS inhibitor
+CVCL_0504,Ataluren,0.05,plate10,2266,0.6636276245117188,unclear
+CVCL_0504,Esmolol (hydrochloride),0.05,plate10,2522,0.4385967254638672,unclear
+CVCL_0504,Omeprazole,0.05,plate10,2969,0.2775220870971679,unclear
+CVCL_0504,Bicalutamide,0.05,plate10,2136,0.8755998611450195,Androgen receptor antagonist
+CVCL_0504,Belinostat,0.05,plate10,1595,0.8108882904052734,HDAC inhibitor
+CVCL_0504,Carbamazepine,0.05,plate10,1466,0.4583606719970703,HDAC inhibitor
+CVCL_0504,Allopurinol,0.05,plate10,2707,0.9793834686279296,unclear
+CVCL_0504,Clopidogrel,0.05,plate10,2363,1.428668975830078,unclear
+CVCL_0504,Dexamethasone,0.05,plate10,1458,0.433624267578125,Glucocorticoid receptor agonist
+CVCL_0504,Malotilate,0.05,plate10,1293,2.19539737701416,unclear
+CVCL_0504,γ-Oryzanol,0.05,plate10,2184,0.3801937103271484,DNA methyltransferase inhibitor
+CVCL_0504,Methylthiouracil,0.05,plate10,3460,0.2281122207641601,unclear
+CVCL_0504,Binimetinib,0.05,plate10,2837,0.830718994140625,MEK inhibitor
+CVCL_0504,Perindopril (erbumine),0.05,plate10,3145,0.4470500946044922,unclear
+CVCL_0504,Dapagliflozin,0.05,plate10,2222,1.0754470825195312,Glucose transporter inhibitor
+CVCL_0504,Panobinostat,0.05,plate10,2028,5.260977745056152,HDAC inhibitor
+CVCL_0504,Uridine,0.05,plate10,2228,0.3539505004882812,unclear
+CVCL_0504,Adagrasib,0.05,plate10,2404,0.1272554397583007,RAS inhibitor
+CVCL_0504,Ataluren,0.5,plate11,1277,0.0464887619018554,unclear
+CVCL_0504,Esmolol (hydrochloride),0.5,plate11,1204,0.2669200897216797,unclear
+CVCL_0504,Omeprazole,0.5,plate11,877,0.3240385055541992,unclear
+CVCL_0504,Bicalutamide,0.5,plate11,1136,0.0968351364135742,Androgen receptor antagonist
+CVCL_0504,Belinostat,0.5,plate11,625,2.0204811096191406,HDAC inhibitor
+CVCL_0504,Carbamazepine,0.5,plate11,1032,0.3243055343627929,HDAC inhibitor
+CVCL_0504,Allopurinol,0.5,plate11,1550,0.9000444412231445,unclear
+CVCL_0504,Clopidogrel,0.5,plate11,1710,0.3123893737792969,unclear
+CVCL_0504,Dexamethasone,0.5,plate11,1781,0.1240549087524414,Glucocorticoid receptor agonist
+CVCL_0504,Malotilate,0.5,plate11,1155,1.5780029296875,unclear
+CVCL_0504,γ-Oryzanol,0.5,plate11,1364,0.0890169143676757,DNA methyltransferase inhibitor
+CVCL_0504,Methylthiouracil,0.5,plate11,1870,0.070164680480957,unclear
+CVCL_0504,Binimetinib,0.5,plate11,1814,1.4475364685058594,MEK inhibitor
+CVCL_0504,Perindopril (erbumine),0.5,plate11,2563,0.633662223815918,unclear
+CVCL_0504,Dapagliflozin,0.5,plate11,2699,0.6834735870361328,Glucose transporter inhibitor
+CVCL_0504,Panobinostat,0.5,plate11,1695,10.384532928466797,HDAC inhibitor
+CVCL_0504,Uridine,0.5,plate11,2479,0.814661979675293,unclear
+CVCL_0504,Adagrasib,0.05,plate11,1795,0.1113433837890625,RAS inhibitor
+CVCL_0504,Ataluren,5.0,plate12,3718,0.0354108810424804,unclear
+CVCL_0504,Esmolol (hydrochloride),5.0,plate12,3539,0.4187793731689453,unclear
+CVCL_0504,Omeprazole,5.0,plate12,3655,0.2585439682006836,unclear
+CVCL_0504,Bicalutamide,5.0,plate12,3686,0.7483196258544922,Androgen receptor antagonist
+CVCL_0504,Belinostat,5.0,plate12,1846,9.437925338745115,HDAC inhibitor
+CVCL_0504,Carbamazepine,5.0,plate12,1370,1.0853137969970703,HDAC inhibitor
+CVCL_0504,Allopurinol,5.0,plate12,2820,0.365488052368164,unclear
+CVCL_0504,Clopidogrel,5.0,plate12,1921,1.1774177551269531,unclear
+CVCL_0504,Dexamethasone,5.0,plate12,1885,0.3722705841064453,Glucocorticoid receptor agonist
+CVCL_0504,Malotilate,5.0,plate12,2264,1.7713336944580078,unclear
+CVCL_0504,γ-Oryzanol,5.0,plate12,2544,0.1273813247680664,DNA methyltransferase inhibitor
+CVCL_0504,Methylthiouracil,5.0,plate12,4170,0.2440052032470703,unclear
+CVCL_0504,Binimetinib,5.0,plate12,3621,2.5352916717529297,MEK inhibitor
+CVCL_0504,Perindopril (erbumine),5.0,plate12,3083,0.2363805770874023,unclear
+CVCL_0504,Dapagliflozin,5.0,plate12,3337,0.336491584777832,Glucose transporter inhibitor
+CVCL_0504,Panobinostat,5.0,plate12,1864,11.906644821166992,HDAC inhibitor
+CVCL_0504,Uridine,5.0,plate12,4303,0.2286443710327148,unclear
+CVCL_0504,Adagrasib,0.05,plate12,2598,0.1739168167114257,RAS inhibitor
+CVCL_0504,Abemaciclib,0.05,plate13,2111,0.609405517578125,CDK inhibitor
+CVCL_0504,PF-06260933,0.05,plate13,2441,0.3957653045654297,Other MAPK inhibitor
+CVCL_0504,Chlorhexidine (diacetate),0.5,plate13,1692,1.6401948928833008,unclear
+CVCL_0504,Berbamine,0.5,plate13,2106,1.1317052841186523,unclear
+CVCL_0504,Malotilate,0.05,plate13,1245,0.6966094970703125,unclear
+CVCL_0504,Adagrasib,0.05,plate13,3277,0.3547344207763672,RAS inhibitor
+CVCL_0504,Berbamine (dihydrochloride),5.0,plate13,582,1.0342817306518557,unclear
+CVCL_0504,Daidzin,5.0,plate13,466,1.7372617721557615,unclear
+CVCL_0504,Fumaric acid,5.0,plate13,1376,1.3176450729370115,unclear
+CVCL_0504,Pravastatin (sodium),5.0,plate13,796,2.2330923080444336,unclear
+CVCL_0504,Belumosudil,5.0,plate13,909,1.3481168746948242,unclear
+CVCL_0504,Flumatinib (mesylate),5.0,plate13,1405,0.6539621353149414,Other TK inhibitor
+CVCL_0504,Cytarabine,5.0,plate13,2013,0.1957178115844726,DNA synthesis/repair inhibitor
+CVCL_0504,Afatinib,5.0,plate13,1934,0.1364307403564453,EGFR/ERBB inhibitor
+CVCL_0504,Naproxen,5.0,plate13,1413,0.0518522262573242,Cyclooxygenase inhibitor
+CVCL_0504,Berbamine (dihydrochloride),0.5,plate13,1849,0.6613912582397461,unclear
+CVCL_0504,Daidzin,0.5,plate13,1451,1.0060148239135742,unclear
+CVCL_0504,Fumaric acid,0.5,plate13,2081,0.2884740829467773,unclear
+CVCL_0504,Pravastatin (sodium),0.5,plate13,1966,1.2638540267944336,unclear
+CVCL_0504,Belumosudil,0.5,plate13,2360,0.2114486694335937,unclear
+CVCL_0504,Flumatinib (mesylate),0.5,plate13,2286,0.3633136749267578,Other TK inhibitor
+CVCL_0504,Cytarabine,0.5,plate13,2014,0.2756862640380859,DNA synthesis/repair inhibitor
+CVCL_0504,Afatinib,0.5,plate13,1615,0.2234659194946289,EGFR/ERBB inhibitor
+CVCL_0504,Naproxen,0.5,plate13,2310,0.3015890121459961,Cyclooxygenase inhibitor
+CVCL_0504,Berbamine (dihydrochloride),0.05,plate13,2282,0.2407741546630859,unclear
+CVCL_0504,Daidzin,0.05,plate13,1587,0.3013210296630859,unclear
+CVCL_0504,Fumaric acid,0.05,plate13,2204,0.5493745803833008,unclear
+CVCL_0504,Pravastatin (sodium),0.05,plate13,1647,1.545680046081543,unclear
+CVCL_0504,Belumosudil,0.05,plate13,2287,0.2336902618408203,unclear
+CVCL_0504,Flumatinib (mesylate),0.05,plate13,2078,0.4386491775512695,Other TK inhibitor
+CVCL_0504,Cytarabine,0.05,plate13,2553,0.234415054321289,DNA synthesis/repair inhibitor
+CVCL_0504,Afatinib,0.05,plate13,1856,0.4435386657714844,EGFR/ERBB inhibitor
+CVCL_0504,Naproxen,0.05,plate13,2005,0.1986980438232422,Cyclooxygenase inhibitor
+CVCL_0504,Glasdegib,5.0,plate13,2002,0.3573741912841797,Sonic inhibitor
+CVCL_0504,Regorafenib,5.0,plate13,2250,0.2962169647216797,Multi-TK inhibitor
+CVCL_0504,Ribociclib,5.0,plate13,1922,0.1732597351074218,CDK inhibitor
+CVCL_0504,Glasdegib,0.5,plate13,2505,0.5098590850830078,Sonic inhibitor
+CVCL_0504,Regorafenib,0.5,plate13,1324,0.3056507110595703,Multi-TK inhibitor
+CVCL_0504,Ribociclib,0.5,plate13,1691,0.1743040084838867,CDK inhibitor
+CVCL_0504,Glasdegib,0.05,plate13,1920,0.7253627777099609,Sonic inhibitor
+CVCL_0504,Regorafenib,0.05,plate13,2328,0.2742691040039062,Multi-TK inhibitor
+CVCL_0504,Ribociclib,0.05,plate13,1698,0.4246339797973633,CDK inhibitor
+CVCL_0504,Chlorhexidine (diacetate),5.0,plate14,1418,0.144291877746582,unclear
+CVCL_0504,Berbamine,5.0,plate14,1084,0.070291519165039,unclear
+CVCL_0504,Retinoic acid,5.0,plate14,1311,0.6137008666992188,Retinoic receptor agonist
+CVCL_0504,Tucidinostat,5.0,plate14,1587,0.8928947448730469,HDAC inhibitor
+CVCL_0504,Homoharringtonine,5.0,plate14,244,14.127699851989746,Protein synthesis inhibitor
+CVCL_0504,Artesunate,5.0,plate14,1296,1.3372249603271484,JAK/STAT inhibitor
+CVCL_0504,Clonidine (hydrochloride),5.0,plate14,1360,0.4864158630371094,Adrenoceptor agonist
+CVCL_0504,Adagrasib,0.05,plate14,1082,2.2119741439819336,RAS inhibitor
+CVCL_0504,Everolimus,0.05,plate1,2109,0.2104921340942382,MTOR inhibitor
+CVCL_0504,palbociclib,0.05,plate1,1155,0.3648719787597656,CDK inhibitor
+CVCL_0504,Regorafenib,0.05,plate1,1061,0.6579370498657227,Multi-TK inhibitor
+CVCL_0504,Binimetinib,0.05,plate1,1344,2.258247375488281,MEK inhibitor
+CVCL_0504,Dabrafenib,0.05,plate1,1543,0.6744632720947266,RAF inhibitor
+CVCL_0504,Paclitaxel,0.05,plate1,1470,1.3527345657348633,Microtubule inhibitor
+CVCL_0504,RMC-6236,0.05,plate1,1159,0.9086275100708008,RAS inhibitor
+CVCL_0504,Afatinib,0.05,plate1,1214,0.2200756072998047,EGFR/ERBB inhibitor
+CVCL_0504,BAY1125976,0.05,plate1,1741,0.2900915145874023,PI3K/AKT inhibitor
+CVCL_0504,9-ING-41,0.05,plate1,1645,0.3438005447387695,GSK3 inhibitor
+CVCL_0504,Bortezomib,0.05,plate1,1114,4.47587776184082,Proteasome inhibitor
+CVCL_0504,Adagrasib,0.05,plate1,1474,0.1657648086547851,RAS inhibitor
+CVCL_0504,Everolimus,0.5,plate2,3663,0.441232681274414,MTOR inhibitor
+CVCL_0504,Abemaciclib,0.5,plate2,2048,2.9371862411499023,CDK inhibitor
+CVCL_0504,palbociclib,0.5,plate2,1960,1.3520078659057615,CDK inhibitor
+CVCL_0504,Regorafenib,0.5,plate2,3042,1.0281009674072266,Multi-TK inhibitor
+CVCL_0504,Binimetinib,0.5,plate2,1799,6.447342872619629,MEK inhibitor
+CVCL_0504,Dabrafenib,0.5,plate2,1681,1.158416748046875,RAF inhibitor
+CVCL_0504,Paclitaxel,0.5,plate2,3515,0.6552143096923828,Microtubule inhibitor
+CVCL_0504,RMC-6236,0.5,plate2,3405,0.8053627014160156,RAS inhibitor
+CVCL_0504,Afatinib,0.5,plate2,3099,0.5173368453979492,EGFR/ERBB inhibitor
+CVCL_0504,BAY1125976,0.5,plate2,1037,6.304627418518066,PI3K/AKT inhibitor
+CVCL_0504,9-ING-41,0.5,plate2,950,9.07214641571045,GSK3 inhibitor
+CVCL_0504,PF-06260933,0.5,plate2,1374,1.6236886978149414,Other MAPK inhibitor
+CVCL_0504,Bortezomib,0.5,plate2,1808,3.3132028579711914,Proteasome inhibitor
+CVCL_0504,Adagrasib,0.05,plate2,3442,0.1298742294311523,RAS inhibitor
+CVCL_0504,Everolimus,5.0,plate3,2169,0.3635082244873047,MTOR inhibitor
+CVCL_0504,Abemaciclib,5.0,plate3,934,4.804739952087402,CDK inhibitor
+CVCL_0504,palbociclib,5.0,plate3,846,0.9289751052856444,CDK inhibitor
+CVCL_0504,Regorafenib,5.0,plate3,979,1.3764715194702148,Multi-TK inhibitor
+CVCL_0504,Binimetinib,5.0,plate3,478,2.497809410095215,MEK inhibitor
+CVCL_0504,Dabrafenib,5.0,plate3,2586,4.643582344055176,RAF inhibitor
+CVCL_0504,Paclitaxel,5.0,plate3,1731,6.14328670501709,Microtubule inhibitor
+CVCL_0504,RMC-6236,5.0,plate3,2533,5.534295082092285,RAS inhibitor
+CVCL_0504,Afatinib,5.0,plate3,1896,6.462216377258301,EGFR/ERBB inhibitor
+CVCL_0504,BAY1125976,5.0,plate3,1890,5.667222023010254,PI3K/AKT inhibitor
+CVCL_0504,9-ING-41,5.0,plate3,1819,3.2074708938598637,GSK3 inhibitor
+CVCL_0504,PF-06260933,5.0,plate3,616,3.5882482528686523,Other MAPK inhibitor
+CVCL_0504,Bortezomib,5.0,plate3,368,5.967263221740723,Proteasome inhibitor
+CVCL_0504,Adagrasib,0.05,plate3,572,0.3405790328979492,RAS inhibitor
+CVCL_1381,Chlorhexidine (diacetate),0.05,plate4,1751,0.1939067840576172,unclear
+CVCL_1381,Berbamine,0.05,plate4,2025,1.046661376953125,unclear
+CVCL_1381,Retinoic acid,0.05,plate4,1809,2.544483184814453,Retinoic receptor agonist
+CVCL_1381,Tucidinostat,0.05,plate4,1768,0.5227527618408203,HDAC inhibitor
+CVCL_1381,Homoharringtonine,0.05,plate4,1092,4.767215728759766,Protein synthesis inhibitor
+CVCL_1381,Artesunate,0.05,plate4,1945,0.3334159851074219,JAK/STAT inhibitor
+CVCL_1381,Clonidine (hydrochloride),0.05,plate4,2377,1.1981258392333984,Adrenoceptor agonist
+CVCL_1381,Adagrasib,0.05,plate4,2455,0.1666622161865234,RAS inhibitor
+CVCL_1381,Chlorhexidine (diacetate),0.5,plate5,2123,0.2299261093139648,unclear
+CVCL_1381,Berbamine,0.5,plate5,1975,1.0615110397338867,unclear
+CVCL_1381,Retinoic acid,0.5,plate5,1509,0.3545694351196289,Retinoic receptor agonist
+CVCL_1381,Tucidinostat,0.5,plate5,1672,1.6102447509765625,HDAC inhibitor
+CVCL_1381,Homoharringtonine,0.5,plate5,494,15.09433937072754,Protein synthesis inhibitor
+CVCL_1381,Artesunate,0.5,plate5,2662,0.113382339477539,JAK/STAT inhibitor
+CVCL_1381,Clonidine (hydrochloride),0.5,plate5,2324,0.2715492248535156,Adrenoceptor agonist
+CVCL_1381,Adagrasib,0.05,plate5,2099,0.4038400650024414,RAS inhibitor
+CVCL_1381,Chlorhexidine (diacetate),5.0,plate6,2276,0.9762697219848632,unclear
+CVCL_1381,Berbamine,5.0,plate6,2511,2.0673837661743164,unclear
+CVCL_1381,Retinoic acid,5.0,plate6,2199,1.0040979385375977,Retinoic receptor agonist
+CVCL_1381,Tucidinostat,5.0,plate6,1527,4.338713645935059,HDAC inhibitor
+CVCL_1381,Homoharringtonine,5.0,plate6,437,21.131702423095703,Protein synthesis inhibitor
+CVCL_1381,Artesunate,5.0,plate6,2672,0.4799013137817383,JAK/STAT inhibitor
+CVCL_1381,Clonidine (hydrochloride),5.0,plate6,3611,2.2730493545532227,Adrenoceptor agonist
+CVCL_1381,Adagrasib,0.05,plate6,2856,0.2492380142211914,RAS inhibitor
+CVCL_1381,Entecavir (monohydrate),0.05,plate7,1412,0.6136875152587891,unclear
+CVCL_1381,Berbamine (dihydrochloride),0.05,plate7,1389,0.8350143432617188,unclear
+CVCL_1381,Daidzin,0.05,plate7,1678,1.716226577758789,unclear
+CVCL_1381,Fumaric acid,0.05,plate7,1652,0.5873222351074219,unclear
+CVCL_1381,Pravastatin (sodium),0.05,plate7,1267,0.6489524841308594,unclear
+CVCL_1381,Dinaciclib,0.05,plate7,415,12.613388061523438,CDK inhibitor
+CVCL_1381,Belumosudil,0.05,plate7,1653,0.8557033538818359,unclear
+CVCL_1381,Flumatinib (mesylate),0.05,plate7,1455,0.49395751953125,Other TK inhibitor
+CVCL_1381,Cytarabine,0.05,plate7,1959,2.682384490966797,DNA synthesis/repair inhibitor
+CVCL_1381,Afatinib,0.05,plate7,1593,0.1482753753662109,EGFR/ERBB inhibitor
+CVCL_1381,Naproxen,0.05,plate7,887,0.3618297576904297,Cyclooxygenase inhibitor
+CVCL_1381,Harringtonine,0.05,plate7,631,1.6290855407714844,Protein synthesis inhibitor
+CVCL_1381,Adagrasib,0.05,plate7,3437,0.3912925720214844,RAS inhibitor
+CVCL_1381,Entecavir (monohydrate),0.5,plate8,3577,0.2906837463378906,unclear
+CVCL_1381,Berbamine (dihydrochloride),0.5,plate8,3960,0.3112430572509765,unclear
+CVCL_1381,Daidzin,0.5,plate8,3704,0.9489593505859376,unclear
+CVCL_1381,Fumaric acid,0.5,plate8,3115,0.5019550323486328,unclear
+CVCL_1381,Pravastatin (sodium),0.5,plate8,2938,0.1630859375,unclear
+CVCL_1381,Dinaciclib,0.5,plate8,833,23.297475814819336,CDK inhibitor
+CVCL_1381,Belumosudil,0.5,plate8,3386,0.4210281372070312,unclear
+CVCL_1381,Flumatinib (mesylate),0.5,plate8,2703,0.6022968292236328,Other TK inhibitor
+CVCL_1381,Cytarabine,0.5,plate8,3006,1.2405166625976562,DNA synthesis/repair inhibitor
+CVCL_1381,Afatinib,0.5,plate8,3012,0.105295181274414,EGFR/ERBB inhibitor
+CVCL_1381,Naproxen,0.5,plate8,3323,0.5122814178466797,Cyclooxygenase inhibitor
+CVCL_1381,Harringtonine,0.5,plate8,1330,5.898342132568359,Protein synthesis inhibitor
+CVCL_1381,Adagrasib,0.5,plate8,1816,0.9729118347167968,RAS inhibitor
+CVCL_1381,Adagrasib,0.05,plate8,2247,0.0316982269287109,RAS inhibitor
+CVCL_1381,Entecavir (monohydrate),5.0,plate9,3033,1.1268424987792969,unclear
+CVCL_1381,Berbamine (dihydrochloride),5.0,plate9,2157,1.2692375183105469,unclear
+CVCL_1381,Daidzin,5.0,plate9,2509,1.6481971740722656,unclear
+CVCL_1381,Fumaric acid,5.0,plate9,2542,1.289651870727539,unclear
+CVCL_1381,Pravastatin (sodium),5.0,plate9,2621,1.2121315002441406,unclear
+CVCL_1381,Dinaciclib,5.0,plate9,263,16.64554214477539,CDK inhibitor
+CVCL_1381,Belumosudil,5.0,plate9,1277,1.0275154113769531,unclear
+CVCL_1381,Flumatinib (mesylate),5.0,plate9,1265,1.0594425201416016,Other TK inhibitor
+CVCL_1381,Cytarabine,5.0,plate9,677,4.74024772644043,DNA synthesis/repair inhibitor
+CVCL_1381,Afatinib,5.0,plate9,1014,0.1396064758300781,EGFR/ERBB inhibitor
+CVCL_1381,Naproxen,5.0,plate9,1067,0.2140846252441406,Cyclooxygenase inhibitor
+CVCL_1381,Harringtonine,5.0,plate9,872,10.52914047241211,Protein synthesis inhibitor
+CVCL_1381,Adagrasib,5.0,plate9,1623,0.982736587524414,RAS inhibitor
+CVCL_1381,Adagrasib,0.05,plate9,1246,-0.0268611907958984,RAS inhibitor
+CVCL_1381,Ataluren,0.05,plate10,2405,0.4881439208984375,unclear
+CVCL_1381,Esmolol (hydrochloride),0.05,plate10,2951,0.8362255096435547,unclear
+CVCL_1381,Omeprazole,0.05,plate10,3247,0.3796749114990234,unclear
+CVCL_1381,Bicalutamide,0.05,plate10,2610,0.5454978942871094,Androgen receptor antagonist
+CVCL_1381,Belinostat,0.05,plate10,1739,0.8331642150878906,HDAC inhibitor
+CVCL_1381,Carbamazepine,0.05,plate10,1634,0.3859424591064453,HDAC inhibitor
+CVCL_1381,Allopurinol,0.05,plate10,2936,0.936908721923828,unclear
+CVCL_1381,Clopidogrel,0.05,plate10,2624,1.6397628784179688,unclear
+CVCL_1381,Dexamethasone,0.05,plate10,1587,0.994609832763672,Glucocorticoid receptor agonist
+CVCL_1381,Malotilate,0.05,plate10,1712,3.028188705444336,unclear
+CVCL_1381,γ-Oryzanol,0.05,plate10,2383,0.3848800659179687,DNA methyltransferase inhibitor
+CVCL_1381,Methylthiouracil,0.05,plate10,3561,0.1109466552734375,unclear
+CVCL_1381,Binimetinib,0.05,plate10,3162,0.5031604766845703,MEK inhibitor
+CVCL_1381,Perindopril (erbumine),0.05,plate10,3147,0.1410770416259765,unclear
+CVCL_1381,Dapagliflozin,0.05,plate10,2164,0.5570068359375,Glucose transporter inhibitor
+CVCL_1381,Panobinostat,0.05,plate10,1911,2.1586265563964844,HDAC inhibitor
+CVCL_1381,Uridine,0.05,plate10,2269,0.0939197540283203,unclear
+CVCL_1381,Adagrasib,0.05,plate10,2589,0.2738227844238281,RAS inhibitor
+CVCL_1381,Ataluren,0.5,plate11,1513,-0.0025558471679687,unclear
+CVCL_1381,Esmolol (hydrochloride),0.5,plate11,1412,0.2343921661376953,unclear
+CVCL_1381,Omeprazole,0.5,plate11,982,0.1624908447265625,unclear
+CVCL_1381,Bicalutamide,0.5,plate11,1369,0.1071758270263671,Androgen receptor antagonist
+CVCL_1381,Belinostat,0.5,plate11,808,1.09149169921875,HDAC inhibitor
+CVCL_1381,Carbamazepine,0.5,plate11,1471,0.1514949798583984,HDAC inhibitor
+CVCL_1381,Allopurinol,0.5,plate11,1759,0.6941089630126953,unclear
+CVCL_1381,Clopidogrel,0.5,plate11,2040,0.245096206665039,unclear
+CVCL_1381,Dexamethasone,0.5,plate11,2024,0.4933586120605469,Glucocorticoid receptor agonist
+CVCL_1381,Malotilate,0.5,plate11,1623,1.2158794403076172,unclear
+CVCL_1381,γ-Oryzanol,0.5,plate11,1470,0.3726425170898437,DNA methyltransferase inhibitor
+CVCL_1381,Methylthiouracil,0.5,plate11,2147,0.1668529510498047,unclear
+CVCL_1381,Binimetinib,0.5,plate11,1975,0.5520648956298828,MEK inhibitor
+CVCL_1381,Perindopril (erbumine),0.5,plate11,2529,0.6271495819091797,unclear
+CVCL_1381,Dapagliflozin,0.5,plate11,2763,0.5288333892822266,Glucose transporter inhibitor
+CVCL_1381,Panobinostat,0.5,plate11,1210,9.670373916625977,HDAC inhibitor
+CVCL_1381,Uridine,0.5,plate11,2430,0.6664848327636719,unclear
+CVCL_1381,Adagrasib,0.05,plate11,2083,0.110809326171875,RAS inhibitor
+CVCL_1381,Ataluren,5.0,plate12,3841,0.2221641540527343,unclear
+CVCL_1381,Esmolol (hydrochloride),5.0,plate12,3963,0.4026355743408203,unclear
+CVCL_1381,Omeprazole,5.0,plate12,4093,0.1954517364501953,unclear
+CVCL_1381,Bicalutamide,5.0,plate12,3801,0.485809326171875,Androgen receptor antagonist
+CVCL_1381,Belinostat,5.0,plate12,1628,8.342632293701172,HDAC inhibitor
+CVCL_1381,Carbamazepine,5.0,plate12,1608,0.8245124816894531,HDAC inhibitor
+CVCL_1381,Allopurinol,5.0,plate12,3088,0.4481887817382812,unclear
+CVCL_1381,Clopidogrel,5.0,plate12,2303,0.8975543975830078,unclear
+CVCL_1381,Dexamethasone,5.0,plate12,2040,1.0813713073730469,Glucocorticoid receptor agonist
+CVCL_1381,Malotilate,5.0,plate12,2587,1.418596267700195,unclear
+CVCL_1381,γ-Oryzanol,5.0,plate12,2428,0.2697105407714844,DNA methyltransferase inhibitor
+CVCL_1381,Methylthiouracil,5.0,plate12,4466,0.0790748596191406,unclear
+CVCL_1381,Binimetinib,5.0,plate12,4059,1.0227127075195312,MEK inhibitor
+CVCL_1381,Perindopril (erbumine),5.0,plate12,3000,0.1972618103027343,unclear
+CVCL_1381,Dapagliflozin,5.0,plate12,3330,0.4372520446777344,Glucose transporter inhibitor
+CVCL_1381,Panobinostat,5.0,plate12,1233,11.338939666748049,HDAC inhibitor
+CVCL_1381,Uridine,5.0,plate12,4612,0.5088996887207031,unclear
+CVCL_1381,Adagrasib,0.05,plate12,2450,0.2218494415283203,RAS inhibitor
+CVCL_1381,Abemaciclib,0.05,plate13,2409,0.6318416595458984,CDK inhibitor
+CVCL_1381,PF-06260933,0.05,plate13,2792,0.410318374633789,Other MAPK inhibitor
+CVCL_1381,Chlorhexidine (diacetate),0.5,plate13,1801,2.0438098907470703,unclear
+CVCL_1381,Berbamine,0.5,plate13,2252,1.239091873168945,unclear
+CVCL_1381,Malotilate,0.05,plate13,1592,0.5079097747802734,unclear
+CVCL_1381,Adagrasib,0.05,plate13,3676,0.424081802368164,RAS inhibitor
+CVCL_1381,Berbamine (dihydrochloride),5.0,plate13,703,0.8837738037109375,unclear
+CVCL_1381,Daidzin,5.0,plate13,642,1.391256332397461,unclear
+CVCL_1381,Fumaric acid,5.0,plate13,1813,0.993511199951172,unclear
+CVCL_1381,Pravastatin (sodium),5.0,plate13,1377,1.620401382446289,unclear
+CVCL_1381,Belumosudil,5.0,plate13,1383,1.1954383850097656,unclear
+CVCL_1381,Flumatinib (mesylate),5.0,plate13,1962,0.6860027313232422,Other TK inhibitor
+CVCL_1381,Cytarabine,5.0,plate13,2349,0.3828582763671875,DNA synthesis/repair inhibitor
+CVCL_1381,Afatinib,5.0,plate13,1682,0.4053974151611328,EGFR/ERBB inhibitor
+CVCL_1381,Naproxen,5.0,plate13,1661,0.0937252044677734,Cyclooxygenase inhibitor
+CVCL_1381,Berbamine (dihydrochloride),0.5,plate13,2183,0.4446601867675781,unclear
+CVCL_1381,Daidzin,0.5,plate13,2005,1.0533599853515625,unclear
+CVCL_1381,Fumaric acid,0.5,plate13,2380,0.3186664581298828,unclear
+CVCL_1381,Pravastatin (sodium),0.5,plate13,2551,1.1612663269042969,unclear
+CVCL_1381,Belumosudil,0.5,plate13,2741,0.2937984466552734,unclear
+CVCL_1381,Flumatinib (mesylate),0.5,plate13,2759,0.3522109985351562,Other TK inhibitor
+CVCL_1381,Cytarabine,0.5,plate13,2113,0.3555450439453125,DNA synthesis/repair inhibitor
+CVCL_1381,Afatinib,0.5,plate13,1807,0.201608657836914,EGFR/ERBB inhibitor
+CVCL_1381,Naproxen,0.5,plate13,2647,0.2462635040283203,Cyclooxygenase inhibitor
+CVCL_1381,Berbamine (dihydrochloride),0.05,plate13,2651,0.4803886413574219,unclear
+CVCL_1381,Daidzin,0.05,plate13,1925,0.5483055114746094,unclear
+CVCL_1381,Fumaric acid,0.05,plate13,2344,0.3221454620361328,unclear
+CVCL_1381,Pravastatin (sodium),0.05,plate13,2036,1.0089111328125,unclear
+CVCL_1381,Belumosudil,0.05,plate13,2533,0.3128910064697265,unclear
+CVCL_1381,Flumatinib (mesylate),0.05,plate13,2286,0.4917259216308594,Other TK inhibitor
+CVCL_1381,Cytarabine,0.05,plate13,2417,0.525604248046875,DNA synthesis/repair inhibitor
+CVCL_1381,Afatinib,0.05,plate13,1898,0.4337596893310547,EGFR/ERBB inhibitor
+CVCL_1381,Naproxen,0.05,plate13,2255,0.3019485473632812,Cyclooxygenase inhibitor
+CVCL_1381,Glasdegib,5.0,plate13,1910,0.4133281707763672,Sonic inhibitor
+CVCL_1381,Regorafenib,5.0,plate13,2173,0.3378162384033203,Multi-TK inhibitor
+CVCL_1381,Ribociclib,5.0,plate13,2146,0.251962661743164,CDK inhibitor
+CVCL_1381,Glasdegib,0.5,plate13,2592,0.4196395874023437,Sonic inhibitor
+CVCL_1381,Regorafenib,0.5,plate13,1519,0.3990821838378906,Multi-TK inhibitor
+CVCL_1381,Ribociclib,0.5,plate13,1780,0.1849174499511718,CDK inhibitor
+CVCL_1381,Glasdegib,0.05,plate13,2420,1.076885223388672,Sonic inhibitor
+CVCL_1381,Regorafenib,0.05,plate13,2662,0.489297866821289,Multi-TK inhibitor
+CVCL_1381,Ribociclib,0.05,plate13,2242,0.2526664733886719,CDK inhibitor
+CVCL_1381,Chlorhexidine (diacetate),5.0,plate14,1447,0.1863479614257812,unclear
+CVCL_1381,Berbamine,5.0,plate14,1240,0.2844810485839844,unclear
+CVCL_1381,Retinoic acid,5.0,plate14,1478,0.8598575592041016,Retinoic receptor agonist
+CVCL_1381,Tucidinostat,5.0,plate14,1645,0.6753005981445312,HDAC inhibitor
+CVCL_1381,Homoharringtonine,5.0,plate14,536,17.209171295166016,Protein synthesis inhibitor
+CVCL_1381,Artesunate,5.0,plate14,1379,0.4766502380371094,JAK/STAT inhibitor
+CVCL_1381,Clonidine (hydrochloride),5.0,plate14,1268,0.3989734649658203,Adrenoceptor agonist
+CVCL_1381,Adagrasib,0.05,plate14,911,2.3336048126220703,RAS inhibitor
+CVCL_1381,Everolimus,0.05,plate1,1897,0.4921846389770508,MTOR inhibitor
+CVCL_1381,palbociclib,0.05,plate1,998,0.7936258316040039,CDK inhibitor
+CVCL_1381,Regorafenib,0.05,plate1,929,0.1690492630004882,Multi-TK inhibitor
+CVCL_1381,Binimetinib,0.05,plate1,1403,2.079289436340332,MEK inhibitor
+CVCL_1381,Dabrafenib,0.05,plate1,1274,0.3098173141479492,RAF inhibitor
+CVCL_1381,Paclitaxel,0.05,plate1,1464,0.6722326278686523,Microtubule inhibitor
+CVCL_1381,RMC-6236,0.05,plate1,1032,0.5266790390014648,RAS inhibitor
+CVCL_1381,Afatinib,0.05,plate1,1050,0.4042367935180664,EGFR/ERBB inhibitor
+CVCL_1381,BAY1125976,0.05,plate1,1469,0.1673345565795898,PI3K/AKT inhibitor
+CVCL_1381,9-ING-41,0.05,plate1,1429,0.2216215133666992,GSK3 inhibitor
+CVCL_1381,Bortezomib,0.05,plate1,914,5.480912208557129,Proteasome inhibitor
+CVCL_1381,Adagrasib,0.05,plate1,1121,-0.0039253234863281,RAS inhibitor
+CVCL_1381,Everolimus,0.5,plate2,2909,0.5308303833007812,MTOR inhibitor
+CVCL_1381,Abemaciclib,0.5,plate2,1693,2.973081588745117,CDK inhibitor
+CVCL_1381,palbociclib,0.5,plate2,1610,0.8389453887939453,CDK inhibitor
+CVCL_1381,Regorafenib,0.5,plate2,2512,0.917766571044922,Multi-TK inhibitor
+CVCL_1381,Binimetinib,0.5,plate2,1561,4.868288040161133,MEK inhibitor
+CVCL_1381,Dabrafenib,0.5,plate2,1442,1.3778400421142578,RAF inhibitor
+CVCL_1381,Paclitaxel,0.5,plate2,2845,0.8373031616210938,Microtubule inhibitor
+CVCL_1381,RMC-6236,0.5,plate2,2795,1.310516357421875,RAS inhibitor
+CVCL_1381,Afatinib,0.5,plate2,2557,0.5696754455566406,EGFR/ERBB inhibitor
+CVCL_1381,BAY1125976,0.5,plate2,1108,5.380729675292969,PI3K/AKT inhibitor
+CVCL_1381,9-ING-41,0.5,plate2,990,9.25868034362793,GSK3 inhibitor
+CVCL_1381,PF-06260933,0.5,plate2,1201,1.8662281036376955,Other MAPK inhibitor
+CVCL_1381,Bortezomib,0.5,plate2,1554,5.591207504272461,Proteasome inhibitor
+CVCL_1381,Adagrasib,0.05,plate2,2868,0.221811294555664,RAS inhibitor
+CVCL_1381,Everolimus,5.0,plate3,2580,0.2978544235229492,MTOR inhibitor
+CVCL_1381,Abemaciclib,5.0,plate3,757,6.379992485046387,CDK inhibitor
+CVCL_1381,palbociclib,5.0,plate3,965,0.8772010803222656,CDK inhibitor
+CVCL_1381,Regorafenib,5.0,plate3,1026,1.3037309646606443,Multi-TK inhibitor
+CVCL_1381,Binimetinib,5.0,plate3,605,1.6353139877319336,MEK inhibitor
+CVCL_1381,Dabrafenib,5.0,plate3,2400,3.648369789123535,RAF inhibitor
+CVCL_1381,Paclitaxel,5.0,plate3,2015,6.570235252380371,Microtubule inhibitor
+CVCL_1381,RMC-6236,5.0,plate3,2264,4.80875301361084,RAS inhibitor
+CVCL_1381,Afatinib,5.0,plate3,1592,5.550881385803223,EGFR/ERBB inhibitor
+CVCL_1381,BAY1125976,5.0,plate3,1622,4.235304832458496,PI3K/AKT inhibitor
+CVCL_1381,9-ING-41,5.0,plate3,1976,2.35275936126709,GSK3 inhibitor
+CVCL_1381,PF-06260933,5.0,plate3,492,3.618403434753418,Other MAPK inhibitor
+CVCL_1381,Bortezomib,5.0,plate3,351,6.051255226135254,Proteasome inhibitor
+CVCL_1381,Adagrasib,0.05,plate3,686,0.4125432968139648,RAS inhibitor
+CVCL_1056,Chlorhexidine (diacetate),0.05,plate4,2058,0.252227783203125,unclear
+CVCL_1056,Berbamine,0.05,plate4,2582,1.5753355026245115,unclear
+CVCL_1056,Retinoic acid,0.05,plate4,1966,3.624882698059082,Retinoic receptor agonist
+CVCL_1056,Tucidinostat,0.05,plate4,2318,0.2763547897338867,HDAC inhibitor
+CVCL_1056,Homoharringtonine,0.05,plate4,1666,4.533268928527832,Protein synthesis inhibitor
+CVCL_1056,Artesunate,0.05,plate4,2165,0.8499841690063477,JAK/STAT inhibitor
+CVCL_1056,Clonidine (hydrochloride),0.05,plate4,2913,1.4586400985717771,Adrenoceptor agonist
+CVCL_1056,Adagrasib,0.05,plate4,2888,0.1373872756958007,RAS inhibitor
+CVCL_1056,Chlorhexidine (diacetate),0.5,plate5,2535,0.2241973876953125,unclear
+CVCL_1056,Berbamine,0.5,plate5,2594,0.9766149520874025,unclear
+CVCL_1056,Retinoic acid,0.5,plate5,1826,0.2352771759033203,Retinoic receptor agonist
+CVCL_1056,Tucidinostat,0.5,plate5,1858,1.7854070663452148,HDAC inhibitor
+CVCL_1056,Homoharringtonine,0.5,plate5,558,21.611656188964844,Protein synthesis inhibitor
+CVCL_1056,Artesunate,0.5,plate5,3173,0.683741569519043,JAK/STAT inhibitor
+CVCL_1056,Clonidine (hydrochloride),0.5,plate5,3011,0.1233291625976562,Adrenoceptor agonist
+CVCL_1056,Adagrasib,0.05,plate5,2830,0.5135154724121094,RAS inhibitor
+CVCL_1056,Chlorhexidine (diacetate),5.0,plate6,2352,1.0641632080078125,unclear
+CVCL_1056,Berbamine,5.0,plate6,2845,0.8192968368530273,unclear
+CVCL_1056,Retinoic acid,5.0,plate6,2251,0.9386491775512696,Retinoic receptor agonist
+CVCL_1056,Tucidinostat,5.0,plate6,1571,3.385186195373535,HDAC inhibitor
+CVCL_1056,Homoharringtonine,5.0,plate6,480,27.032833099365234,Protein synthesis inhibitor
+CVCL_1056,Artesunate,5.0,plate6,2902,1.049539566040039,JAK/STAT inhibitor
+CVCL_1056,Clonidine (hydrochloride),5.0,plate6,4484,2.050173759460449,Adrenoceptor agonist
+CVCL_1056,Adagrasib,0.05,plate6,3303,0.1129074096679687,RAS inhibitor
+CVCL_1056,Entecavir (monohydrate),0.05,plate7,1725,0.3471403121948242,unclear
+CVCL_1056,Berbamine (dihydrochloride),0.05,plate7,1805,1.0828638076782229,unclear
+CVCL_1056,Daidzin,0.05,plate7,1973,2.575636863708496,unclear
+CVCL_1056,Fumaric acid,0.05,plate7,1747,0.6864748001098633,unclear
+CVCL_1056,Pravastatin (sodium),0.05,plate7,1780,0.4927358627319336,unclear
+CVCL_1056,Dinaciclib,0.05,plate7,840,15.775404930114746,CDK inhibitor
+CVCL_1056,Belumosudil,0.05,plate7,2029,0.9833536148071288,unclear
+CVCL_1056,Flumatinib (mesylate),0.05,plate7,2092,0.9267377853393556,Other TK inhibitor
+CVCL_1056,Cytarabine,0.05,plate7,2347,2.733534812927246,DNA synthesis/repair inhibitor
+CVCL_1056,Afatinib,0.05,plate7,1984,0.1007881164550781,EGFR/ERBB inhibitor
+CVCL_1056,Naproxen,0.05,plate7,1148,0.2866029739379883,Cyclooxygenase inhibitor
+CVCL_1056,Harringtonine,0.05,plate7,840,1.1562681198120115,Protein synthesis inhibitor
+CVCL_1056,Adagrasib,0.05,plate7,4440,0.1982698440551757,RAS inhibitor
+CVCL_1056,Entecavir (monohydrate),0.5,plate8,5581,1.5533466339111328,unclear
+CVCL_1056,Berbamine (dihydrochloride),0.5,plate8,4728,0.43218994140625,unclear
+CVCL_1056,Daidzin,0.5,plate8,4203,1.0629806518554688,unclear
+CVCL_1056,Fumaric acid,0.5,plate8,3701,0.6717033386230469,unclear
+CVCL_1056,Pravastatin (sodium),0.5,plate8,3433,0.6835784912109375,unclear
+CVCL_1056,Dinaciclib,0.5,plate8,1775,27.55143928527832,CDK inhibitor
+CVCL_1056,Belumosudil,0.5,plate8,4104,0.3209190368652344,unclear
+CVCL_1056,Flumatinib (mesylate),0.5,plate8,3480,1.94636344909668,Other TK inhibitor
+CVCL_1056,Cytarabine,0.5,plate8,3838,0.9254379272460938,DNA synthesis/repair inhibitor
+CVCL_1056,Afatinib,0.5,plate8,3499,0.2230205535888672,EGFR/ERBB inhibitor
+CVCL_1056,Naproxen,0.5,plate8,3648,0.9603824615478516,Cyclooxygenase inhibitor
+CVCL_1056,Harringtonine,0.5,plate8,2585,14.53066062927246,Protein synthesis inhibitor
+CVCL_1056,Adagrasib,0.5,plate8,1341,0.9586620330810548,RAS inhibitor
+CVCL_1056,Adagrasib,0.05,plate8,2456,0.0492057800292968,RAS inhibitor
+CVCL_1056,Entecavir (monohydrate),5.0,plate9,4343,2.052659034729004,unclear
+CVCL_1056,Berbamine (dihydrochloride),5.0,plate9,2699,2.69216251373291,unclear
+CVCL_1056,Daidzin,5.0,plate9,3250,3.874444007873535,unclear
+CVCL_1056,Fumaric acid,5.0,plate9,3453,2.1108274459838867,unclear
+CVCL_1056,Pravastatin (sodium),5.0,plate9,4050,1.625615119934082,unclear
+CVCL_1056,Dinaciclib,5.0,plate9,755,19.1247673034668,CDK inhibitor
+CVCL_1056,Belumosudil,5.0,plate9,1915,1.2441282272338867,unclear
+CVCL_1056,Flumatinib (mesylate),5.0,plate9,1567,1.9993829727172847,Other TK inhibitor
+CVCL_1056,Cytarabine,5.0,plate9,937,4.81516170501709,DNA synthesis/repair inhibitor
+CVCL_1056,Afatinib,5.0,plate9,1230,0.2612800598144531,EGFR/ERBB inhibitor
+CVCL_1056,Naproxen,5.0,plate9,1342,0.1266069412231445,Cyclooxygenase inhibitor
+CVCL_1056,Harringtonine,5.0,plate9,2195,18.49496459960937,Protein synthesis inhibitor
+CVCL_1056,Adagrasib,5.0,plate9,2171,1.515702247619629,RAS inhibitor
+CVCL_1056,Adagrasib,0.05,plate9,1471,0.1423978805541992,RAS inhibitor
+CVCL_1056,Ataluren,0.05,plate10,3106,0.3816871643066406,unclear
+CVCL_1056,Esmolol (hydrochloride),0.05,plate10,4056,0.6722793579101562,unclear
+CVCL_1056,Omeprazole,0.05,plate10,4213,0.6826648712158203,unclear
+CVCL_1056,Bicalutamide,0.05,plate10,2927,1.0769729614257812,Androgen receptor antagonist
+CVCL_1056,Belinostat,0.05,plate10,2120,0.6245918273925781,HDAC inhibitor
+CVCL_1056,Carbamazepine,0.05,plate10,1786,0.4539299011230469,HDAC inhibitor
+CVCL_1056,Allopurinol,0.05,plate10,4446,1.3898887634277344,unclear
+CVCL_1056,Clopidogrel,0.05,plate10,4323,1.8932609558105469,unclear
+CVCL_1056,Dexamethasone,0.05,plate10,1505,1.3555164337158203,Glucocorticoid receptor agonist
+CVCL_1056,Malotilate,0.05,plate10,3121,2.709075927734375,unclear
+CVCL_1056,γ-Oryzanol,0.05,plate10,3478,0.3638877868652344,DNA methyltransferase inhibitor
+CVCL_1056,Methylthiouracil,0.05,plate10,5562,0.2157917022705078,unclear
+CVCL_1056,Binimetinib,0.05,plate10,4861,0.3905582427978515,MEK inhibitor
+CVCL_1056,Perindopril (erbumine),0.05,plate10,4170,0.5428810119628906,unclear
+CVCL_1056,Dapagliflozin,0.05,plate10,2723,0.5786304473876953,Glucose transporter inhibitor
+CVCL_1056,Panobinostat,0.05,plate10,2757,1.3609294891357422,HDAC inhibitor
+CVCL_1056,Uridine,0.05,plate10,2660,0.2505035400390625,unclear
+CVCL_1056,Adagrasib,0.05,plate10,3296,0.27728271484375,RAS inhibitor
+CVCL_1056,Ataluren,0.5,plate11,2214,0.1878414154052734,unclear
+CVCL_1056,Esmolol (hydrochloride),0.5,plate11,1973,0.2175140380859375,unclear
+CVCL_1056,Omeprazole,0.5,plate11,1349,0.1691856384277343,unclear
+CVCL_1056,Bicalutamide,0.5,plate11,2145,0.2536792755126953,Androgen receptor antagonist
+CVCL_1056,Belinostat,0.5,plate11,1405,1.1141700744628906,HDAC inhibitor
+CVCL_1056,Carbamazepine,0.5,plate11,1747,0.2861347198486328,HDAC inhibitor
+CVCL_1056,Allopurinol,0.5,plate11,2545,1.331403732299805,unclear
+CVCL_1056,Clopidogrel,0.5,plate11,3836,0.3380069732666015,unclear
+CVCL_1056,Dexamethasone,0.5,plate11,2483,0.7606010437011719,Glucocorticoid receptor agonist
+CVCL_1056,Malotilate,0.5,plate11,3026,1.395124435424805,unclear
+CVCL_1056,γ-Oryzanol,0.5,plate11,2259,0.2401027679443359,DNA methyltransferase inhibitor
+CVCL_1056,Methylthiouracil,0.5,plate11,3167,0.473703384399414,unclear
+CVCL_1056,Binimetinib,0.5,plate11,3402,0.9091053009033204,MEK inhibitor
+CVCL_1056,Perindopril (erbumine),0.5,plate11,4358,0.8698463439941406,unclear
+CVCL_1056,Dapagliflozin,0.5,plate11,4316,0.5243949890136719,Glucose transporter inhibitor
+CVCL_1056,Panobinostat,0.5,plate11,2273,6.55821418762207,HDAC inhibitor
+CVCL_1056,Uridine,0.5,plate11,3732,0.6885547637939453,unclear
+CVCL_1056,Adagrasib,0.05,plate11,3335,0.1594772338867187,RAS inhibitor
+CVCL_1056,Ataluren,5.0,plate12,6366,0.3829936981201172,unclear
+CVCL_1056,Esmolol (hydrochloride),5.0,plate12,5347,0.4238395690917969,unclear
+CVCL_1056,Omeprazole,5.0,plate12,5409,0.1627311706542968,unclear
+CVCL_1056,Bicalutamide,5.0,plate12,4984,0.7891216278076172,Androgen receptor antagonist
+CVCL_1056,Belinostat,5.0,plate12,3011,6.477748870849609,HDAC inhibitor
+CVCL_1056,Carbamazepine,5.0,plate12,1726,0.6931781768798828,HDAC inhibitor
+CVCL_1056,Allopurinol,5.0,plate12,4249,0.3599433898925781,unclear
+CVCL_1056,Clopidogrel,5.0,plate12,3207,0.969280242919922,unclear
+CVCL_1056,Dexamethasone,5.0,plate12,1916,1.2400455474853516,Glucocorticoid receptor agonist
+CVCL_1056,Malotilate,5.0,plate12,3713,1.9653377532958984,unclear
+CVCL_1056,γ-Oryzanol,5.0,plate12,2738,0.4422264099121094,DNA methyltransferase inhibitor
+CVCL_1056,Methylthiouracil,5.0,plate12,6477,0.3373012542724609,unclear
+CVCL_1056,Binimetinib,5.0,plate12,6314,0.5701904296875,MEK inhibitor
+CVCL_1056,Perindopril (erbumine),5.0,plate12,3732,0.3667354583740234,unclear
+CVCL_1056,Dapagliflozin,5.0,plate12,4049,0.5443077087402344,Glucose transporter inhibitor
+CVCL_1056,Panobinostat,5.0,plate12,1663,7.387081146240234,HDAC inhibitor
+CVCL_1056,Uridine,5.0,plate12,6630,0.4289264678955078,unclear
+CVCL_1056,Adagrasib,0.05,plate12,2478,0.0844669342041015,RAS inhibitor
+CVCL_1056,Abemaciclib,0.05,plate13,2801,0.7835884094238281,CDK inhibitor
+CVCL_1056,PF-06260933,0.05,plate13,3668,0.2980480194091797,Other MAPK inhibitor
+CVCL_1056,Chlorhexidine (diacetate),0.5,plate13,1866,1.2665519714355469,unclear
+CVCL_1056,Berbamine,0.5,plate13,2581,0.7962417602539062,unclear
+CVCL_1056,Malotilate,0.05,plate13,2122,0.789764404296875,unclear
+CVCL_1056,Adagrasib,0.05,plate13,4289,0.1783638000488281,RAS inhibitor
+CVCL_1056,Berbamine (dihydrochloride),5.0,plate13,672,0.7083644866943359,unclear
+CVCL_1056,Daidzin,5.0,plate13,739,2.245210647583008,unclear
+CVCL_1056,Fumaric acid,5.0,plate13,2488,0.7158164978027344,unclear
+CVCL_1056,Pravastatin (sodium),5.0,plate13,1638,2.231372833251953,unclear
+CVCL_1056,Belumosudil,5.0,plate13,1659,1.4476432800292969,unclear
+CVCL_1056,Flumatinib (mesylate),5.0,plate13,2487,0.8489418029785156,Other TK inhibitor
+CVCL_1056,Cytarabine,5.0,plate13,2887,0.1394996643066406,DNA synthesis/repair inhibitor
+CVCL_1056,Afatinib,5.0,plate13,1951,0.2463874816894531,EGFR/ERBB inhibitor
+CVCL_1056,Naproxen,5.0,plate13,1878,0.0578422546386718,Cyclooxygenase inhibitor
+CVCL_1056,Berbamine (dihydrochloride),0.5,plate13,2962,0.4519157409667969,unclear
+CVCL_1056,Daidzin,0.5,plate13,2702,0.8788986206054688,unclear
+CVCL_1056,Fumaric acid,0.5,plate13,3048,0.271453857421875,unclear
+CVCL_1056,Pravastatin (sodium),0.5,plate13,3399,1.338542938232422,unclear
+CVCL_1056,Belumosudil,0.5,plate13,3636,0.1656131744384765,unclear
+CVCL_1056,Flumatinib (mesylate),0.5,plate13,3554,0.4856624603271484,Other TK inhibitor
+CVCL_1056,Cytarabine,0.5,plate13,2721,0.19451904296875,DNA synthesis/repair inhibitor
+CVCL_1056,Afatinib,0.5,plate13,2332,0.2642135620117187,EGFR/ERBB inhibitor
+CVCL_1056,Naproxen,0.5,plate13,3943,0.1731243133544922,Cyclooxygenase inhibitor
+CVCL_1056,Berbamine (dihydrochloride),0.05,plate13,3730,0.2290802001953125,unclear
+CVCL_1056,Daidzin,0.05,plate13,2284,0.3240222930908203,unclear
+CVCL_1056,Fumaric acid,0.05,plate13,2982,0.4321784973144531,unclear
+CVCL_1056,Pravastatin (sodium),0.05,plate13,2718,1.205474853515625,unclear
+CVCL_1056,Belumosudil,0.05,plate13,3205,0.3633022308349609,unclear
+CVCL_1056,Flumatinib (mesylate),0.05,plate13,3005,0.4626007080078125,Other TK inhibitor
+CVCL_1056,Cytarabine,0.05,plate13,3100,0.1059532165527343,DNA synthesis/repair inhibitor
+CVCL_1056,Afatinib,0.05,plate13,2267,0.2834053039550781,EGFR/ERBB inhibitor
+CVCL_1056,Naproxen,0.05,plate13,2790,0.1374340057373047,Cyclooxygenase inhibitor
+CVCL_1056,Glasdegib,5.0,plate13,1995,0.2106513977050781,Sonic inhibitor
+CVCL_1056,Regorafenib,5.0,plate13,2814,0.2616939544677734,Multi-TK inhibitor
+CVCL_1056,Ribociclib,5.0,plate13,3312,0.1656360626220703,CDK inhibitor
+CVCL_1056,Glasdegib,0.5,plate13,2993,0.4621429443359375,Sonic inhibitor
+CVCL_1056,Regorafenib,0.5,plate13,1665,0.2157955169677734,Multi-TK inhibitor
+CVCL_1056,Ribociclib,0.5,plate13,2356,0.1352519989013672,CDK inhibitor
+CVCL_1056,Glasdegib,0.05,plate13,2966,0.7961139678955078,Sonic inhibitor
+CVCL_1056,Regorafenib,0.05,plate13,3438,0.2865047454833984,Multi-TK inhibitor
+CVCL_1056,Ribociclib,0.05,plate13,3420,0.2506237030029297,CDK inhibitor
+CVCL_1056,Chlorhexidine (diacetate),5.0,plate14,2338,0.1430187225341797,unclear
+CVCL_1056,Berbamine,5.0,plate14,1887,0.3057489395141601,unclear
+CVCL_1056,Retinoic acid,5.0,plate14,2177,0.4756965637207031,Retinoic receptor agonist
+CVCL_1056,Tucidinostat,5.0,plate14,2204,0.5555324554443359,HDAC inhibitor
+CVCL_1056,Homoharringtonine,5.0,plate14,829,21.749135971069336,Protein synthesis inhibitor
+CVCL_1056,Artesunate,5.0,plate14,2078,0.6159448623657227,JAK/STAT inhibitor
+CVCL_1056,Clonidine (hydrochloride),5.0,plate14,1782,0.1927642822265625,Adrenoceptor agonist
+CVCL_1056,Adagrasib,0.05,plate14,1603,1.1274127960205078,RAS inhibitor
+CVCL_1056,Everolimus,0.05,plate1,2152,0.0993165969848632,MTOR inhibitor
+CVCL_1056,palbociclib,0.05,plate1,775,0.6259403228759766,CDK inhibitor
+CVCL_1056,Regorafenib,0.05,plate1,1103,0.3254957199096679,Multi-TK inhibitor
+CVCL_1056,Binimetinib,0.05,plate1,1702,1.903376579284668,MEK inhibitor
+CVCL_1056,Dabrafenib,0.05,plate1,1361,0.2707672119140625,RAF inhibitor
+CVCL_1056,Paclitaxel,0.05,plate1,1797,0.8118381500244141,Microtubule inhibitor
+CVCL_1056,RMC-6236,0.05,plate1,1127,0.6750164031982422,RAS inhibitor
+CVCL_1056,Afatinib,0.05,plate1,792,0.3060951232910156,EGFR/ERBB inhibitor
+CVCL_1056,BAY1125976,0.05,plate1,1686,0.2149581909179687,PI3K/AKT inhibitor
+CVCL_1056,9-ING-41,0.05,plate1,1769,0.2169971466064453,GSK3 inhibitor
+CVCL_1056,Bortezomib,0.05,plate1,528,4.096665382385254,Proteasome inhibitor
+CVCL_1056,Adagrasib,0.05,plate1,1266,0.0002470016479492,RAS inhibitor
+CVCL_1056,Everolimus,0.5,plate2,3694,0.4634628295898437,MTOR inhibitor
+CVCL_1056,Abemaciclib,0.5,plate2,2392,1.5047636032104492,CDK inhibitor
+CVCL_1056,palbociclib,0.5,plate2,1809,1.0051536560058594,CDK inhibitor
+CVCL_1056,Regorafenib,0.5,plate2,2934,0.7133007049560547,Multi-TK inhibitor
+CVCL_1056,Binimetinib,0.5,plate2,1599,3.8498611450195312,MEK inhibitor
+CVCL_1056,Dabrafenib,0.5,plate2,1360,1.0305213928222656,RAF inhibitor
+CVCL_1056,Paclitaxel,0.5,plate2,2953,0.5036859512329102,Microtubule inhibitor
+CVCL_1056,RMC-6236,0.5,plate2,2786,1.1322765350341797,RAS inhibitor
+CVCL_1056,Afatinib,0.5,plate2,2622,0.5080480575561523,EGFR/ERBB inhibitor
+CVCL_1056,BAY1125976,0.5,plate2,1033,5.191333770751953,PI3K/AKT inhibitor
+CVCL_1056,9-ING-41,0.5,plate2,867,8.094467163085938,GSK3 inhibitor
+CVCL_1056,PF-06260933,0.5,plate2,1261,0.9910163879394532,Other MAPK inhibitor
+CVCL_1056,Bortezomib,0.5,plate2,1529,3.936187744140625,Proteasome inhibitor
+CVCL_1056,Adagrasib,0.05,plate2,3919,0.1338281631469726,RAS inhibitor
+CVCL_1056,Everolimus,5.0,plate3,3241,0.6442356109619141,MTOR inhibitor
+CVCL_1056,Abemaciclib,5.0,plate3,567,3.231210708618164,CDK inhibitor
+CVCL_1056,palbociclib,5.0,plate3,903,2.1704177856445312,CDK inhibitor
+CVCL_1056,Regorafenib,5.0,plate3,1054,0.7563400268554688,Multi-TK inhibitor
+CVCL_1056,Binimetinib,5.0,plate3,710,2.131874084472656,MEK inhibitor
+CVCL_1056,Dabrafenib,5.0,plate3,3481,5.474430084228516,RAF inhibitor
+CVCL_1056,Paclitaxel,5.0,plate3,2798,7.364044189453125,Microtubule inhibitor
+CVCL_1056,RMC-6236,5.0,plate3,2565,5.203466415405273,RAS inhibitor
+CVCL_1056,Afatinib,5.0,plate3,1964,6.439422607421875,EGFR/ERBB inhibitor
+CVCL_1056,BAY1125976,5.0,plate3,1882,6.935209274291992,PI3K/AKT inhibitor
+CVCL_1056,9-ING-41,5.0,plate3,3002,2.6930065155029297,GSK3 inhibitor
+CVCL_1056,PF-06260933,5.0,plate3,487,1.7872600555419922,Other MAPK inhibitor
+CVCL_1056,Bortezomib,5.0,plate3,182,4.744007110595703,Proteasome inhibitor
+CVCL_1056,Adagrasib,0.05,plate3,721,0.2891416549682617,RAS inhibitor
+CVCL_0131,Chlorhexidine (diacetate),0.05,plate4,2160,0.314645767211914,unclear
+CVCL_0131,Berbamine,0.05,plate4,2874,1.4108600616455078,unclear
+CVCL_0131,Retinoic acid,0.05,plate4,2362,3.1949634552001958,Retinoic receptor agonist
+CVCL_0131,Tucidinostat,0.05,plate4,2438,0.5963878631591797,HDAC inhibitor
+CVCL_0131,Homoharringtonine,0.05,plate4,1864,9.266786575317385,Protein synthesis inhibitor
+CVCL_0131,Artesunate,0.05,plate4,2530,0.7772846221923828,JAK/STAT inhibitor
+CVCL_0131,Clonidine (hydrochloride),0.05,plate4,2855,1.0149078369140625,Adrenoceptor agonist
+CVCL_0131,Adagrasib,0.05,plate4,2950,0.1165523529052734,RAS inhibitor
+CVCL_0131,Chlorhexidine (diacetate),0.5,plate5,2930,0.4326963424682617,unclear
+CVCL_0131,Berbamine,0.5,plate5,2669,0.8460693359375,unclear
+CVCL_0131,Retinoic acid,0.5,plate5,1990,0.5237360000610352,Retinoic receptor agonist
+CVCL_0131,Tucidinostat,0.5,plate5,2023,1.6270380020141602,HDAC inhibitor
+CVCL_0131,Homoharringtonine,0.5,plate5,1213,28.48318099975586,Protein synthesis inhibitor
+CVCL_0131,Artesunate,0.5,plate5,3491,1.1181421279907229,JAK/STAT inhibitor
+CVCL_0131,Clonidine (hydrochloride),0.5,plate5,3157,0.2758407592773437,Adrenoceptor agonist
+CVCL_0131,Adagrasib,0.05,plate5,3110,0.5087766647338867,RAS inhibitor
+CVCL_0131,Chlorhexidine (diacetate),5.0,plate6,2698,0.6323680877685547,unclear
+CVCL_0131,Berbamine,5.0,plate6,3146,0.9400081634521484,unclear
+CVCL_0131,Retinoic acid,5.0,plate6,2436,0.8334665298461914,Retinoic receptor agonist
+CVCL_0131,Tucidinostat,5.0,plate6,1663,3.754770278930664,HDAC inhibitor
+CVCL_0131,Homoharringtonine,5.0,plate6,1112,29.65242576599121,Protein synthesis inhibitor
+CVCL_0131,Artesunate,5.0,plate6,3380,1.2002506256103516,JAK/STAT inhibitor
+CVCL_0131,Clonidine (hydrochloride),5.0,plate6,4886,1.724931716918945,Adrenoceptor agonist
+CVCL_0131,Adagrasib,0.05,plate6,3786,0.1468076705932617,RAS inhibitor
+CVCL_0131,Entecavir (monohydrate),0.05,plate7,963,0.4788217544555664,unclear
+CVCL_0131,Berbamine (dihydrochloride),0.05,plate7,1007,0.9141197204589844,unclear
+CVCL_0131,Daidzin,0.05,plate7,1006,2.44009780883789,unclear
+CVCL_0131,Fumaric acid,0.05,plate7,978,0.8349609375,unclear
+CVCL_0131,Pravastatin (sodium),0.05,plate7,962,0.2213964462280273,unclear
+CVCL_0131,Dinaciclib,0.05,plate7,193,13.312213897705078,CDK inhibitor
+CVCL_0131,Belumosudil,0.05,plate7,1275,1.0539474487304688,unclear
+CVCL_0131,Flumatinib (mesylate),0.05,plate7,1061,0.1536989212036132,Other TK inhibitor
+CVCL_0131,Cytarabine,0.05,plate7,1324,2.295970916748047,DNA synthesis/repair inhibitor
+CVCL_0131,Afatinib,0.05,plate7,946,0.1061878204345703,EGFR/ERBB inhibitor
+CVCL_0131,Naproxen,0.05,plate7,572,0.2403631210327148,Cyclooxygenase inhibitor
+CVCL_0131,Harringtonine,0.05,plate7,478,1.5026121139526367,Protein synthesis inhibitor
+CVCL_0131,Adagrasib,0.05,plate7,2330,0.2447433471679687,RAS inhibitor
+CVCL_0131,Entecavir (monohydrate),0.5,plate8,2972,0.9622774124145508,unclear
+CVCL_0131,Berbamine (dihydrochloride),0.5,plate8,2980,0.3546113967895508,unclear
+CVCL_0131,Daidzin,0.5,plate8,2925,0.6159610748291016,unclear
+CVCL_0131,Fumaric acid,0.5,plate8,2280,0.4683132171630859,unclear
+CVCL_0131,Pravastatin (sodium),0.5,plate8,2471,0.1559438705444336,unclear
+CVCL_0131,Dinaciclib,0.5,plate8,390,22.248985290527344,CDK inhibitor
+CVCL_0131,Belumosudil,0.5,plate8,2717,0.2244930267333984,unclear
+CVCL_0131,Flumatinib (mesylate),0.5,plate8,2198,0.6145153045654297,Other TK inhibitor
+CVCL_0131,Cytarabine,0.5,plate8,2729,0.6440000534057617,DNA synthesis/repair inhibitor
+CVCL_0131,Afatinib,0.5,plate8,2273,0.2628755569458008,EGFR/ERBB inhibitor
+CVCL_0131,Naproxen,0.5,plate8,2487,0.5008602142333984,Cyclooxygenase inhibitor
+CVCL_0131,Harringtonine,0.5,plate8,1308,15.39979648590088,Protein synthesis inhibitor
+CVCL_0131,Adagrasib,0.5,plate8,1296,0.7266426086425781,RAS inhibitor
+CVCL_0131,Adagrasib,0.05,plate8,1815,0.1375007629394531,RAS inhibitor
+CVCL_0131,Entecavir (monohydrate),5.0,plate9,2568,1.127485275268555,unclear
+CVCL_0131,Berbamine (dihydrochloride),5.0,plate9,1731,2.0582847595214844,unclear
+CVCL_0131,Daidzin,5.0,plate9,1916,3.2358341217041016,unclear
+CVCL_0131,Fumaric acid,5.0,plate9,2082,2.1089916229248047,unclear
+CVCL_0131,Pravastatin (sodium),5.0,plate9,2527,1.1732463836669922,unclear
+CVCL_0131,Belumosudil,5.0,plate9,1114,0.9195957183837892,unclear
+CVCL_0131,Flumatinib (mesylate),5.0,plate9,1062,1.331808090209961,Other TK inhibitor
+CVCL_0131,Cytarabine,5.0,plate9,713,4.856880187988281,DNA synthesis/repair inhibitor
+CVCL_0131,Afatinib,5.0,plate9,773,0.1928443908691406,EGFR/ERBB inhibitor
+CVCL_0131,Naproxen,5.0,plate9,871,0.0990104675292968,Cyclooxygenase inhibitor
+CVCL_0131,Harringtonine,5.0,plate9,1204,19.93939781188965,Protein synthesis inhibitor
+CVCL_0131,Adagrasib,5.0,plate9,1490,1.154989242553711,RAS inhibitor
+CVCL_0131,Adagrasib,0.05,plate9,793,0.0422277450561523,RAS inhibitor
+CVCL_0131,Dinaciclib,5.0,plate9,155,14.593786239624023,CDK inhibitor
+CVCL_0131,Ataluren,0.05,plate10,1929,0.4120168685913086,unclear
+CVCL_0131,Esmolol (hydrochloride),0.05,plate10,2313,0.5990486145019531,unclear
+CVCL_0131,Omeprazole,0.05,plate10,2307,0.7471933364868164,unclear
+CVCL_0131,Bicalutamide,0.05,plate10,1917,0.9292993545532228,Androgen receptor antagonist
+CVCL_0131,Belinostat,0.05,plate10,1165,0.7204980850219727,HDAC inhibitor
+CVCL_0131,Carbamazepine,0.05,plate10,1208,0.5014820098876953,HDAC inhibitor
+CVCL_0131,Allopurinol,0.05,plate10,2548,1.4863176345825195,unclear
+CVCL_0131,Clopidogrel,0.05,plate10,2386,1.329667091369629,unclear
+CVCL_0131,Dexamethasone,0.05,plate10,1290,0.4846429824829101,Glucocorticoid receptor agonist
+CVCL_0131,Malotilate,0.05,plate10,1349,2.203160285949707,unclear
+CVCL_0131,γ-Oryzanol,0.05,plate10,1828,0.1932144165039062,DNA methyltransferase inhibitor
+CVCL_0131,Methylthiouracil,0.05,plate10,3170,0.1844387054443359,unclear
+CVCL_0131,Binimetinib,0.05,plate10,2705,0.2296791076660156,MEK inhibitor
+CVCL_0131,Perindopril (erbumine),0.05,plate10,2564,0.6251049041748047,unclear
+CVCL_0131,Dapagliflozin,0.05,plate10,1857,1.4246187210083008,Glucose transporter inhibitor
+CVCL_0131,Panobinostat,0.05,plate10,1384,3.546982765197754,HDAC inhibitor
+CVCL_0131,Uridine,0.05,plate10,1759,0.4798030853271484,unclear
+CVCL_0131,Adagrasib,0.05,plate10,1964,0.173283576965332,RAS inhibitor
+CVCL_0131,Ataluren,0.5,plate11,1275,0.3114194869995117,unclear
+CVCL_0131,Esmolol (hydrochloride),0.5,plate11,1086,0.0364484786987304,unclear
+CVCL_0131,Omeprazole,0.5,plate11,715,0.1692943572998047,unclear
+CVCL_0131,Bicalutamide,0.5,plate11,1163,0.133244514465332,Androgen receptor antagonist
+CVCL_0131,Belinostat,0.5,plate11,592,2.354053497314453,HDAC inhibitor
+CVCL_0131,Carbamazepine,0.5,plate11,1087,0.1703996658325195,HDAC inhibitor
+CVCL_0131,Allopurinol,0.5,plate11,1553,1.3804950714111328,unclear
+CVCL_0131,Clopidogrel,0.5,plate11,2106,0.3903074264526367,unclear
+CVCL_0131,Dexamethasone,0.5,plate11,1851,0.13275146484375,Glucocorticoid receptor agonist
+CVCL_0131,Malotilate,0.5,plate11,1577,0.9433364868164062,unclear
+CVCL_0131,γ-Oryzanol,0.5,plate11,1114,0.2321605682373047,DNA methyltransferase inhibitor
+CVCL_0131,Methylthiouracil,0.5,plate11,1790,0.5902671813964844,unclear
+CVCL_0131,Binimetinib,0.5,plate11,1813,0.5554037094116211,MEK inhibitor
+CVCL_0131,Perindopril (erbumine),0.5,plate11,2418,0.7349176406860352,unclear
+CVCL_0131,Dapagliflozin,0.5,plate11,2416,0.771967887878418,Glucose transporter inhibitor
+CVCL_0131,Panobinostat,0.5,plate11,960,11.798904418945312,HDAC inhibitor
+CVCL_0131,Uridine,0.5,plate11,2201,0.8051605224609375,unclear
+CVCL_0131,Adagrasib,0.05,plate11,1577,0.2621736526489258,RAS inhibitor
+CVCL_0131,Ataluren,5.0,plate12,3321,0.0324487686157226,unclear
+CVCL_0131,Esmolol (hydrochloride),5.0,plate12,2998,0.741058349609375,unclear
+CVCL_0131,Omeprazole,5.0,plate12,3116,0.5034523010253906,unclear
+CVCL_0131,Bicalutamide,5.0,plate12,3087,0.5472240447998047,Androgen receptor antagonist
+CVCL_0131,Belinostat,5.0,plate12,1042,11.372411727905272,HDAC inhibitor
+CVCL_0131,Carbamazepine,5.0,plate12,1066,0.5875043869018555,HDAC inhibitor
+CVCL_0131,Allopurinol,5.0,plate12,2688,0.1811742782592773,unclear
+CVCL_0131,Clopidogrel,5.0,plate12,1945,1.043437957763672,unclear
+CVCL_0131,Dexamethasone,5.0,plate12,1499,0.4755439758300781,Glucocorticoid receptor agonist
+CVCL_0131,Malotilate,5.0,plate12,2187,1.5575408935546875,unclear
+CVCL_0131,γ-Oryzanol,5.0,plate12,1846,0.2759199142456054,DNA methyltransferase inhibitor
+CVCL_0131,Methylthiouracil,5.0,plate12,3449,0.0662965774536132,unclear
+CVCL_0131,Binimetinib,5.0,plate12,3692,0.5353899002075195,MEK inhibitor
+CVCL_0131,Perindopril (erbumine),5.0,plate12,2428,0.1307182312011718,unclear
+CVCL_0131,Dapagliflozin,5.0,plate12,2543,0.1967306137084961,Glucose transporter inhibitor
+CVCL_0131,Panobinostat,5.0,plate12,846,13.317594528198242,HDAC inhibitor
+CVCL_0131,Uridine,5.0,plate12,3796,0.1440763473510742,unclear
+CVCL_0131,Adagrasib,0.05,plate12,1909,0.0275096893310546,RAS inhibitor
+CVCL_0131,Abemaciclib,0.05,plate13,1666,0.480508804321289,CDK inhibitor
+CVCL_0131,PF-06260933,0.05,plate13,2376,0.2152233123779297,Other MAPK inhibitor
+CVCL_0131,Chlorhexidine (diacetate),0.5,plate13,1441,1.368448257446289,unclear
+CVCL_0131,Berbamine,0.5,plate13,1742,0.7419929504394531,unclear
+CVCL_0131,Malotilate,0.05,plate13,1243,0.9083232879638672,unclear
+CVCL_0131,Adagrasib,0.05,plate13,3005,0.216531753540039,RAS inhibitor
+CVCL_0131,Berbamine (dihydrochloride),5.0,plate13,346,0.8423671722412109,unclear
+CVCL_0131,Daidzin,5.0,plate13,439,2.1089534759521484,unclear
+CVCL_0131,Fumaric acid,5.0,plate13,1505,1.0018177032470703,unclear
+CVCL_0131,Pravastatin (sodium),5.0,plate13,1032,2.250265121459961,unclear
+CVCL_0131,Belumosudil,5.0,plate13,947,1.5307483673095703,unclear
+CVCL_0131,Flumatinib (mesylate),5.0,plate13,1486,0.5025405883789062,Other TK inhibitor
+CVCL_0131,Cytarabine,5.0,plate13,1954,0.2047538757324218,DNA synthesis/repair inhibitor
+CVCL_0131,Afatinib,5.0,plate13,1655,0.0699710845947265,EGFR/ERBB inhibitor
+CVCL_0131,Naproxen,5.0,plate13,1154,0.0049610137939453,Cyclooxygenase inhibitor
+CVCL_0131,Berbamine (dihydrochloride),0.5,plate13,1617,0.5546703338623047,unclear
+CVCL_0131,Daidzin,0.5,plate13,1490,0.9252986907958984,unclear
+CVCL_0131,Fumaric acid,0.5,plate13,1929,0.1608047485351562,unclear
+CVCL_0131,Pravastatin (sodium),0.5,plate13,2165,1.657644271850586,unclear
+CVCL_0131,Belumosudil,0.5,plate13,2580,0.2037830352783203,unclear
+CVCL_0131,Flumatinib (mesylate),0.5,plate13,2220,0.4017467498779297,Other TK inhibitor
+CVCL_0131,Cytarabine,0.5,plate13,2077,0.1912860870361328,DNA synthesis/repair inhibitor
+CVCL_0131,Afatinib,0.5,plate13,1521,0.2657184600830078,EGFR/ERBB inhibitor
+CVCL_0131,Naproxen,0.5,plate13,2367,0.2432384490966797,Cyclooxygenase inhibitor
+CVCL_0131,Berbamine (dihydrochloride),0.05,plate13,2197,0.1049995422363281,unclear
+CVCL_0131,Daidzin,0.05,plate13,1677,0.2071266174316406,unclear
+CVCL_0131,Fumaric acid,0.05,plate13,2176,0.37713623046875,unclear
+CVCL_0131,Pravastatin (sodium),0.05,plate13,1930,1.5697269439697266,unclear
+CVCL_0131,Belumosudil,0.05,plate13,2291,0.1296005249023437,unclear
+CVCL_0131,Flumatinib (mesylate),0.05,plate13,1812,0.3090057373046875,Other TK inhibitor
+CVCL_0131,Cytarabine,0.05,plate13,2263,0.151681900024414,DNA synthesis/repair inhibitor
+CVCL_0131,Afatinib,0.05,plate13,1697,0.3280849456787109,EGFR/ERBB inhibitor
+CVCL_0131,Naproxen,0.05,plate13,1832,0.0649223327636718,Cyclooxygenase inhibitor
+CVCL_0131,Glasdegib,5.0,plate13,1802,0.2570972442626953,Sonic inhibitor
+CVCL_0131,Regorafenib,5.0,plate13,2049,0.164896011352539,Multi-TK inhibitor
+CVCL_0131,Ribociclib,5.0,plate13,1870,0.1793155670166015,CDK inhibitor
+CVCL_0131,Glasdegib,0.5,plate13,2078,0.5100765228271484,Sonic inhibitor
+CVCL_0131,Regorafenib,0.5,plate13,1158,0.2276668548583984,Multi-TK inhibitor
+CVCL_0131,Ribociclib,0.5,plate13,1695,0.1687221527099609,CDK inhibitor
+CVCL_0131,Glasdegib,0.05,plate13,1872,0.9620685577392578,Sonic inhibitor
+CVCL_0131,Regorafenib,0.05,plate13,2296,0.2940082550048828,Multi-TK inhibitor
+CVCL_0131,Ribociclib,0.05,plate13,1988,0.4227542877197265,CDK inhibitor
+CVCL_0131,Chlorhexidine (diacetate),5.0,plate14,2553,0.2283296585083007,unclear
+CVCL_0131,Berbamine,5.0,plate14,1975,0.1918754577636718,unclear
+CVCL_0131,Retinoic acid,5.0,plate14,2411,1.172419548034668,Retinoic receptor agonist
+CVCL_0131,Tucidinostat,5.0,plate14,2313,0.548029899597168,HDAC inhibitor
+CVCL_0131,Homoharringtonine,5.0,plate14,1797,25.83824920654297,Protein synthesis inhibitor
+CVCL_0131,Artesunate,5.0,plate14,2181,0.9253416061401368,JAK/STAT inhibitor
+CVCL_0131,Clonidine (hydrochloride),5.0,plate14,2047,0.5691251754760742,Adrenoceptor agonist
+CVCL_0131,Adagrasib,0.05,plate14,1829,2.1155080795288086,RAS inhibitor
+CVCL_0131,Everolimus,0.05,plate1,2631,0.3035736083984375,MTOR inhibitor
+CVCL_0131,palbociclib,0.05,plate1,1080,0.5349349975585938,CDK inhibitor
+CVCL_0131,Regorafenib,0.05,plate1,1234,0.4957475662231445,Multi-TK inhibitor
+CVCL_0131,Binimetinib,0.05,plate1,2029,1.8619165420532229,MEK inhibitor
+CVCL_0131,Dabrafenib,0.05,plate1,1659,0.3624935150146484,RAF inhibitor
+CVCL_0131,Paclitaxel,0.05,plate1,2021,0.9346609115600586,Microtubule inhibitor
+CVCL_0131,RMC-6236,0.05,plate1,1430,0.8281736373901367,RAS inhibitor
+CVCL_0131,Afatinib,0.05,plate1,1032,0.1480836868286132,EGFR/ERBB inhibitor
+CVCL_0131,BAY1125976,0.05,plate1,1996,0.3451795578002929,PI3K/AKT inhibitor
+CVCL_0131,9-ING-41,0.05,plate1,2185,0.3735733032226562,GSK3 inhibitor
+CVCL_0131,Bortezomib,0.05,plate1,1058,6.016762733459473,Proteasome inhibitor
+CVCL_0131,Adagrasib,0.05,plate1,1689,0.0493478775024414,RAS inhibitor
+CVCL_0131,Everolimus,0.5,plate2,4480,0.6848745346069336,MTOR inhibitor
+CVCL_0131,Abemaciclib,0.5,plate2,2580,1.4620084762573242,CDK inhibitor
+CVCL_0131,palbociclib,0.5,plate2,2198,1.891057014465332,CDK inhibitor
+CVCL_0131,Regorafenib,0.5,plate2,3475,1.0980138778686523,Multi-TK inhibitor
+CVCL_0131,Binimetinib,0.5,plate2,2145,3.340113639831543,MEK inhibitor
+CVCL_0131,Dabrafenib,0.5,plate2,1644,0.7483854293823242,RAF inhibitor
+CVCL_0131,Paclitaxel,0.5,plate2,3872,0.5549106597900391,Microtubule inhibitor
+CVCL_0131,RMC-6236,0.5,plate2,3621,0.7596921920776367,RAS inhibitor
+CVCL_0131,Afatinib,0.5,plate2,3115,0.306828498840332,EGFR/ERBB inhibitor
+CVCL_0131,BAY1125976,0.5,plate2,1167,4.008877754211426,PI3K/AKT inhibitor
+CVCL_0131,9-ING-41,0.5,plate2,1078,6.776167869567871,GSK3 inhibitor
+CVCL_0131,PF-06260933,0.5,plate2,1484,1.2493467330932615,Other MAPK inhibitor
+CVCL_0131,Bortezomib,0.5,plate2,2003,4.206404685974121,Proteasome inhibitor
+CVCL_0131,Adagrasib,0.05,plate2,4249,0.040654182434082,RAS inhibitor
+CVCL_0131,Everolimus,5.0,plate3,3582,0.4979286193847656,MTOR inhibitor
+CVCL_0131,Abemaciclib,5.0,plate3,1265,3.987916946411133,CDK inhibitor
+CVCL_0131,palbociclib,5.0,plate3,1233,0.9679040908813475,CDK inhibitor
+CVCL_0131,Regorafenib,5.0,plate3,1111,0.6895484924316406,Multi-TK inhibitor
+CVCL_0131,Binimetinib,5.0,plate3,987,1.7305173873901367,MEK inhibitor
+CVCL_0131,Dabrafenib,5.0,plate3,3776,5.842180252075195,RAF inhibitor
+CVCL_0131,Paclitaxel,5.0,plate3,3544,8.204597473144531,Microtubule inhibitor
+CVCL_0131,RMC-6236,5.0,plate3,3360,6.223718643188477,RAS inhibitor
+CVCL_0131,Afatinib,5.0,plate3,2961,7.006998062133789,EGFR/ERBB inhibitor
+CVCL_0131,BAY1125976,5.0,plate3,2662,6.735902786254883,PI3K/AKT inhibitor
+CVCL_0131,9-ING-41,5.0,plate3,3413,2.2332019805908203,GSK3 inhibitor
+CVCL_0131,PF-06260933,5.0,plate3,561,2.3138256072998047,Other MAPK inhibitor
+CVCL_0131,Bortezomib,5.0,plate3,364,7.102998733520508,Proteasome inhibitor
+CVCL_0131,Adagrasib,0.05,plate3,855,0.3000783920288086,RAS inhibitor
