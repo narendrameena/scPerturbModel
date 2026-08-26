@@ -1,0 +1,51 @@
+# Default experiment config. Copy per experiment: configs/exp001_<name>.yaml
+experiment_name: default
+
+paths:
+  raw: data/raw/tahoe-100m
+  metadata: data/metadata
+  interim: data/interim
+  processed: data/processed
+  checkpoints: results/checkpoints
+  figures: results/figures
+  logs: logs
+
+data:
+  # QC mirrors the paper's "full filters"
+  min_umis: 700
+  max_mito_pct: 20
+  min_genes: 250
+  min_cells_per_condition: 50
+  exclude_cell_lines: [NCI-H661, NCI-H596, NCI-H2122]
+  control_label: DMSO_TF
+  # dev-subset settings (Phase 1); null = use everything
+  subset:
+    n_cell_lines: 8
+    n_drugs: 50
+    max_cells: 3_000_000
+    seed: 0
+
+splits:
+  # one of: held_out_condition | held_out_cell_line | held_out_drug | held_out_plate
+  scheme: held_out_condition
+  val_fraction: 0.1
+  test_plates: [14]        # plate 14 = biological replicate of plate 6
+  seed: 0
+
+model:
+  type: scvi_baseline       # scvi_baseline | additive_shift | linear | conditional_gen
+  latent_dim: 10            # paper used 10-d scVI latent
+  likelihood: nb
+  drug_encoder: onehot      # onehot | ecfp | chemberta
+
+training:
+  batch_size: 4096
+  max_epochs: 10
+  lr: 1.0e-3
+  num_workers: 8
+  precision: bf16-mixed
+  seed: 0
+
+evaluation:
+  metrics: [e_distance, pseudobulk_delta_pearson, de_overlap_top100, mmd]
+  biological_probes: [dabrafenib_braf_specificity, rmc6236_kras_specificity, cdk_cell_cycle_shift]

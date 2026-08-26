@@ -1,0 +1,14 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "perturbmodel"
+version = "0.1.0"
+description = "PyTorch models of single-cell perturbation responses (Tahoe-100M)"
+requires-python = ">=3.10"
+# runtime deps are managed via envs/environment.yml; keep this list minimal
+dependencies = ["numpy", "pyyaml", "torch"]
+
+[tool.setuptools.packages.find]
+where = ["src"]

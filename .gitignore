@@ -1,0 +1,30 @@
+# big data stays on scratch; small metadata/derived tables ARE tracked (see negations)
+/data/*
+!/data/README.md
+!/data/metadata/
+/data/metadata/.cache/
+/data/metadata/metadata/obs_metadata.parquet
+!/data/interim/
+/data/interim/*
+!/data/interim/dev_subset/
+/data/interim/dev_subset/*
+!/data/interim/dev_subset/selection.yaml
+!/data/interim/dev_subset/condition_counts.csv
+/results/*
+!/results/tables/
+/papers/
+/manuscripts/
+/logs/
+wandb/
+
+# python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+
+# misc
+.DS_Store
+*.swp
+*.log

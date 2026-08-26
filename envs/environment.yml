@@ -1,0 +1,34 @@
+name: tahoe
+channels:
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pip
+  - numpy
+  - pandas
+  - scipy
+  - scikit-learn
+  - matplotlib
+  - seaborn
+  - jupyterlab
+  - ipywidgets
+  - pyarrow
+  - h5py
+  - pyyaml
+  - tqdm
+  - pip:
+      # single-cell stack
+      - scanpy
+      - anndata
+      - scvi-tools          # scVI baseline (matches the paper)
+      - pertpy              # perturbation analysis: E-distance, MOA tools
+      # deep learning (adjust CUDA build to the cluster's driver if needed)
+      - torch
+      - lightning
+      # Tahoe-100M access
+      - datasets            # HF streaming
+      - huggingface_hub
+      # chemistry (drug encoders for held-out-drug generalization)
+      - rdkit
+      # experiment tracking (optional; or use tensorboard)
+      - wandb

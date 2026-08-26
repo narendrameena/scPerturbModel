@@ -1,0 +1,1025 @@
+cell_line_id,drug,conc,plate,n_cells
+CVCL_0131,Berbamine,0.05000000074505806,plate4,2874
+CVCL_0131,Chlorhexidine (diacetate),0.05000000074505806,plate4,2160
+CVCL_0131,Retinoic acid,0.05000000074505806,plate4,2362
+CVCL_0131,Tucidinostat,0.05000000074505806,plate4,2438
+CVCL_0428,Berbamine,0.05000000074505806,plate4,1432
+CVCL_0428,Chlorhexidine (diacetate),0.05000000074505806,plate4,1118
+CVCL_0428,Retinoic acid,0.05000000074505806,plate4,1040
+CVCL_0428,Tucidinostat,0.05000000074505806,plate4,1213
+CVCL_0459,Berbamine,0.05000000074505806,plate4,4170
+CVCL_0459,Chlorhexidine (diacetate),0.05000000074505806,plate4,4201
+CVCL_0459,Retinoic acid,0.05000000074505806,plate4,4351
+CVCL_0459,Tucidinostat,0.05000000074505806,plate4,4259
+CVCL_0504,Berbamine,0.05000000074505806,plate4,2523
+CVCL_0504,Chlorhexidine (diacetate),0.05000000074505806,plate4,1946
+CVCL_0504,Retinoic acid,0.05000000074505806,plate4,2115
+CVCL_0504,Tucidinostat,0.05000000074505806,plate4,2189
+CVCL_0546,Berbamine,0.05000000074505806,plate4,4893
+CVCL_0546,Chlorhexidine (diacetate),0.05000000074505806,plate4,4383
+CVCL_0546,Retinoic acid,0.05000000074505806,plate4,4647
+CVCL_0546,Tucidinostat,0.05000000074505806,plate4,4504
+CVCL_1056,Berbamine,0.05000000074505806,plate4,2582
+CVCL_1056,Chlorhexidine (diacetate),0.05000000074505806,plate4,2058
+CVCL_1056,Retinoic acid,0.05000000074505806,plate4,1966
+CVCL_1056,Tucidinostat,0.05000000074505806,plate4,2318
+CVCL_1285,Berbamine,0.05000000074505806,plate4,3190
+CVCL_1285,Chlorhexidine (diacetate),0.05000000074505806,plate4,2583
+CVCL_1285,Retinoic acid,0.05000000074505806,plate4,2636
+CVCL_1285,Tucidinostat,0.05000000074505806,plate4,2627
+CVCL_1381,Berbamine,0.05000000074505806,plate4,2025
+CVCL_1381,Chlorhexidine (diacetate),0.05000000074505806,plate4,1751
+CVCL_1381,Retinoic acid,0.05000000074505806,plate4,1809
+CVCL_1381,Tucidinostat,0.05000000074505806,plate4,1768
+CVCL_0131,Adagrasib,0.05000000074505806,plate4,2950
+CVCL_0131,Artesunate,0.05000000074505806,plate4,2530
+CVCL_0131,Clonidine (hydrochloride),0.05000000074505806,plate4,2855
+CVCL_0131,DMSO_TF,0.0,plate4,4876
+CVCL_0131,Homoharringtonine,0.05000000074505806,plate4,1864
+CVCL_0428,Adagrasib,0.05000000074505806,plate4,1123
+CVCL_0428,Artesunate,0.05000000074505806,plate4,1172
+CVCL_0428,Clonidine (hydrochloride),0.05000000074505806,plate4,1295
+CVCL_0428,DMSO_TF,0.0,plate4,2437
+CVCL_0428,Homoharringtonine,0.05000000074505806,plate4,656
+CVCL_0459,Adagrasib,0.05000000074505806,plate4,6115
+CVCL_0459,Artesunate,0.05000000074505806,plate4,4553
+CVCL_0459,Clonidine (hydrochloride),0.05000000074505806,plate4,6436
+CVCL_0459,DMSO_TF,0.0,plate4,8342
+CVCL_0459,Homoharringtonine,0.05000000074505806,plate4,2904
+CVCL_0504,Adagrasib,0.05000000074505806,plate4,2845
+CVCL_0504,Artesunate,0.05000000074505806,plate4,2414
+CVCL_0504,Clonidine (hydrochloride),0.05000000074505806,plate4,2779
+CVCL_0504,DMSO_TF,0.0,plate4,4583
+CVCL_0504,Homoharringtonine,0.05000000074505806,plate4,1233
+CVCL_0546,Adagrasib,0.05000000074505806,plate4,6632
+CVCL_0546,Artesunate,0.05000000074505806,plate4,5679
+CVCL_0546,Clonidine (hydrochloride),0.05000000074505806,plate4,7113
+CVCL_0546,DMSO_TF,0.0,plate4,9876
+CVCL_0546,Homoharringtonine,0.05000000074505806,plate4,4271
+CVCL_1056,Adagrasib,0.05000000074505806,plate4,2888
+CVCL_1056,Artesunate,0.05000000074505806,plate4,2165
+CVCL_1056,Clonidine (hydrochloride),0.05000000074505806,plate4,2913
+CVCL_1056,DMSO_TF,0.0,plate4,4614
+CVCL_1056,Homoharringtonine,0.05000000074505806,plate4,1666
+CVCL_1285,Adagrasib,0.05000000074505806,plate4,3337
+CVCL_1285,Artesunate,0.05000000074505806,plate4,2874
+CVCL_1285,Clonidine (hydrochloride),0.05000000074505806,plate4,3487
+CVCL_1285,DMSO_TF,0.0,plate4,4950
+CVCL_1285,Homoharringtonine,0.05000000074505806,plate4,2359
+CVCL_1381,Adagrasib,0.05000000074505806,plate4,2455
+CVCL_1381,Artesunate,0.05000000074505806,plate4,1945
+CVCL_1381,Clonidine (hydrochloride),0.05000000074505806,plate4,2377
+CVCL_1381,DMSO_TF,0.0,plate4,3690
+CVCL_1381,Homoharringtonine,0.05000000074505806,plate4,1092
+CVCL_0131,Berbamine,0.5,plate5,2669
+CVCL_0131,Chlorhexidine (diacetate),0.5,plate5,2930
+CVCL_0131,Retinoic acid,0.5,plate5,1990
+CVCL_0428,Berbamine,0.5,plate5,1271
+CVCL_0428,Chlorhexidine (diacetate),0.5,plate5,1306
+CVCL_0428,Retinoic acid,0.5,plate5,932
+CVCL_0459,Berbamine,0.5,plate5,2852
+CVCL_0459,Chlorhexidine (diacetate),0.5,plate5,3501
+CVCL_0459,Retinoic acid,0.5,plate5,2247
+CVCL_0504,Berbamine,0.5,plate5,1817
+CVCL_0504,Chlorhexidine (diacetate),0.5,plate5,2282
+CVCL_0504,Retinoic acid,0.5,plate5,1426
+CVCL_0546,Berbamine,0.5,plate5,3341
+CVCL_0546,Chlorhexidine (diacetate),0.5,plate5,4131
+CVCL_0546,Retinoic acid,0.5,plate5,2837
+CVCL_1056,Berbamine,0.5,plate5,2594
+CVCL_1056,Chlorhexidine (diacetate),0.5,plate5,2535
+CVCL_1056,Retinoic acid,0.5,plate5,1826
+CVCL_1285,Berbamine,0.5,plate5,2956
+CVCL_1285,Chlorhexidine (diacetate),0.5,plate5,3078
+CVCL_1285,Retinoic acid,0.5,plate5,2220
+CVCL_1381,Berbamine,0.5,plate5,1975
+CVCL_1381,Chlorhexidine (diacetate),0.5,plate5,2123
+CVCL_1381,Retinoic acid,0.5,plate5,1509
+CVCL_0131,Artesunate,0.5,plate5,3491
+CVCL_0131,Homoharringtonine,0.5,plate5,1213
+CVCL_0131,Tucidinostat,0.5,plate5,2023
+CVCL_0428,Artesunate,0.5,plate5,1622
+CVCL_0428,Homoharringtonine,0.5,plate5,123
+CVCL_0428,Tucidinostat,0.5,plate5,1002
+CVCL_0459,Artesunate,0.5,plate5,4971
+CVCL_0459,Homoharringtonine,0.5,plate5,2114
+CVCL_0459,Tucidinostat,0.5,plate5,2195
+CVCL_0504,Artesunate,0.5,plate5,2708
+CVCL_0504,Tucidinostat,0.5,plate5,1575
+CVCL_0546,Artesunate,0.5,plate5,5614
+CVCL_0546,Homoharringtonine,0.5,plate5,3234
+CVCL_0546,Tucidinostat,0.5,plate5,2482
+CVCL_1056,Artesunate,0.5,plate5,3173
+CVCL_1056,Homoharringtonine,0.5,plate5,558
+CVCL_1056,Tucidinostat,0.5,plate5,1858
+CVCL_1285,Artesunate,0.5,plate5,3907
+CVCL_1285,Homoharringtonine,0.5,plate5,1730
+CVCL_1285,Tucidinostat,0.5,plate5,1840
+CVCL_1381,Artesunate,0.5,plate5,2662
+CVCL_1381,Homoharringtonine,0.5,plate5,494
+CVCL_1381,Tucidinostat,0.5,plate5,1672
+CVCL_0131,Adagrasib,0.05000000074505806,plate5,3110
+CVCL_0131,Clonidine (hydrochloride),0.5,plate5,3157
+CVCL_0131,DMSO_TF,0.0,plate5,6487
+CVCL_0428,Adagrasib,0.05000000074505806,plate5,1206
+CVCL_0428,Clonidine (hydrochloride),0.5,plate5,1404
+CVCL_0428,DMSO_TF,0.0,plate5,3078
+CVCL_0459,Adagrasib,0.05000000074505806,plate5,3262
+CVCL_0459,Clonidine (hydrochloride),0.5,plate5,3883
+CVCL_0459,DMSO_TF,0.0,plate5,7556
+CVCL_0504,Adagrasib,0.05000000074505806,plate5,2216
+CVCL_0504,Clonidine (hydrochloride),0.5,plate5,2397
+CVCL_0504,DMSO_TF,0.0,plate5,5222
+CVCL_0546,Adagrasib,0.05000000074505806,plate5,4059
+CVCL_0546,Clonidine (hydrochloride),0.5,plate5,4509
+CVCL_0546,DMSO_TF,0.0,plate5,9956
+CVCL_1056,Adagrasib,0.05000000074505806,plate5,2830
+CVCL_1056,Clonidine (hydrochloride),0.5,plate5,3011
+CVCL_1056,DMSO_TF,0.0,plate5,5743
+CVCL_1285,Adagrasib,0.05000000074505806,plate5,3021
+CVCL_1285,Clonidine (hydrochloride),0.5,plate5,3460
+CVCL_1285,DMSO_TF,0.0,plate5,6811
+CVCL_1381,Adagrasib,0.05000000074505806,plate5,2099
+CVCL_1381,Clonidine (hydrochloride),0.5,plate5,2324
+CVCL_1381,DMSO_TF,0.0,plate5,4724
+CVCL_0504,Homoharringtonine,0.5,plate5,369
+CVCL_0131,Berbamine,5.0,plate6,3146
+CVCL_0131,Chlorhexidine (diacetate),5.0,plate6,2698
+CVCL_0131,Retinoic acid,5.0,plate6,2436
+CVCL_0131,Tucidinostat,5.0,plate6,1663
+CVCL_0428,Berbamine,5.0,plate6,1400
+CVCL_0428,Chlorhexidine (diacetate),5.0,plate6,1209
+CVCL_0428,Retinoic acid,5.0,plate6,1244
+CVCL_0428,Tucidinostat,5.0,plate6,984
+CVCL_0459,Berbamine,5.0,plate6,5767
+CVCL_0459,Chlorhexidine (diacetate),5.0,plate6,4990
+CVCL_0459,Retinoic acid,5.0,plate6,5010
+CVCL_0459,Tucidinostat,5.0,plate6,3533
+CVCL_0504,Berbamine,5.0,plate6,3017
+CVCL_0504,Chlorhexidine (diacetate),5.0,plate6,2971
+CVCL_0504,Retinoic acid,5.0,plate6,2621
+CVCL_0504,Tucidinostat,5.0,plate6,1850
+CVCL_0546,Berbamine,5.0,plate6,6656
+CVCL_0546,Chlorhexidine (diacetate),5.0,plate6,5949
+CVCL_0546,Retinoic acid,5.0,plate6,5702
+CVCL_0546,Tucidinostat,5.0,plate6,3618
+CVCL_1056,Berbamine,5.0,plate6,2845
+CVCL_1056,Chlorhexidine (diacetate),5.0,plate6,2352
+CVCL_1056,Retinoic acid,5.0,plate6,2251
+CVCL_1056,Tucidinostat,5.0,plate6,1571
+CVCL_1285,Berbamine,5.0,plate6,3537
+CVCL_1285,Chlorhexidine (diacetate),5.0,plate6,3301
+CVCL_1285,Retinoic acid,5.0,plate6,2850
+CVCL_1285,Tucidinostat,5.0,plate6,1634
+CVCL_1381,Berbamine,5.0,plate6,2511
+CVCL_1381,Chlorhexidine (diacetate),5.0,plate6,2276
+CVCL_1381,Retinoic acid,5.0,plate6,2199
+CVCL_1381,Tucidinostat,5.0,plate6,1527
+CVCL_0131,Adagrasib,0.05000000074505806,plate6,3786
+CVCL_0131,Artesunate,5.0,plate6,3380
+CVCL_0131,Clonidine (hydrochloride),5.0,plate6,4886
+CVCL_0131,DMSO_TF,0.0,plate6,6853
+CVCL_0131,Homoharringtonine,5.0,plate6,1112
+CVCL_0428,Adagrasib,0.05000000074505806,plate6,1468
+CVCL_0428,Artesunate,5.0,plate6,1489
+CVCL_0428,Clonidine (hydrochloride),5.0,plate6,2198
+CVCL_0428,DMSO_TF,0.0,plate6,3208
+CVCL_0459,Adagrasib,0.05000000074505806,plate6,5960
+CVCL_0459,Artesunate,5.0,plate6,6145
+CVCL_0459,Clonidine (hydrochloride),5.0,plate6,8803
+CVCL_0459,DMSO_TF,0.0,plate6,9518
+CVCL_0459,Homoharringtonine,5.0,plate6,2805
+CVCL_0504,Adagrasib,0.05000000074505806,plate6,3376
+CVCL_0504,Artesunate,5.0,plate6,2980
+CVCL_0504,Clonidine (hydrochloride),5.0,plate6,4294
+CVCL_0504,DMSO_TF,0.0,plate6,6303
+CVCL_0546,Adagrasib,0.05000000074505806,plate6,7566
+CVCL_0546,Artesunate,5.0,plate6,6898
+CVCL_0546,Clonidine (hydrochloride),5.0,plate6,10363
+CVCL_0546,DMSO_TF,0.0,plate6,13159
+CVCL_0546,Homoharringtonine,5.0,plate6,4229
+CVCL_1056,Adagrasib,0.05000000074505806,plate6,3303
+CVCL_1056,Artesunate,5.0,plate6,2902
+CVCL_1056,Clonidine (hydrochloride),5.0,plate6,4484
+CVCL_1056,DMSO_TF,0.0,plate6,5753
+CVCL_1056,Homoharringtonine,5.0,plate6,480
+CVCL_1285,Adagrasib,0.05000000074505806,plate6,3808
+CVCL_1285,Artesunate,5.0,plate6,3770
+CVCL_1285,Clonidine (hydrochloride),5.0,plate6,5355
+CVCL_1285,DMSO_TF,0.0,plate6,7119
+CVCL_1285,Homoharringtonine,5.0,plate6,1777
+CVCL_1381,Adagrasib,0.05000000074505806,plate6,2856
+CVCL_1381,Artesunate,5.0,plate6,2672
+CVCL_1381,Clonidine (hydrochloride),5.0,plate6,3611
+CVCL_1381,DMSO_TF,0.0,plate6,5198
+CVCL_1381,Homoharringtonine,5.0,plate6,437
+CVCL_0428,Homoharringtonine,5.0,plate6,118
+CVCL_0504,Homoharringtonine,5.0,plate6,124
+CVCL_0131,Afatinib,0.05000000074505806,plate7,946
+CVCL_0131,Belumosudil,0.05000000074505806,plate7,1275
+CVCL_0131,Berbamine (dihydrochloride),0.05000000074505806,plate7,1007
+CVCL_0131,Cytarabine,0.05000000074505806,plate7,1324
+CVCL_0131,Daidzin,0.05000000074505806,plate7,1006
+CVCL_0131,Dinaciclib,0.05000000074505806,plate7,193
+CVCL_0131,Entecavir (monohydrate),0.05000000074505806,plate7,963
+CVCL_0131,Flumatinib (mesylate),0.05000000074505806,plate7,1061
+CVCL_0131,Fumaric acid,0.05000000074505806,plate7,978
+CVCL_0131,Harringtonine,0.05000000074505806,plate7,478
+CVCL_0131,Naproxen,0.05000000074505806,plate7,572
+CVCL_0131,Pravastatin (sodium),0.05000000074505806,plate7,962
+CVCL_0428,Afatinib,0.05000000074505806,plate7,2311
+CVCL_0428,Belumosudil,0.05000000074505806,plate7,2445
+CVCL_0428,Berbamine (dihydrochloride),0.05000000074505806,plate7,1872
+CVCL_0428,Cytarabine,0.05000000074505806,plate7,2569
+CVCL_0428,Daidzin,0.05000000074505806,plate7,1940
+CVCL_0428,Dinaciclib,0.05000000074505806,plate7,435
+CVCL_0428,Entecavir (monohydrate),0.05000000074505806,plate7,1673
+CVCL_0428,Flumatinib (mesylate),0.05000000074505806,plate7,2112
+CVCL_0428,Fumaric acid,0.05000000074505806,plate7,1995
+CVCL_0428,Harringtonine,0.05000000074505806,plate7,910
+CVCL_0428,Naproxen,0.05000000074505806,plate7,1363
+CVCL_0428,Pravastatin (sodium),0.05000000074505806,plate7,1900
+CVCL_0459,Afatinib,0.05000000074505806,plate7,3072
+CVCL_0459,Belumosudil,0.05000000074505806,plate7,3712
+CVCL_0459,Berbamine (dihydrochloride),0.05000000074505806,plate7,3072
+CVCL_0459,Cytarabine,0.05000000074505806,plate7,3999
+CVCL_0459,Daidzin,0.05000000074505806,plate7,3480
+CVCL_0459,Dinaciclib,0.05000000074505806,plate7,500
+CVCL_0459,Entecavir (monohydrate),0.05000000074505806,plate7,2883
+CVCL_0459,Flumatinib (mesylate),0.05000000074505806,plate7,2978
+CVCL_0459,Fumaric acid,0.05000000074505806,plate7,3175
+CVCL_0459,Harringtonine,0.05000000074505806,plate7,1458
+CVCL_0459,Naproxen,0.05000000074505806,plate7,1614
+CVCL_0459,Pravastatin (sodium),0.05000000074505806,plate7,2704
+CVCL_0504,Afatinib,0.05000000074505806,plate7,1046
+CVCL_0504,Belumosudil,0.05000000074505806,plate7,1261
+CVCL_0504,Berbamine (dihydrochloride),0.05000000074505806,plate7,1091
+CVCL_0504,Cytarabine,0.05000000074505806,plate7,1346
+CVCL_0504,Daidzin,0.05000000074505806,plate7,1160
+CVCL_0504,Entecavir (monohydrate),0.05000000074505806,plate7,883
+CVCL_0504,Flumatinib (mesylate),0.05000000074505806,plate7,1051
+CVCL_0504,Fumaric acid,0.05000000074505806,plate7,1143
+CVCL_0504,Harringtonine,0.05000000074505806,plate7,470
+CVCL_0504,Naproxen,0.05000000074505806,plate7,510
+CVCL_0504,Pravastatin (sodium),0.05000000074505806,plate7,826
+CVCL_0546,Afatinib,0.05000000074505806,plate7,2720
+CVCL_0546,Belumosudil,0.05000000074505806,plate7,3809
+CVCL_0546,Berbamine (dihydrochloride),0.05000000074505806,plate7,3021
+CVCL_0546,Cytarabine,0.05000000074505806,plate7,3464
+CVCL_0546,Daidzin,0.05000000074505806,plate7,3126
+CVCL_0546,Dinaciclib,0.05000000074505806,plate7,322
+CVCL_0546,Entecavir (monohydrate),0.05000000074505806,plate7,2782
+CVCL_0546,Flumatinib (mesylate),0.05000000074505806,plate7,3066
+CVCL_0546,Fumaric acid,0.05000000074505806,plate7,3135
+CVCL_0546,Harringtonine,0.05000000074505806,plate7,1684
+CVCL_0546,Naproxen,0.05000000074505806,plate7,1724
+CVCL_0546,Pravastatin (sodium),0.05000000074505806,plate7,2668
+CVCL_1056,Afatinib,0.05000000074505806,plate7,1984
+CVCL_1056,Belumosudil,0.05000000074505806,plate7,2029
+CVCL_1056,Berbamine (dihydrochloride),0.05000000074505806,plate7,1805
+CVCL_1056,Cytarabine,0.05000000074505806,plate7,2347
+CVCL_1056,Daidzin,0.05000000074505806,plate7,1973
+CVCL_1056,Dinaciclib,0.05000000074505806,plate7,840
+CVCL_1056,Entecavir (monohydrate),0.05000000074505806,plate7,1725
+CVCL_1056,Flumatinib (mesylate),0.05000000074505806,plate7,2092
+CVCL_1056,Fumaric acid,0.05000000074505806,plate7,1747
+CVCL_1056,Harringtonine,0.05000000074505806,plate7,840
+CVCL_1056,Naproxen,0.05000000074505806,plate7,1148
+CVCL_1056,Pravastatin (sodium),0.05000000074505806,plate7,1780
+CVCL_1285,Afatinib,0.05000000074505806,plate7,2066
+CVCL_1285,Belumosudil,0.05000000074505806,plate7,2213
+CVCL_1285,Berbamine (dihydrochloride),0.05000000074505806,plate7,1977
+CVCL_1285,Cytarabine,0.05000000074505806,plate7,2594
+CVCL_1285,Daidzin,0.05000000074505806,plate7,2071
+CVCL_1285,Dinaciclib,0.05000000074505806,plate7,744
+CVCL_1285,Entecavir (monohydrate),0.05000000074505806,plate7,1761
+CVCL_1285,Flumatinib (mesylate),0.05000000074505806,plate7,2132
+CVCL_1285,Fumaric acid,0.05000000074505806,plate7,2010
+CVCL_1285,Harringtonine,0.05000000074505806,plate7,1024
+CVCL_1285,Naproxen,0.05000000074505806,plate7,1204
+CVCL_1285,Pravastatin (sodium),0.05000000074505806,plate7,1715
+CVCL_1381,Afatinib,0.05000000074505806,plate7,1593
+CVCL_1381,Belumosudil,0.05000000074505806,plate7,1653
+CVCL_1381,Berbamine (dihydrochloride),0.05000000074505806,plate7,1389
+CVCL_1381,Cytarabine,0.05000000074505806,plate7,1959
+CVCL_1381,Daidzin,0.05000000074505806,plate7,1678
+CVCL_1381,Dinaciclib,0.05000000074505806,plate7,415
+CVCL_1381,Entecavir (monohydrate),0.05000000074505806,plate7,1412
+CVCL_1381,Flumatinib (mesylate),0.05000000074505806,plate7,1455
+CVCL_1381,Fumaric acid,0.05000000074505806,plate7,1652
+CVCL_1381,Harringtonine,0.05000000074505806,plate7,631
+CVCL_1381,Naproxen,0.05000000074505806,plate7,887
+CVCL_1381,Pravastatin (sodium),0.05000000074505806,plate7,1267
+CVCL_0131,Adagrasib,0.05000000074505806,plate7,2330
+CVCL_0131,DMSO_TF,0.0,plate7,1489
+CVCL_0428,Adagrasib,0.05000000074505806,plate7,4752
+CVCL_0428,DMSO_TF,0.0,plate7,3665
+CVCL_0459,Adagrasib,0.05000000074505806,plate7,7179
+CVCL_0459,DMSO_TF,0.0,plate7,5214
+CVCL_0504,Adagrasib,0.05000000074505806,plate7,2329
+CVCL_0504,DMSO_TF,0.0,plate7,1939
+CVCL_0504,Dinaciclib,0.05000000074505806,plate7,42
+CVCL_0546,Adagrasib,0.05000000074505806,plate7,6928
+CVCL_0546,DMSO_TF,0.0,plate7,5302
+CVCL_1056,Adagrasib,0.05000000074505806,plate7,4440
+CVCL_1056,DMSO_TF,0.0,plate7,2769
+CVCL_1285,Adagrasib,0.05000000074505806,plate7,4719
+CVCL_1285,DMSO_TF,0.0,plate7,3312
+CVCL_1381,Adagrasib,0.05000000074505806,plate7,3437
+CVCL_1381,DMSO_TF,0.0,plate7,2529
+CVCL_0131,Afatinib,0.5,plate8,2273
+CVCL_0131,Belumosudil,0.5,plate8,2717
+CVCL_0131,Berbamine (dihydrochloride),0.5,plate8,2980
+CVCL_0131,Cytarabine,0.5,plate8,2729
+CVCL_0131,Daidzin,0.5,plate8,2925
+CVCL_0131,Dinaciclib,0.5,plate8,390
+CVCL_0131,Entecavir (monohydrate),0.5,plate8,2972
+CVCL_0131,Flumatinib (mesylate),0.5,plate8,2198
+CVCL_0131,Fumaric acid,0.5,plate8,2280
+CVCL_0131,Naproxen,0.5,plate8,2487
+CVCL_0131,Pravastatin (sodium),0.5,plate8,2471
+CVCL_0428,Afatinib,0.5,plate8,4363
+CVCL_0428,Belumosudil,0.5,plate8,5215
+CVCL_0428,Berbamine (dihydrochloride),0.5,plate8,5923
+CVCL_0428,Cytarabine,0.5,plate8,4880
+CVCL_0428,Daidzin,0.5,plate8,5342
+CVCL_0428,Dinaciclib,0.5,plate8,864
+CVCL_0428,Entecavir (monohydrate),0.5,plate8,5404
+CVCL_0428,Flumatinib (mesylate),0.5,plate8,4133
+CVCL_0428,Fumaric acid,0.5,plate8,4480
+CVCL_0428,Naproxen,0.5,plate8,4949
+CVCL_0428,Pravastatin (sodium),0.5,plate8,4612
+CVCL_0459,Afatinib,0.5,plate8,8113
+CVCL_0459,Belumosudil,0.5,plate8,9353
+CVCL_0459,Berbamine (dihydrochloride),0.5,plate8,10589
+CVCL_0459,Cytarabine,0.5,plate8,8847
+CVCL_0459,Daidzin,0.5,plate8,10999
+CVCL_0459,Dinaciclib,0.5,plate8,816
+CVCL_0459,Entecavir (monohydrate),0.5,plate8,12613
+CVCL_0459,Flumatinib (mesylate),0.5,plate8,8277
+CVCL_0459,Fumaric acid,0.5,plate8,8846
+CVCL_0459,Naproxen,0.5,plate8,8560
+CVCL_0459,Pravastatin (sodium),0.5,plate8,8763
+CVCL_0504,Afatinib,0.5,plate8,2704
+CVCL_0504,Belumosudil,0.5,plate8,2881
+CVCL_0504,Berbamine (dihydrochloride),0.5,plate8,3618
+CVCL_0504,Cytarabine,0.5,plate8,2931
+CVCL_0504,Daidzin,0.5,plate8,3688
+CVCL_0504,Entecavir (monohydrate),0.5,plate8,3186
+CVCL_0504,Flumatinib (mesylate),0.5,plate8,2345
+CVCL_0504,Fumaric acid,0.5,plate8,2739
+CVCL_0504,Naproxen,0.5,plate8,3005
+CVCL_0504,Pravastatin (sodium),0.5,plate8,2888
+CVCL_0546,Afatinib,0.5,plate8,8099
+CVCL_0546,Belumosudil,0.5,plate8,9842
+CVCL_0546,Berbamine (dihydrochloride),0.5,plate8,10839
+CVCL_0546,Cytarabine,0.5,plate8,9228
+CVCL_0546,Daidzin,0.5,plate8,10852
+CVCL_0546,Dinaciclib,0.5,plate8,738
+CVCL_0546,Entecavir (monohydrate),0.5,plate8,9908
+CVCL_0546,Flumatinib (mesylate),0.5,plate8,7782
+CVCL_0546,Fumaric acid,0.5,plate8,8375
+CVCL_0546,Naproxen,0.5,plate8,9094
+CVCL_0546,Pravastatin (sodium),0.5,plate8,9662
+CVCL_1056,Afatinib,0.5,plate8,3499
+CVCL_1056,Belumosudil,0.5,plate8,4104
+CVCL_1056,Berbamine (dihydrochloride),0.5,plate8,4728
+CVCL_1056,Cytarabine,0.5,plate8,3838
+CVCL_1056,Daidzin,0.5,plate8,4203
+CVCL_1056,Dinaciclib,0.5,plate8,1775
+CVCL_1056,Entecavir (monohydrate),0.5,plate8,5581
+CVCL_1056,Flumatinib (mesylate),0.5,plate8,3480
+CVCL_1056,Fumaric acid,0.5,plate8,3701
+CVCL_1056,Naproxen,0.5,plate8,3648
+CVCL_1056,Pravastatin (sodium),0.5,plate8,3433
+CVCL_1285,Afatinib,0.5,plate8,3886
+CVCL_1285,Belumosudil,0.5,plate8,4707
+CVCL_1285,Berbamine (dihydrochloride),0.5,plate8,5487
+CVCL_1285,Cytarabine,0.5,plate8,4879
+CVCL_1285,Daidzin,0.5,plate8,5039
+CVCL_1285,Dinaciclib,0.5,plate8,1878
+CVCL_1285,Entecavir (monohydrate),0.5,plate8,6125
+CVCL_1285,Flumatinib (mesylate),0.5,plate8,4119
+CVCL_1285,Fumaric acid,0.5,plate8,4424
+CVCL_1285,Naproxen,0.5,plate8,4642
+CVCL_1285,Pravastatin (sodium),0.5,plate8,4284
+CVCL_1381,Afatinib,0.5,plate8,3012
+CVCL_1381,Belumosudil,0.5,plate8,3386
+CVCL_1381,Berbamine (dihydrochloride),0.5,plate8,3960
+CVCL_1381,Cytarabine,0.5,plate8,3006
+CVCL_1381,Daidzin,0.5,plate8,3704
+CVCL_1381,Dinaciclib,0.5,plate8,833
+CVCL_1381,Entecavir (monohydrate),0.5,plate8,3577
+CVCL_1381,Flumatinib (mesylate),0.5,plate8,2703
+CVCL_1381,Fumaric acid,0.5,plate8,3115
+CVCL_1381,Naproxen,0.5,plate8,3323
+CVCL_1381,Pravastatin (sodium),0.5,plate8,2938
+CVCL_0131,Adagrasib,0.5,plate8,1296
+CVCL_0131,Harringtonine,0.5,plate8,1308
+CVCL_0428,Adagrasib,0.5,plate8,2477
+CVCL_0428,Harringtonine,0.5,plate8,1144
+CVCL_0459,Adagrasib,0.5,plate8,3341
+CVCL_0459,Harringtonine,0.5,plate8,7920
+CVCL_0504,Adagrasib,0.5,plate8,1901
+CVCL_0504,Harringtonine,0.5,plate8,1016
+CVCL_0546,Adagrasib,0.5,plate8,5736
+CVCL_0546,Harringtonine,0.5,plate8,8156
+CVCL_1056,Adagrasib,0.5,plate8,1341
+CVCL_1056,Harringtonine,0.5,plate8,2585
+CVCL_1285,Adagrasib,0.5,plate8,1500
+CVCL_1285,Harringtonine,0.5,plate8,3982
+CVCL_1381,Adagrasib,0.5,plate8,1816
+CVCL_1381,Harringtonine,0.5,plate8,1330
+CVCL_0131,Adagrasib,0.05000000074505806,plate8,1815
+CVCL_0131,DMSO_TF,0.0,plate8,3938
+CVCL_0428,Adagrasib,0.05000000074505806,plate8,3624
+CVCL_0428,DMSO_TF,0.0,plate8,7909
+CVCL_0459,Adagrasib,0.05000000074505806,plate8,4768
+CVCL_0459,DMSO_TF,0.0,plate8,10638
+CVCL_0504,Adagrasib,0.05000000074505806,plate8,2220
+CVCL_0504,DMSO_TF,0.0,plate8,4913
+CVCL_0546,Adagrasib,0.05000000074505806,plate8,6390
+CVCL_0546,DMSO_TF,0.0,plate8,13988
+CVCL_1056,Adagrasib,0.05000000074505806,plate8,2456
+CVCL_1056,DMSO_TF,0.0,plate8,5111
+CVCL_1285,Adagrasib,0.05000000074505806,plate8,2847
+CVCL_1285,DMSO_TF,0.0,plate8,6202
+CVCL_1381,Adagrasib,0.05000000074505806,plate8,2247
+CVCL_1381,DMSO_TF,0.0,plate8,4814
+CVCL_0504,Dinaciclib,0.5,plate8,58
+CVCL_0131,Afatinib,5.0,plate9,773
+CVCL_0131,Belumosudil,5.0,plate9,1114
+CVCL_0131,Berbamine (dihydrochloride),5.0,plate9,1731
+CVCL_0131,Cytarabine,5.0,plate9,713
+CVCL_0131,Daidzin,5.0,plate9,1916
+CVCL_0131,Entecavir (monohydrate),5.0,plate9,2568
+CVCL_0131,Flumatinib (mesylate),5.0,plate9,1062
+CVCL_0131,Fumaric acid,5.0,plate9,2082
+CVCL_0131,Harringtonine,5.0,plate9,1204
+CVCL_0131,Naproxen,5.0,plate9,871
+CVCL_0131,Pravastatin (sodium),5.0,plate9,2527
+CVCL_0428,Afatinib,5.0,plate9,1530
+CVCL_0428,Belumosudil,5.0,plate9,550
+CVCL_0428,Berbamine (dihydrochloride),5.0,plate9,2606
+CVCL_0428,Cytarabine,5.0,plate9,1217
+CVCL_0428,Daidzin,5.0,plate9,3157
+CVCL_0428,Entecavir (monohydrate),5.0,plate9,3313
+CVCL_0428,Flumatinib (mesylate),5.0,plate9,2259
+CVCL_0428,Fumaric acid,5.0,plate9,2965
+CVCL_0428,Harringtonine,5.0,plate9,635
+CVCL_0428,Naproxen,5.0,plate9,1800
+CVCL_0428,Pravastatin (sodium),5.0,plate9,3787
+CVCL_0459,Afatinib,5.0,plate9,2757
+CVCL_0459,Belumosudil,5.0,plate9,2724
+CVCL_0459,Berbamine (dihydrochloride),5.0,plate9,5056
+CVCL_0459,Cytarabine,5.0,plate9,2522
+CVCL_0459,Daidzin,5.0,plate9,7112
+CVCL_0459,Dinaciclib,5.0,plate9,260
+CVCL_0459,Entecavir (monohydrate),5.0,plate9,9083
+CVCL_0459,Flumatinib (mesylate),5.0,plate9,3557
+CVCL_0459,Fumaric acid,5.0,plate9,7190
+CVCL_0459,Harringtonine,5.0,plate9,7919
+CVCL_0459,Naproxen,5.0,plate9,3023
+CVCL_0459,Pravastatin (sodium),5.0,plate9,8461
+CVCL_0504,Afatinib,5.0,plate9,762
+CVCL_0504,Belumosudil,5.0,plate9,546
+CVCL_0504,Berbamine (dihydrochloride),5.0,plate9,1886
+CVCL_0504,Cytarabine,5.0,plate9,816
+CVCL_0504,Daidzin,5.0,plate9,2076
+CVCL_0504,Entecavir (monohydrate),5.0,plate9,2440
+CVCL_0504,Flumatinib (mesylate),5.0,plate9,1123
+CVCL_0504,Fumaric acid,5.0,plate9,2039
+CVCL_0504,Harringtonine,5.0,plate9,664
+CVCL_0504,Naproxen,5.0,plate9,791
+CVCL_0504,Pravastatin (sodium),5.0,plate9,2331
+CVCL_0546,Afatinib,5.0,plate9,2568
+CVCL_0546,Belumosudil,5.0,plate9,4316
+CVCL_0546,Berbamine (dihydrochloride),5.0,plate9,5475
+CVCL_0546,Cytarabine,5.0,plate9,2391
+CVCL_0546,Daidzin,5.0,plate9,5928
+CVCL_0546,Dinaciclib,5.0,plate9,229
+CVCL_0546,Entecavir (monohydrate),5.0,plate9,7207
+CVCL_0546,Flumatinib (mesylate),5.0,plate9,4070
+CVCL_0546,Fumaric acid,5.0,plate9,6398
+CVCL_0546,Harringtonine,5.0,plate9,7317
+CVCL_0546,Naproxen,5.0,plate9,2628
+CVCL_0546,Pravastatin (sodium),5.0,plate9,7708
+CVCL_1056,Afatinib,5.0,plate9,1230
+CVCL_1056,Belumosudil,5.0,plate9,1915
+CVCL_1056,Berbamine (dihydrochloride),5.0,plate9,2699
+CVCL_1056,Cytarabine,5.0,plate9,937
+CVCL_1056,Daidzin,5.0,plate9,3250
+CVCL_1056,Dinaciclib,5.0,plate9,755
+CVCL_1056,Entecavir (monohydrate),5.0,plate9,4343
+CVCL_1056,Flumatinib (mesylate),5.0,plate9,1567
+CVCL_1056,Fumaric acid,5.0,plate9,3453
+CVCL_1056,Harringtonine,5.0,plate9,2195
+CVCL_1056,Naproxen,5.0,plate9,1342
+CVCL_1056,Pravastatin (sodium),5.0,plate9,4050
+CVCL_1285,Afatinib,5.0,plate9,1619
+CVCL_1285,Belumosudil,5.0,plate9,1576
+CVCL_1285,Berbamine (dihydrochloride),5.0,plate9,2845
+CVCL_1285,Cytarabine,5.0,plate9,1067
+CVCL_1285,Daidzin,5.0,plate9,3372
+CVCL_1285,Dinaciclib,5.0,plate9,724
+CVCL_1285,Entecavir (monohydrate),5.0,plate9,4225
+CVCL_1285,Flumatinib (mesylate),5.0,plate9,1942
+CVCL_1285,Fumaric acid,5.0,plate9,3632
+CVCL_1285,Harringtonine,5.0,plate9,4340
+CVCL_1285,Naproxen,5.0,plate9,1584
+CVCL_1285,Pravastatin (sodium),5.0,plate9,4102
+CVCL_1381,Afatinib,5.0,plate9,1014
+CVCL_1381,Belumosudil,5.0,plate9,1277
+CVCL_1381,Berbamine (dihydrochloride),5.0,plate9,2157
+CVCL_1381,Cytarabine,5.0,plate9,677
+CVCL_1381,Daidzin,5.0,plate9,2509
+CVCL_1381,Dinaciclib,5.0,plate9,263
+CVCL_1381,Entecavir (monohydrate),5.0,plate9,3033
+CVCL_1381,Flumatinib (mesylate),5.0,plate9,1265
+CVCL_1381,Fumaric acid,5.0,plate9,2542
+CVCL_1381,Harringtonine,5.0,plate9,872
+CVCL_1381,Naproxen,5.0,plate9,1067
+CVCL_1381,Pravastatin (sodium),5.0,plate9,2621
+CVCL_0131,Adagrasib,0.05000000074505806,plate9,793
+CVCL_0131,Adagrasib,5.0,plate9,1490
+CVCL_0131,DMSO_TF,0.0,plate9,2262
+CVCL_0428,Adagrasib,0.05000000074505806,plate9,1704
+CVCL_0428,Adagrasib,5.0,plate9,2173
+CVCL_0428,DMSO_TF,0.0,plate9,4733
+CVCL_0459,Adagrasib,0.05000000074505806,plate9,2965
+CVCL_0459,Adagrasib,5.0,plate9,5385
+CVCL_0459,DMSO_TF,0.0,plate9,8191
+CVCL_0504,Adagrasib,0.05000000074505806,plate9,935
+CVCL_0504,Adagrasib,5.0,plate9,1574
+CVCL_0504,DMSO_TF,0.0,plate9,2428
+CVCL_0546,Adagrasib,0.05000000074505806,plate9,2825
+CVCL_0546,Adagrasib,5.0,plate9,5107
+CVCL_0546,DMSO_TF,0.0,plate9,7099
+CVCL_1056,Adagrasib,0.05000000074505806,plate9,1471
+CVCL_1056,Adagrasib,5.0,plate9,2171
+CVCL_1056,DMSO_TF,0.0,plate9,4078
+CVCL_1285,Adagrasib,0.05000000074505806,plate9,1549
+CVCL_1285,Adagrasib,5.0,plate9,2586
+CVCL_1285,DMSO_TF,0.0,plate9,4475
+CVCL_1381,Adagrasib,0.05000000074505806,plate9,1246
+CVCL_1381,Adagrasib,5.0,plate9,1623
+CVCL_1381,DMSO_TF,0.0,plate9,3235
+CVCL_0131,Dinaciclib,5.0,plate9,155
+CVCL_0428,Dinaciclib,5.0,plate9,248
+CVCL_0504,Dinaciclib,5.0,plate9,17
+CVCL_0131,Ataluren,0.05000000074505806,plate10,1929
+CVCL_0131,Belinostat,0.05000000074505806,plate10,1165
+CVCL_0131,Bicalutamide,0.05000000074505806,plate10,1917
+CVCL_0131,Esmolol (hydrochloride),0.05000000074505806,plate10,2313
+CVCL_0131,Omeprazole,0.05000000074505806,plate10,2307
+CVCL_0428,Ataluren,0.05000000074505806,plate10,4003
+CVCL_0428,Belinostat,0.05000000074505806,plate10,2750
+CVCL_0428,Bicalutamide,0.05000000074505806,plate10,3175
+CVCL_0428,Esmolol (hydrochloride),0.05000000074505806,plate10,3850
+CVCL_0428,Omeprazole,0.05000000074505806,plate10,3937
+CVCL_0459,Ataluren,0.05000000074505806,plate10,6449
+CVCL_0459,Belinostat,0.05000000074505806,plate10,5174
+CVCL_0459,Bicalutamide,0.05000000074505806,plate10,7070
+CVCL_0459,Esmolol (hydrochloride),0.05000000074505806,plate10,9234
+CVCL_0459,Omeprazole,0.05000000074505806,plate10,10742
+CVCL_0504,Ataluren,0.05000000074505806,plate10,2266
+CVCL_0504,Belinostat,0.05000000074505806,plate10,1595
+CVCL_0504,Bicalutamide,0.05000000074505806,plate10,2136
+CVCL_0504,Esmolol (hydrochloride),0.05000000074505806,plate10,2522
+CVCL_0504,Omeprazole,0.05000000074505806,plate10,2969
+CVCL_0546,Ataluren,0.05000000074505806,plate10,6751
+CVCL_0546,Belinostat,0.05000000074505806,plate10,4966
+CVCL_0546,Bicalutamide,0.05000000074505806,plate10,6171
+CVCL_0546,Esmolol (hydrochloride),0.05000000074505806,plate10,8512
+CVCL_0546,Omeprazole,0.05000000074505806,plate10,9048
+CVCL_1056,Ataluren,0.05000000074505806,plate10,3106
+CVCL_1056,Belinostat,0.05000000074505806,plate10,2120
+CVCL_1056,Bicalutamide,0.05000000074505806,plate10,2927
+CVCL_1056,Esmolol (hydrochloride),0.05000000074505806,plate10,4056
+CVCL_1056,Omeprazole,0.05000000074505806,plate10,4213
+CVCL_1285,Ataluren,0.05000000074505806,plate10,3865
+CVCL_1285,Belinostat,0.05000000074505806,plate10,2657
+CVCL_1285,Bicalutamide,0.05000000074505806,plate10,3631
+CVCL_1285,Esmolol (hydrochloride),0.05000000074505806,plate10,4784
+CVCL_1285,Omeprazole,0.05000000074505806,plate10,4776
+CVCL_1381,Ataluren,0.05000000074505806,plate10,2405
+CVCL_1381,Belinostat,0.05000000074505806,plate10,1739
+CVCL_1381,Bicalutamide,0.05000000074505806,plate10,2610
+CVCL_1381,Esmolol (hydrochloride),0.05000000074505806,plate10,2951
+CVCL_1381,Omeprazole,0.05000000074505806,plate10,3247
+CVCL_0131,Allopurinol,0.05000000074505806,plate10,2536
+CVCL_0131,Carbamazepine,0.05000000074505806,plate10,1199
+CVCL_0131,Clopidogrel,0.05000000074505806,plate10,2364
+CVCL_0131,Dexamethasone,0.05000000074505806,plate10,1280
+CVCL_0131,Malotilate,0.05000000074505806,plate10,1340
+CVCL_0131,γ-Oryzanol,0.05000000074505806,plate10,1815
+CVCL_0428,Allopurinol,0.05000000074505806,plate10,4317
+CVCL_0428,Carbamazepine,0.05000000074505806,plate10,2438
+CVCL_0428,Clopidogrel,0.05000000074505806,plate10,4037
+CVCL_0428,Dexamethasone,0.05000000074505806,plate10,2400
+CVCL_0428,Malotilate,0.05000000074505806,plate10,2899
+CVCL_0428,γ-Oryzanol,0.05000000074505806,plate10,3630
+CVCL_0459,Allopurinol,0.05000000074505806,plate10,11558
+CVCL_0459,Carbamazepine,0.05000000074505806,plate10,4085
+CVCL_0459,Clopidogrel,0.05000000074505806,plate10,10623
+CVCL_0459,Dexamethasone,0.05000000074505806,plate10,3611
+CVCL_0459,Malotilate,0.05000000074505806,plate10,5292
+CVCL_0459,γ-Oryzanol,0.05000000074505806,plate10,7667
+CVCL_0504,Allopurinol,0.05000000074505806,plate10,2690
+CVCL_0504,Carbamazepine,0.05000000074505806,plate10,1456
+CVCL_0504,Clopidogrel,0.05000000074505806,plate10,2349
+CVCL_0504,Dexamethasone,0.05000000074505806,plate10,1452
+CVCL_0504,Malotilate,0.05000000074505806,plate10,1285
+CVCL_0504,γ-Oryzanol,0.05000000074505806,plate10,2169
+CVCL_0546,Allopurinol,0.05000000074505806,plate10,8944
+CVCL_0546,Carbamazepine,0.05000000074505806,plate10,4688
+CVCL_0546,Clopidogrel,0.05000000074505806,plate10,7746
+CVCL_0546,Dexamethasone,0.05000000074505806,plate10,4918
+CVCL_0546,Malotilate,0.05000000074505806,plate10,4103
+CVCL_0546,γ-Oryzanol,0.05000000074505806,plate10,6243
+CVCL_1056,Allopurinol,0.05000000074505806,plate10,4424
+CVCL_1056,Carbamazepine,0.05000000074505806,plate10,1779
+CVCL_1056,Clopidogrel,0.05000000074505806,plate10,4292
+CVCL_1056,Dexamethasone,0.05000000074505806,plate10,1496
+CVCL_1056,Malotilate,0.05000000074505806,plate10,3099
+CVCL_1056,γ-Oryzanol,0.05000000074505806,plate10,3447
+CVCL_1285,Allopurinol,0.05000000074505806,plate10,5262
+CVCL_1285,Carbamazepine,0.05000000074505806,plate10,2319
+CVCL_1285,Clopidogrel,0.05000000074505806,plate10,4707
+CVCL_1285,Dexamethasone,0.05000000074505806,plate10,2046
+CVCL_1285,Malotilate,0.05000000074505806,plate10,3128
+CVCL_1285,γ-Oryzanol,0.05000000074505806,plate10,3787
+CVCL_1381,Allopurinol,0.05000000074505806,plate10,2921
+CVCL_1381,Carbamazepine,0.05000000074505806,plate10,1625
+CVCL_1381,Clopidogrel,0.05000000074505806,plate10,2608
+CVCL_1381,Dexamethasone,0.05000000074505806,plate10,1572
+CVCL_1381,Malotilate,0.05000000074505806,plate10,1697
+CVCL_1381,γ-Oryzanol,0.05000000074505806,plate10,2363
+CVCL_0131,Adagrasib,0.05000000074505806,plate10,1964
+CVCL_0131,Binimetinib,0.05000000074505806,plate10,2705
+CVCL_0131,DMSO_TF,0.0,plate10,3730
+CVCL_0131,Dapagliflozin,0.05000000074505806,plate10,1857
+CVCL_0131,Methylthiouracil,0.05000000074505806,plate10,3170
+CVCL_0131,Panobinostat,0.05000000074505806,plate10,1384
+CVCL_0131,Perindopril (erbumine),0.05000000074505806,plate10,2564
+CVCL_0131,Uridine,0.05000000074505806,plate10,1759
+CVCL_0428,Adagrasib,0.05000000074505806,plate10,3623
+CVCL_0428,Binimetinib,0.05000000074505806,plate10,4288
+CVCL_0428,DMSO_TF,0.0,plate10,6941
+CVCL_0428,Dapagliflozin,0.05000000074505806,plate10,3089
+CVCL_0428,Methylthiouracil,0.05000000074505806,plate10,5235
+CVCL_0428,Panobinostat,0.05000000074505806,plate10,3660
+CVCL_0428,Perindopril (erbumine),0.05000000074505806,plate10,4243
+CVCL_0428,Uridine,0.05000000074505806,plate10,3427
+CVCL_0459,Adagrasib,0.05000000074505806,plate10,7401
+CVCL_0459,Binimetinib,0.05000000074505806,plate10,10721
+CVCL_0459,DMSO_TF,0.0,plate10,14575
+CVCL_0459,Dapagliflozin,0.05000000074505806,plate10,6673
+CVCL_0459,Methylthiouracil,0.05000000074505806,plate10,12927
+CVCL_0459,Panobinostat,0.05000000074505806,plate10,6802
+CVCL_0459,Perindopril (erbumine),0.05000000074505806,plate10,11235
+CVCL_0459,Uridine,0.05000000074505806,plate10,5736
+CVCL_0504,Adagrasib,0.05000000074505806,plate10,2404
+CVCL_0504,Binimetinib,0.05000000074505806,plate10,2837
+CVCL_0504,DMSO_TF,0.0,plate10,4468
+CVCL_0504,Dapagliflozin,0.05000000074505806,plate10,2222
+CVCL_0504,Methylthiouracil,0.05000000074505806,plate10,3460
+CVCL_0504,Panobinostat,0.05000000074505806,plate10,2028
+CVCL_0504,Perindopril (erbumine),0.05000000074505806,plate10,3145
+CVCL_0504,Uridine,0.05000000074505806,plate10,2228
+CVCL_0546,Adagrasib,0.05000000074505806,plate10,7226
+CVCL_0546,Binimetinib,0.05000000074505806,plate10,8313
+CVCL_0546,DMSO_TF,0.0,plate10,13066
+CVCL_0546,Dapagliflozin,0.05000000074505806,plate10,7294
+CVCL_0546,Methylthiouracil,0.05000000074505806,plate10,10520
+CVCL_0546,Panobinostat,0.05000000074505806,plate10,6025
+CVCL_0546,Perindopril (erbumine),0.05000000074505806,plate10,10112
+CVCL_0546,Uridine,0.05000000074505806,plate10,6759
+CVCL_1056,Adagrasib,0.05000000074505806,plate10,3296
+CVCL_1056,Binimetinib,0.05000000074505806,plate10,4861
+CVCL_1056,DMSO_TF,0.0,plate10,6931
+CVCL_1056,Dapagliflozin,0.05000000074505806,plate10,2723
+CVCL_1056,Methylthiouracil,0.05000000074505806,plate10,5562
+CVCL_1056,Panobinostat,0.05000000074505806,plate10,2757
+CVCL_1056,Perindopril (erbumine),0.05000000074505806,plate10,4170
+CVCL_1056,Uridine,0.05000000074505806,plate10,2660
+CVCL_1285,Adagrasib,0.05000000074505806,plate10,3771
+CVCL_1285,Binimetinib,0.05000000074505806,plate10,5591
+CVCL_1285,DMSO_TF,0.0,plate10,7323
+CVCL_1285,Dapagliflozin,0.05000000074505806,plate10,3247
+CVCL_1285,Methylthiouracil,0.05000000074505806,plate10,6498
+CVCL_1285,Panobinostat,0.05000000074505806,plate10,3477
+CVCL_1285,Perindopril (erbumine),0.05000000074505806,plate10,4904
+CVCL_1285,Uridine,0.05000000074505806,plate10,3410
+CVCL_1381,Adagrasib,0.05000000074505806,plate10,2589
+CVCL_1381,Binimetinib,0.05000000074505806,plate10,3162
+CVCL_1381,DMSO_TF,0.0,plate10,4704
+CVCL_1381,Dapagliflozin,0.05000000074505806,plate10,2164
+CVCL_1381,Methylthiouracil,0.05000000074505806,plate10,3561
+CVCL_1381,Panobinostat,0.05000000074505806,plate10,1911
+CVCL_1381,Perindopril (erbumine),0.05000000074505806,plate10,3147
+CVCL_1381,Uridine,0.05000000074505806,plate10,2269
+CVCL_0131,Ataluren,0.5,plate11,1275
+CVCL_0131,Belinostat,0.5,plate11,592
+CVCL_0131,Bicalutamide,0.5,plate11,1163
+CVCL_0131,Esmolol (hydrochloride),0.5,plate11,1086
+CVCL_0131,Omeprazole,0.5,plate11,715
+CVCL_0428,Ataluren,0.5,plate11,2175
+CVCL_0428,Belinostat,0.5,plate11,1556
+CVCL_0428,Bicalutamide,0.5,plate11,1811
+CVCL_0428,Esmolol (hydrochloride),0.5,plate11,1979
+CVCL_0428,Omeprazole,0.5,plate11,1337
+CVCL_0459,Ataluren,0.5,plate11,4483
+CVCL_0459,Belinostat,0.5,plate11,3033
+CVCL_0459,Bicalutamide,0.5,plate11,4171
+CVCL_0459,Esmolol (hydrochloride),0.5,plate11,4596
+CVCL_0459,Omeprazole,0.5,plate11,2904
+CVCL_0504,Ataluren,0.5,plate11,1277
+CVCL_0504,Belinostat,0.5,plate11,625
+CVCL_0504,Bicalutamide,0.5,plate11,1136
+CVCL_0504,Esmolol (hydrochloride),0.5,plate11,1204
+CVCL_0504,Omeprazole,0.5,plate11,877
+CVCL_0546,Ataluren,0.5,plate11,4006
+CVCL_0546,Belinostat,0.5,plate11,2141
+CVCL_0546,Bicalutamide,0.5,plate11,3275
+CVCL_0546,Esmolol (hydrochloride),0.5,plate11,3630
+CVCL_0546,Omeprazole,0.5,plate11,2433
+CVCL_1056,Ataluren,0.5,plate11,2214
+CVCL_1056,Belinostat,0.5,plate11,1405
+CVCL_1056,Bicalutamide,0.5,plate11,2145
+CVCL_1056,Esmolol (hydrochloride),0.5,plate11,1973
+CVCL_1056,Omeprazole,0.5,plate11,1349
+CVCL_1285,Ataluren,0.5,plate11,2418
+CVCL_1285,Belinostat,0.5,plate11,1516
+CVCL_1285,Bicalutamide,0.5,plate11,2216
+CVCL_1285,Esmolol (hydrochloride),0.5,plate11,2284
+CVCL_1285,Omeprazole,0.5,plate11,1546
+CVCL_1381,Ataluren,0.5,plate11,1513
+CVCL_1381,Belinostat,0.5,plate11,808
+CVCL_1381,Bicalutamide,0.5,plate11,1369
+CVCL_1381,Esmolol (hydrochloride),0.5,plate11,1412
+CVCL_1381,Omeprazole,0.5,plate11,982
+CVCL_0131,Allopurinol,0.5,plate11,1553
+CVCL_0131,Carbamazepine,0.5,plate11,1087
+CVCL_0131,Clopidogrel,0.5,plate11,2106
+CVCL_0131,Dexamethasone,0.5,plate11,1851
+CVCL_0131,Malotilate,0.5,plate11,1577
+CVCL_0428,Allopurinol,0.5,plate11,2538
+CVCL_0428,Carbamazepine,0.5,plate11,2119
+CVCL_0428,Clopidogrel,0.5,plate11,3372
+CVCL_0428,Dexamethasone,0.5,plate11,2792
+CVCL_0428,Malotilate,0.5,plate11,2405
+CVCL_0459,Allopurinol,0.5,plate11,5906
+CVCL_0459,Carbamazepine,0.5,plate11,3495
+CVCL_0459,Clopidogrel,0.5,plate11,8294
+CVCL_0459,Dexamethasone,0.5,plate11,5497
+CVCL_0459,Malotilate,0.5,plate11,5867
+CVCL_0504,Allopurinol,0.5,plate11,1550
+CVCL_0504,Carbamazepine,0.5,plate11,1032
+CVCL_0504,Clopidogrel,0.5,plate11,1710
+CVCL_0504,Dexamethasone,0.5,plate11,1781
+CVCL_0504,Malotilate,0.5,plate11,1155
+CVCL_0546,Allopurinol,0.5,plate11,5339
+CVCL_0546,Carbamazepine,0.5,plate11,3580
+CVCL_0546,Clopidogrel,0.5,plate11,6119
+CVCL_0546,Dexamethasone,0.5,plate11,6095
+CVCL_0546,Malotilate,0.5,plate11,4309
+CVCL_1056,Allopurinol,0.5,plate11,2545
+CVCL_1056,Carbamazepine,0.5,plate11,1747
+CVCL_1056,Clopidogrel,0.5,plate11,3836
+CVCL_1056,Dexamethasone,0.5,plate11,2483
+CVCL_1056,Malotilate,0.5,plate11,3026
+CVCL_1285,Allopurinol,0.5,plate11,2778
+CVCL_1285,Carbamazepine,0.5,plate11,1978
+CVCL_1285,Clopidogrel,0.5,plate11,3967
+CVCL_1285,Dexamethasone,0.5,plate11,2885
+CVCL_1285,Malotilate,0.5,plate11,3072
+CVCL_1381,Allopurinol,0.5,plate11,1759
+CVCL_1381,Carbamazepine,0.5,plate11,1471
+CVCL_1381,Clopidogrel,0.5,plate11,2040
+CVCL_1381,Dexamethasone,0.5,plate11,2024
+CVCL_1381,Malotilate,0.5,plate11,1623
+CVCL_0131,Adagrasib,0.05000000074505806,plate11,1577
+CVCL_0131,Binimetinib,0.5,plate11,1813
+CVCL_0131,DMSO_TF,0.0,plate11,3356
+CVCL_0131,Dapagliflozin,0.5,plate11,2416
+CVCL_0131,Methylthiouracil,0.5,plate11,1790
+CVCL_0131,Panobinostat,0.5,plate11,960
+CVCL_0131,Perindopril (erbumine),0.5,plate11,2418
+CVCL_0131,Uridine,0.5,plate11,2201
+CVCL_0131,γ-Oryzanol,0.5,plate11,1114
+CVCL_0428,Adagrasib,0.05000000074505806,plate11,2781
+CVCL_0428,Binimetinib,0.5,plate11,3027
+CVCL_0428,DMSO_TF,0.0,plate11,5721
+CVCL_0428,Dapagliflozin,0.5,plate11,3933
+CVCL_0428,Methylthiouracil,0.5,plate11,3138
+CVCL_0428,Panobinostat,0.5,plate11,2656
+CVCL_0428,Perindopril (erbumine),0.5,plate11,3436
+CVCL_0428,Uridine,0.5,plate11,3474
+CVCL_0428,γ-Oryzanol,0.5,plate11,2129
+CVCL_0459,Adagrasib,0.05000000074505806,plate11,6963
+CVCL_0459,Binimetinib,0.5,plate11,6837
+CVCL_0459,DMSO_TF,0.0,plate11,15253
+CVCL_0459,Dapagliflozin,0.5,plate11,11193
+CVCL_0459,Methylthiouracil,0.5,plate11,6071
+CVCL_0459,Panobinostat,0.5,plate11,6943
+CVCL_0459,Perindopril (erbumine),0.5,plate11,10144
+CVCL_0459,Uridine,0.5,plate11,10032
+CVCL_0459,γ-Oryzanol,0.5,plate11,4997
+CVCL_0504,Adagrasib,0.05000000074505806,plate11,1795
+CVCL_0504,Binimetinib,0.5,plate11,1814
+CVCL_0504,DMSO_TF,0.0,plate11,3845
+CVCL_0504,Dapagliflozin,0.5,plate11,2699
+CVCL_0504,Methylthiouracil,0.5,plate11,1870
+CVCL_0504,Panobinostat,0.5,plate11,1695
+CVCL_0504,Perindopril (erbumine),0.5,plate11,2563
+CVCL_0504,Uridine,0.5,plate11,2479
+CVCL_0504,γ-Oryzanol,0.5,plate11,1364
+CVCL_0546,Adagrasib,0.05000000074505806,plate11,5338
+CVCL_0546,Binimetinib,0.5,plate11,5145
+CVCL_0546,DMSO_TF,0.0,plate11,11802
+CVCL_0546,Dapagliflozin,0.5,plate11,8262
+CVCL_0546,Methylthiouracil,0.5,plate11,5720
+CVCL_0546,Panobinostat,0.5,plate11,4896
+CVCL_0546,Perindopril (erbumine),0.5,plate11,7645
+CVCL_0546,Uridine,0.5,plate11,7751
+CVCL_0546,γ-Oryzanol,0.5,plate11,3886
+CVCL_1056,Adagrasib,0.05000000074505806,plate11,3335
+CVCL_1056,Binimetinib,0.5,plate11,3402
+CVCL_1056,DMSO_TF,0.0,plate11,6157
+CVCL_1056,Dapagliflozin,0.5,plate11,4316
+CVCL_1056,Methylthiouracil,0.5,plate11,3167
+CVCL_1056,Panobinostat,0.5,plate11,2273
+CVCL_1056,Perindopril (erbumine),0.5,plate11,4358
+CVCL_1056,Uridine,0.5,plate11,3732
+CVCL_1056,γ-Oryzanol,0.5,plate11,2259
+CVCL_1285,Adagrasib,0.05000000074505806,plate11,3538
+CVCL_1285,Binimetinib,0.5,plate11,3798
+CVCL_1285,DMSO_TF,0.0,plate11,6882
+CVCL_1285,Dapagliflozin,0.5,plate11,4867
+CVCL_1285,Methylthiouracil,0.5,plate11,3585
+CVCL_1285,Panobinostat,0.5,plate11,3172
+CVCL_1285,Perindopril (erbumine),0.5,plate11,4714
+CVCL_1285,Uridine,0.5,plate11,4380
+CVCL_1285,γ-Oryzanol,0.5,plate11,2589
+CVCL_1381,Adagrasib,0.05000000074505806,plate11,2083
+CVCL_1381,Binimetinib,0.5,plate11,1975
+CVCL_1381,DMSO_TF,0.0,plate11,3892
+CVCL_1381,Dapagliflozin,0.5,plate11,2763
+CVCL_1381,Methylthiouracil,0.5,plate11,2147
+CVCL_1381,Panobinostat,0.5,plate11,1210
+CVCL_1381,Perindopril (erbumine),0.5,plate11,2529
+CVCL_1381,Uridine,0.5,plate11,2430
+CVCL_1381,γ-Oryzanol,0.5,plate11,1470
+CVCL_0131,Ataluren,5.0,plate12,320
+CVCL_0131,Belinostat,5.0,plate12,103
+CVCL_0131,Bicalutamide,5.0,plate12,297
+CVCL_0131,Esmolol (hydrochloride),5.0,plate12,285
+CVCL_0131,Omeprazole,5.0,plate12,312
+CVCL_0428,Ataluren,5.0,plate12,531
+CVCL_0428,Belinostat,5.0,plate12,423
+CVCL_0428,Bicalutamide,5.0,plate12,476
+CVCL_0428,Esmolol (hydrochloride),5.0,plate12,500
+CVCL_0428,Omeprazole,5.0,plate12,518
+CVCL_0459,Ataluren,5.0,plate12,1372
+CVCL_0459,Belinostat,5.0,plate12,628
+CVCL_0459,Bicalutamide,5.0,plate12,1155
+CVCL_0459,Esmolol (hydrochloride),5.0,plate12,1062
+CVCL_0459,Omeprazole,5.0,plate12,1063
+CVCL_0504,Ataluren,5.0,plate12,344
+CVCL_0504,Belinostat,5.0,plate12,160
+CVCL_0504,Bicalutamide,5.0,plate12,362
+CVCL_0504,Esmolol (hydrochloride),5.0,plate12,336
+CVCL_0504,Omeprazole,5.0,plate12,359
+CVCL_0546,Ataluren,5.0,plate12,1071
+CVCL_0546,Belinostat,5.0,plate12,545
+CVCL_0546,Bicalutamide,5.0,plate12,986
+CVCL_0546,Esmolol (hydrochloride),5.0,plate12,944
+CVCL_0546,Omeprazole,5.0,plate12,920
+CVCL_1056,Ataluren,5.0,plate12,651
+CVCL_1056,Belinostat,5.0,plate12,273
+CVCL_1056,Bicalutamide,5.0,plate12,456
+CVCL_1056,Esmolol (hydrochloride),5.0,plate12,511
+CVCL_1056,Omeprazole,5.0,plate12,511
+CVCL_1285,Ataluren,5.0,plate12,721
+CVCL_1285,Belinostat,5.0,plate12,359
+CVCL_1285,Bicalutamide,5.0,plate12,570
+CVCL_1285,Esmolol (hydrochloride),5.0,plate12,562
+CVCL_1285,Omeprazole,5.0,plate12,593
+CVCL_1381,Ataluren,5.0,plate12,393
+CVCL_1381,Belinostat,5.0,plate12,140
+CVCL_1381,Bicalutamide,5.0,plate12,358
+CVCL_1381,Esmolol (hydrochloride),5.0,plate12,415
+CVCL_1381,Omeprazole,5.0,plate12,416
+CVCL_0131,Allopurinol,5.0,plate12,269
+CVCL_0131,Carbamazepine,5.0,plate12,108
+CVCL_0131,Clopidogrel,5.0,plate12,150
+CVCL_0131,Dexamethasone,5.0,plate12,126
+CVCL_0131,Malotilate,5.0,plate12,182
+CVCL_0428,Allopurinol,5.0,plate12,392
+CVCL_0428,Carbamazepine,5.0,plate12,203
+CVCL_0428,Clopidogrel,5.0,plate12,299
+CVCL_0428,Dexamethasone,5.0,plate12,299
+CVCL_0428,Malotilate,5.0,plate12,351
+CVCL_0459,Allopurinol,5.0,plate12,783
+CVCL_0459,Carbamazepine,5.0,plate12,332
+CVCL_0459,Clopidogrel,5.0,plate12,534
+CVCL_0459,Dexamethasone,5.0,plate12,392
+CVCL_0459,Malotilate,5.0,plate12,633
+CVCL_0504,Allopurinol,5.0,plate12,275
+CVCL_0504,Carbamazepine,5.0,plate12,121
+CVCL_0504,Clopidogrel,5.0,plate12,174
+CVCL_0504,Dexamethasone,5.0,plate12,161
+CVCL_0504,Malotilate,5.0,plate12,221
+CVCL_0546,Allopurinol,5.0,plate12,774
+CVCL_0546,Carbamazepine,5.0,plate12,335
+CVCL_0546,Clopidogrel,5.0,plate12,575
+CVCL_0546,Dexamethasone,5.0,plate12,528
+CVCL_0546,Malotilate,5.0,plate12,658
+CVCL_1056,Allopurinol,5.0,plate12,380
+CVCL_1056,Carbamazepine,5.0,plate12,170
+CVCL_1056,Clopidogrel,5.0,plate12,287
+CVCL_1056,Dexamethasone,5.0,plate12,170
+CVCL_1056,Malotilate,5.0,plate12,305
+CVCL_1285,Allopurinol,5.0,plate12,452
+CVCL_1285,Carbamazepine,5.0,plate12,201
+CVCL_1285,Clopidogrel,5.0,plate12,329
+CVCL_1285,Dexamethasone,5.0,plate12,196
+CVCL_1285,Malotilate,5.0,plate12,320
+CVCL_1381,Allopurinol,5.0,plate12,269
+CVCL_1381,Carbamazepine,5.0,plate12,169
+CVCL_1381,Clopidogrel,5.0,plate12,225
+CVCL_1381,Dexamethasone,5.0,plate12,168
+CVCL_1381,Malotilate,5.0,plate12,232
+CVCL_0131,Adagrasib,0.05000000074505806,plate12,176
+CVCL_0131,Binimetinib,5.0,plate12,334
+CVCL_0131,DMSO_TF,0.0,plate12,295
+CVCL_0131,Dapagliflozin,5.0,plate12,208
+CVCL_0131,Methylthiouracil,5.0,plate12,307
+CVCL_0131,Panobinostat,5.0,plate12,83
+CVCL_0131,Perindopril (erbumine),5.0,plate12,224
+CVCL_0131,Uridine,5.0,plate12,340
+CVCL_0131,γ-Oryzanol,5.0,plate12,162
+CVCL_0428,Adagrasib,0.05000000074505806,plate12,367
+CVCL_0428,Binimetinib,5.0,plate12,558
+CVCL_0428,DMSO_TF,0.0,plate12,630
+CVCL_0428,Dapagliflozin,5.0,plate12,489
+CVCL_0428,Methylthiouracil,5.0,plate12,640
+CVCL_0428,Panobinostat,5.0,plate12,246
+CVCL_0428,Perindopril (erbumine),5.0,plate12,422
+CVCL_0428,Uridine,5.0,plate12,731
+CVCL_0428,γ-Oryzanol,5.0,plate12,324
+CVCL_0459,Adagrasib,0.05000000074505806,plate12,495
+CVCL_0459,Binimetinib,5.0,plate12,1138
+CVCL_0459,DMSO_TF,0.0,plate12,848
+CVCL_0459,Dapagliflozin,5.0,plate12,809
+CVCL_0459,Methylthiouracil,5.0,plate12,1299
+CVCL_0459,Panobinostat,5.0,plate12,427
+CVCL_0459,Perindopril (erbumine),5.0,plate12,620
+CVCL_0459,Uridine,5.0,plate12,1305
+CVCL_0459,γ-Oryzanol,5.0,plate12,533
+CVCL_0504,Adagrasib,0.05000000074505806,plate12,236
+CVCL_0504,Binimetinib,5.0,plate12,347
+CVCL_0504,DMSO_TF,0.0,plate12,428
+CVCL_0504,Dapagliflozin,5.0,plate12,305
+CVCL_0504,Methylthiouracil,5.0,plate12,396
+CVCL_0504,Panobinostat,5.0,plate12,155
+CVCL_0504,Perindopril (erbumine),5.0,plate12,286
+CVCL_0504,Uridine,5.0,plate12,394
+CVCL_0504,γ-Oryzanol,5.0,plate12,226
+CVCL_0546,Adagrasib,0.05000000074505806,plate12,739
+CVCL_0546,Binimetinib,5.0,plate12,1004
+CVCL_0546,DMSO_TF,0.0,plate12,1195
+CVCL_0546,Dapagliflozin,5.0,plate12,878
+CVCL_0546,Methylthiouracil,5.0,plate12,1081
+CVCL_0546,Panobinostat,5.0,plate12,552
+CVCL_0546,Perindopril (erbumine),5.0,plate12,722
+CVCL_0546,Uridine,5.0,plate12,1192
+CVCL_0546,γ-Oryzanol,5.0,plate12,593
+CVCL_1056,Adagrasib,0.05000000074505806,plate12,232
+CVCL_1056,Binimetinib,5.0,plate12,613
+CVCL_1056,DMSO_TF,0.0,plate12,393
+CVCL_1056,Dapagliflozin,5.0,plate12,348
+CVCL_1056,Methylthiouracil,5.0,plate12,610
+CVCL_1056,Panobinostat,5.0,plate12,153
+CVCL_1056,Perindopril (erbumine),5.0,plate12,320
+CVCL_1056,Uridine,5.0,plate12,642
+CVCL_1056,γ-Oryzanol,5.0,plate12,249
+CVCL_1285,Adagrasib,0.05000000074505806,plate12,289
+CVCL_1285,Binimetinib,5.0,plate12,652
+CVCL_1285,DMSO_TF,0.0,plate12,511
+CVCL_1285,Dapagliflozin,5.0,plate12,466
+CVCL_1285,Methylthiouracil,5.0,plate12,637
+CVCL_1285,Panobinostat,5.0,plate12,208
+CVCL_1285,Perindopril (erbumine),5.0,plate12,441
+CVCL_1285,Uridine,5.0,plate12,707
+CVCL_1285,γ-Oryzanol,5.0,plate12,306
+CVCL_1381,Adagrasib,0.05000000074505806,plate12,204
+CVCL_1381,Binimetinib,5.0,plate12,373
+CVCL_1381,DMSO_TF,0.0,plate12,438
+CVCL_1381,Dapagliflozin,5.0,plate12,276
+CVCL_1381,Methylthiouracil,5.0,plate12,394
+CVCL_1381,Panobinostat,5.0,plate12,112
+CVCL_1381,Perindopril (erbumine),5.0,plate12,265
+CVCL_1381,Uridine,5.0,plate12,418
+CVCL_1381,γ-Oryzanol,5.0,plate12,209

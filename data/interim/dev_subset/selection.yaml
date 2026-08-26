@@ -1,0 +1,97 @@
+description: Dev subset for fast iteration (Phase 1). All doses of each drug + plate-matched DMSO_TF controls
+  for the selected lines.
+estimated_cells: 6083879
+cell_lines:
+- cellosaurus: CVCL_1285
+  name: HOP62
+  group: KRAS_G12C
+  organ: Lung
+  total_cells: 3420378
+- cellosaurus: CVCL_0428
+  name: MIA PaCa-2
+  group: KRAS_G12C
+  organ: Pancreas
+  total_cells: 2491219
+- cellosaurus: CVCL_0546
+  name: SW480
+  group: KRAS_other
+  organ: Bowel
+  total_cells: 6364321
+- cellosaurus: CVCL_0459
+  name: NCI-H460
+  group: KRAS_other
+  organ: Lung
+  total_cells: 5943411
+- cellosaurus: CVCL_0504
+  name: RKO
+  group: BRAF_V600E
+  organ: Bowel
+  total_cells: 2358711
+- cellosaurus: CVCL_1381
+  name: LOX-IMVI
+  group: BRAF_V600E
+  organ: Skin
+  total_cells: 2278841
+- cellosaurus: CVCL_1056
+  name: A498
+  group: RAS_RAF_WT
+  organ: Kidney
+  total_cells: 2785040
+- cellosaurus: CVCL_0131
+  name: A-172
+  group: RAS_RAF_WT
+  organ: CNS/Brain
+  total_cells: 2352722
+drugs:
+- 9-ING-41
+- Abemaciclib
+- Adagrasib
+- Afatinib
+- Allopurinol
+- Artesunate
+- Ataluren
+- BAY1125976
+- Belinostat
+- Belumosudil
+- Berbamine
+- Berbamine (dihydrochloride)
+- Bicalutamide
+- Binimetinib
+- Bortezomib
+- Carbamazepine
+- Chlorhexidine (diacetate)
+- Clonidine (hydrochloride)
+- Clopidogrel
+- Cytarabine
+- Dabrafenib
+- Daidzin
+- Dapagliflozin
+- Dexamethasone
+- Dinaciclib
+- Entecavir (monohydrate)
+- Esmolol (hydrochloride)
+- Everolimus
+- Flumatinib (mesylate)
+- Fumaric acid
+- Glasdegib
+- Harringtonine
+- Homoharringtonine
+- Malotilate
+- Methylthiouracil
+- Naproxen
+- Omeprazole
+- PF-06260933
+- Paclitaxel
+- Panobinostat
+- Perindopril (erbumine)
+- Pravastatin (sodium)
+- RMC-6236
+- Regorafenib
+- Retinoic acid
+- Ribociclib
+- Tucidinostat
+- Uridine
+- palbociclib
+- "\u03B3-Oryzanol"
+controls:
+- DMSO_TF
