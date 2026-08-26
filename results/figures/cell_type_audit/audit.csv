@@ -1,0 +1,48 @@
+cell_line_id,cell_name,organ,has_reference_tissue,top1,rho1,top2,rho2,top3,rho3,match_top1,match_top3,zmatch_top1,zmatch_top3
+CVCL_0023,A549,Lung,True,Uterus|epithelial cell of uterus,0.713,Mammary|luminal epithelial cell of mammary gland,0.675,Mammary|basal cell,0.656,False,False,False,False
+CVCL_0028,AN3 CA,Uterus,True,Uterus|epithelial cell of uterus,0.714,Uterus|fibroblast,0.682,Uterus|myofibroblast cell,0.678,True,True,False,False
+CVCL_0069,SK-MEL-2,Skin,True,Uterus|epithelial cell of uterus,0.662,Skin|melanocyte,0.652,Uterus|myometrial cell,0.628,False,True,False,True
+CVCL_0099,SNU-1,Esophagus/Stomach,True,Uterus|epithelial cell of uterus,0.713,Mammary|luminal epithelial cell of mammary gland,0.681,Lung|basal cell,0.665,False,False,False,False
+CVCL_0131,A-172,CNS/Brain,True,Uterus|myofibroblast cell,0.657,Uterus|fibroblast,0.649,Uterus|epithelial cell of uterus,0.645,False,False,False,True
+CVCL_0152,AsPC-1,Pancreas,True,Uterus|epithelial cell of uterus,0.738,Mammary|luminal epithelial cell of mammary gland,0.713,Bladder|bladder urothelial cell,0.699,False,False,False,False
+CVCL_0179,BT-474,Breast,True,Uterus|epithelial cell of uterus,0.759,Mammary|luminal epithelial cell of mammary gland,0.756,Stomach|epithelial cell,0.708,False,True,True,True
+CVCL_0218,COLO 205,Bowel,True,Large_Intestine|large intestine goblet cell,0.733,Stomach|epithelial cell,0.729,Uterus|epithelial cell of uterus,0.714,True,True,True,True
+CVCL_0292,HCT15,Bowel,True,Uterus|epithelial cell of uterus,0.765,Stomach|epithelial cell,0.731,Mammary|luminal epithelial cell of mammary gland,0.727,False,False,False,False
+CVCL_0293,HEC-1-A,Uterus,True,Uterus|epithelial cell of uterus,0.758,Mammary|luminal epithelial cell of mammary gland,0.703,Stomach|epithelial cell,0.69,True,True,False,True
+CVCL_0320,HT-29,Bowel,True,Large_Intestine|large intestine goblet cell,0.771,Stomach|epithelial cell,0.766,Uterus|epithelial cell of uterus,0.764,True,True,True,True
+CVCL_0332,HS-578T,Breast,True,Uterus|myofibroblast cell,0.698,Uterus|fibroblast,0.689,Mammary|fibroblast of breast,0.686,False,True,False,False
+CVCL_0334,Hs 766T,Pancreas,True,Uterus|epithelial cell of uterus,0.694,Mammary|luminal epithelial cell of mammary gland,0.678,Uterus|endothelial cell,0.669,False,False,False,False
+CVCL_0359,J82,Bladder/Urinary Tract,True,Uterus|epithelial cell of uterus,0.69,Mammary|basal cell,0.671,Mammary|luminal epithelial cell of mammary gland,0.66,False,False,False,False
+CVCL_0366,SNU-423,Liver,True,Uterus|myofibroblast cell,0.681,Uterus|epithelial cell of uterus,0.672,Uterus|fibroblast,0.669,False,False,False,True
+CVCL_0371,KATO III,Esophagus/Stomach,True,Stomach|epithelial cell,0.778,Uterus|epithelial cell of uterus,0.756,Large_Intestine|large intestine goblet cell,0.749,True,True,True,True
+CVCL_0397,LS 180,Bowel,True,Large_Intestine|large intestine goblet cell,0.777,Stomach|epithelial cell,0.763,Uterus|epithelial cell of uterus,0.749,True,True,True,True
+CVCL_0399,LoVo,Bowel,True,Large_Intestine|large intestine goblet cell,0.762,Uterus|epithelial cell of uterus,0.757,Stomach|epithelial cell,0.748,True,True,True,True
+CVCL_0428,MIA PaCa-2,Pancreas,True,Uterus|epithelial cell of uterus,0.719,Mammary|luminal epithelial cell of mammary gland,0.705,Mammary|basal cell,0.678,False,False,False,False
+CVCL_0459,NCI-H460,Lung,True,Uterus|epithelial cell of uterus,0.669,Mammary|luminal epithelial cell of mammary gland,0.63,Mammary|basal cell,0.622,False,False,False,False
+CVCL_0480,PANC-1,Pancreas,True,Uterus|epithelial cell of uterus,0.716,Mammary|luminal epithelial cell of mammary gland,0.704,Mammary|basal cell,0.687,False,False,False,False
+CVCL_0504,RKO,Bowel,True,Uterus|epithelial cell of uterus,0.731,Mammary|luminal epithelial cell of mammary gland,0.717,Mammary|basal cell,0.698,False,False,False,False
+CVCL_0546,SW480,Bowel,True,Uterus|epithelial cell of uterus,0.745,Mammary|luminal epithelial cell of mammary gland,0.7,Stomach|epithelial cell,0.692,False,False,False,False
+CVCL_1055,A-427,Lung,True,Uterus|epithelial cell of uterus,0.707,Mammary|luminal epithelial cell of mammary gland,0.674,Mammary|basal cell,0.656,False,False,False,False
+CVCL_1056,A498,Kidney,True,Uterus|epithelial cell of uterus,0.693,Mammary|basal cell,0.664,Mammary|luminal epithelial cell of mammary gland,0.661,False,False,False,False
+CVCL_1094,C-33 A,Cervix,True,Uterus|epithelial cell of uterus,0.719,Neural|retinal bipolar neuron,0.673,Mammary|luminal epithelial cell of mammary gland,0.667,True,True,False,False
+CVCL_1097,C32,Skin,True,Pancreas|fibroblast,0.621,Uterus|epithelial cell of uterus,0.619,Uterus|fibroblast,0.619,False,False,False,False
+CVCL_1098,HepG2/C3A,Liver,True,Uterus|epithelial cell of uterus,0.705,Liver|hepatocyte,0.659,Mammary|luminal epithelial cell of mammary gland,0.656,False,True,True,True
+CVCL_1119,CFPAC-1,Pancreas,True,Uterus|epithelial cell of uterus,0.733,Mammary|luminal epithelial cell of mammary gland,0.689,Bladder|bladder urothelial cell,0.668,False,False,False,False
+CVCL_1125,CHP-212,Peripheral Nervous System,True,Uterus|fibroblast,0.692,Uterus|myofibroblast cell,0.677,Uterus|epithelial cell of uterus,0.663,False,False,False,True
+CVCL_1239,H4,CNS/Brain,True,Uterus|myofibroblast cell,0.671,Uterus|fibroblast,0.669,Mammary|fibroblast of breast,0.66,False,False,False,False
+CVCL_1285,HOP62,Lung,True,Uterus|myofibroblast cell,0.683,Uterus|fibroblast,0.669,Uterus|epithelial cell of uterus,0.667,False,False,False,False
+CVCL_1381,LOX-IMVI,Skin,True,Uterus|epithelial cell of uterus,0.666,Mammary|basal cell,0.661,Uterus|myofibroblast cell,0.659,False,False,False,False
+CVCL_1478,NCI-H1573,Lung,True,Uterus|epithelial cell of uterus,0.728,Mammary|luminal epithelial cell of mammary gland,0.701,Bladder|bladder urothelial cell,0.682,False,False,False,False
+CVCL_1495,NCI-H1792,Lung,True,Uterus|epithelial cell of uterus,0.638,Uterus|myofibroblast cell,0.614,Mammary|fibroblast of breast,0.607,False,False,False,False
+CVCL_1517,NCI-H2030,Lung,True,Uterus|epithelial cell of uterus,0.712,Mammary|luminal epithelial cell of mammary gland,0.691,Mammary|basal cell,0.675,False,False,False,True
+CVCL_1547,NCI-H23,Lung,True,Uterus|epithelial cell of uterus,0.717,Mammary|luminal epithelial cell of mammary gland,0.695,Mammary|basal cell,0.687,False,False,False,False
+CVCL_1550,NCI-H2347,Lung,True,Uterus|epithelial cell of uterus,0.758,Mammary|luminal epithelial cell of mammary gland,0.74,Bladder|bladder urothelial cell,0.707,False,False,False,True
+CVCL_1635,Panc 03.27,Pancreas,True,Uterus|epithelial cell of uterus,0.763,Mammary|luminal epithelial cell of mammary gland,0.727,Bladder|bladder urothelial cell,0.703,False,False,False,False
+CVCL_1666,RPMI-7951,Skin,True,Uterus|myofibroblast cell,0.69,Uterus|fibroblast,0.678,Mammary|fibroblast of breast,0.673,False,False,False,True
+CVCL_1693,SHP-77,Lung,True,Neural|retinal bipolar neuron,0.683,Uterus|epithelial cell of uterus,0.658,Neural|eye photoreceptor cell,0.629,False,False,False,False
+CVCL_1715,SW 1088,CNS/Brain,True,Uterus|myofibroblast cell,0.69,Uterus|fibroblast,0.682,Mammary|fibroblast of breast,0.67,False,False,False,False
+CVCL_1716,SW 1271,Lung,True,Uterus|epithelial cell of uterus,0.698,Mammary|luminal epithelial cell of mammary gland,0.666,Mammary|basal cell,0.66,False,False,False,True
+CVCL_1717,SW1417,Bowel,True,Uterus|epithelial cell of uterus,0.776,Large_Intestine|large intestine goblet cell,0.733,Stomach|epithelial cell,0.727,False,True,False,True
+CVCL_1724,SW48,Bowel,True,Uterus|epithelial cell of uterus,0.769,Stomach|epithelial cell,0.73,Large_Intestine|large intestine goblet cell,0.724,False,True,False,True
+CVCL_1731,SW 900,Lung,True,Uterus|epithelial cell of uterus,0.708,Mammary|luminal epithelial cell of mammary gland,0.662,Mammary|basal cell,0.659,False,False,False,True
+CVCL_C466,hTERT-HPNE,Pancreas,True,Uterus|myofibroblast cell,0.699,Uterus|fibroblast,0.694,Mammary|fibroblast of breast,0.683,False,False,True,True
