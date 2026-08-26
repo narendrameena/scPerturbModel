@@ -34,6 +34,7 @@ ROOT = Path(__file__).resolve().parent.parent
 FIG = ROOT / "results" / "figures" / "04_generalization"
 TAB = ROOT / "results" / "tables"
 COLORS = {"additive": "#eb6834", "covariate": "#2a78d6",
+          "expr_context": "#1baf7a",
           "nn_drug": "#eda100", "ecfp_model": "#2a78d6"}
 SEED = 0
 T = lambda a: torch.as_tensor(a)
@@ -79,6 +80,12 @@ def main():
     ap.add_argument("--mode", choices=["line", "drug", "both"], default="both")
     ap.add_argument("--pb-dir", default="data/processed/pseudobulk_dev")
     ap.add_argument("--tag", default="", help="suffix for outputs, e.g. dev47")
+    ap.add_argument("--context", choices=["covariate", "expression"],
+                    default="covariate",
+                    help="line-mode context: static covariates, or the line's "
+                         "own DMSO control transcriptome (per-fold PCA, fit on "
+                         "training lines only; defined for unseen lines)")
+    ap.add_argument("--n-pcs", type=int, default=30)
     ap.add_argument("--replot", action="store_true",
                     help="regenerate figure from the saved eval CSV")
     args = ap.parse_args()
@@ -116,6 +123,16 @@ def main():
 
     # ---------------- MODE line ----------------
     if args.mode in ("line", "both"):
+        # control (DMSO) log1p-CPM profile per line, plate-weighted
+        dmso = cond[(cond.drug == "DMSO_TF") & (cond.plate != "plate14")]
+        ctrl_prof = np.stack([
+            np.average(X[grp.row.to_numpy()], axis=0, weights=grp.n_cells)
+            for _, grp in dmso.groupby("cell_line_id", observed=True)])
+        ctrl_lines = sorted(dmso.cell_line_id.unique())
+        assert ctrl_lines == lines, "control profiles must cover all lines"
+        row_line = np.array([lines.index(l) for l in G.cell_line_id])
+        model_name = "covariate" if args.context == "covariate" else "expr_context"
+
         for ln in lines:
             test_mask = (G.cell_line_id == ln).to_numpy()
             train_mask = ~test_mask
@@ -125,16 +142,32 @@ def main():
             LD = T(((logdose - mu) / sd).astype(np.float32)[:, None])
             P_r, Y_r = T(PRIOR[:, resp]), T(DELTA[:, resp])
             val = rng.random(len(G)) < 0.1
-            model = fit(CovariateResidualDelta(LF.shape[1], len(resp)),
-                        LF, FP, LD, P_r, Y_r,
+
+            if args.context == "expression":
+                # per-fold PCA of control profiles, TRAIN lines only
+                tr_l = [i for i, l in enumerate(lines) if l != ln]
+                gvar = ctrl_prof[tr_l].var(axis=0)
+                gsel = np.argsort(gvar)[-5000:]
+                M = ctrl_prof[:, gsel]
+                mu_c = M[tr_l].mean(axis=0, keepdims=True)
+                _, _, Vt = np.linalg.svd(M[tr_l] - mu_c, full_matrices=False)
+                k = min(args.n_pcs, Vt.shape[0])
+                F = (M - mu_c) @ Vt[:k].T
+                F = F / (F[tr_l].std(axis=0, keepdims=True) + 1e-8)
+                CTX = T(F[row_line].astype(np.float32))
+            else:
+                CTX = LF
+
+            model = fit(CovariateResidualDelta(CTX.shape[1], len(resp)),
+                        CTX, FP, LD, P_r, Y_r,
                         np.where(train_mask & ~val)[0],
                         np.where(train_mask & val)[0])
             with torch.no_grad():
-                pr = model(LF, FP, LD, P_r).numpy()
-            pred_cov = PRIOR.copy()
-            pred_cov[:, resp] = pr
+                pr = model(CTX, FP, LD, P_r).numpy()
+            pred_ctx = PRIOR.copy()
+            pred_ctx[:, resp] = pr
             eval_rows(np.where(test_mask)[0],
-                      {"additive": PRIOR, "covariate": pred_cov},
+                      {"additive": PRIOR, model_name: pred_ctx},
                       resp, "line", ln)
             print(f"[line fold {ln}] done", flush=True)
 
@@ -201,13 +234,21 @@ def make_figure(res: pd.DataFrame, suf: str):
     nfl = res.loc[res["mode"] == "line", "fold"].nunique()
     nfd = res.loc[res["mode"] == "drug", "fold"].nunique()
     fig, axes = plt.subplots(1, 2, figsize=(11, 4.2), constrained_layout=True)
-    panels = [("line", ["additive", "covariate"],
+    lbl = {"additive": f"additive shift\n({max(nfl - 1, 0)} other lines)",
+           "covariate": "+ mutation/organ\ncontext",
+           "expr_context": "+ control-expression\ncontext (PCA)",
+           "nn_drug": "nearest drug\nby ECFP",
+           "ecfp_model": "ECFP model\n(prior-dropout)"}
+    line_models = [m for m in ("additive", "covariate", "expr_context")
+                   if ((res["mode"] == "line") & (res.model == m)).any()]
+    drug_models = [m for m in ("nn_drug", "ecfp_model")
+                   if ((res["mode"] == "drug") & (res.model == m)).any()]
+    panels = [("line", line_models,
                f"A  Held-out cell line ({nfl}-fold)",
-               [f"additive shift\n({nfl - 1} other lines)",
-                "+ mutation/organ\ncontext"]),
-              ("drug", ["nn_drug", "ecfp_model"],
+               [lbl[m] for m in line_models]),
+              ("drug", drug_models,
                f"B  Held-out drug ({nfd}-fold)",
-               ["nearest drug\nby ECFP", "ECFP model\n(prior-dropout)"])]
+               [lbl[m] for m in drug_models])]
     for ax, (mode, models, title, labels) in zip(axes, panels):
         sub = res[res["mode"] == mode]
         if not len(sub):
