@@ -25,7 +25,8 @@ import numpy as np
 import pandas as pd
 import torch
 
-from perturbmodel.evaluation import held_out_condition_triples
+from perturbmodel.evaluation import (held_out_condition_triples,
+                                     held_out_pair_triples)
 from perturbmodel.evaluation.delta_eval import (additive_prior, build_deltas,
                                                 delta_metrics, load_pseudobulk,
                                                 responsive_genes)
@@ -41,6 +42,11 @@ SEED = 0
 ap = argparse.ArgumentParser()
 ap.add_argument("--pb-dir", default="data/processed/pseudobulk_dev")
 ap.add_argument("--tag", default="", help="suffix for outputs, e.g. dev47")
+ap.add_argument("--split-mode", choices=["condition", "pair"],
+                default="condition",
+                help="'condition': hold out (line,drug,dose) triples (other "
+                     "doses of the pair stay in training). 'pair': hold out "
+                     "whole (line,drug) pairs — removes dose leakage.")
 cli = ap.parse_args()
 SUF = f"_{cli.tag}" if cli.tag else ""
 CKPT = ROOT / "results" / "checkpoints" / f"phase3_delta{SUF}"
@@ -51,7 +57,9 @@ np.random.seed(SEED)
 # ---------------- data ----------------
 X, cond = load_pseudobulk(ROOT / cli.pb_dir)
 G, DELTA = build_deltas(X, cond)
-test_triples = held_out_condition_triples(G, seed=0, test_frac=0.2)
+splitter = (held_out_condition_triples if cli.split_mode == "condition"
+            else held_out_pair_triples)
+test_triples = splitter(G, seed=0, test_frac=0.2)
 is_test = np.array([(l, d, c) in test_triples
                     for l, d, c in zip(G.cell_line_id, G.drug, G.conc)])
 train_mask = ~is_test
