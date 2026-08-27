@@ -112,21 +112,24 @@ three fail, and why the measured gains are small wherever the effect is real.
 `results/figures/04_generalization/few_shot_eval_dev8ft/`
 
 Adapting to a new line succeeds only if the residual head is allowed to
-co-adapt with the new embedding (dev8, 8-fold, fixed evaluation panel, paired
-per condition against the additive baseline):
+co-adapt with the new embedding. Gain in r_de100 over the additive baseline,
+leave-one-line-out with a fixed evaluation panel reserved before probing:
 
-| probe drugs measured on the new line | frozen head | fine-tuned |
-|---|---|---|
-| 1 | 0.000 | +0.0022 |
-| 5 | 0.000 | +0.0086 |
-| 20 | 0.000 | **+0.0102** |
-| all ~30 (oracle) | −0.0008 | — |
+| probe drugs measured on the new line | frozen head (dev47) | fine-tuned (dev8) | **fine-tuned (dev47)** |
+|---|---|---|---|
+| 1 | +0.0002 | +0.0022 | +0.0001 |
+| 5 | +0.0006 | +0.0086 | **+0.0199** |
+| 20 | +0.0009 | +0.0102 | **+0.0343** |
+| all ~30 (oracle) | +0.0009 | — | +0.0350 |
 
-≈20 probe compounds recover approximately the entire available line-level gain
-(+0.0101 measured for *seen* lines under the strict pair split). The learned
-context space therefore behaves like a lookup over training lines rather than
-a space one can interpolate into — a concrete constraint for virtual-cell
-models, and a concrete protocol for screening a new cell model.
+At full scale the effect is large and monotone: **20 probe compounds recover
+98% of the oracle ceiling** (r_de100 0.691 → 0.725), and even 5 compounds
+recover 57%. The identical probe data yields *nothing* when the residual head
+is frozen (n = 8,420 conditions), so the barrier is architectural, not
+informational: the learned context space behaves like a lookup over training
+lines rather than a space one can interpolate into. Practically, a new cell
+model needs neither its genotype nor its baseline profile — it needs a handful
+of measured compounds and a fine-tuning pass.
 
 **Unseen drugs**, by contrast, generalize through chemistry: an ECFP-conditioned
 model trained with prior-dropout reaches r_de100 0.388 vs 0.267 for a
