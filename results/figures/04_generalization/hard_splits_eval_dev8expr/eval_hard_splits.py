@@ -154,6 +154,9 @@ def main():
                 k = min(args.n_pcs, Vt.shape[0])
                 F = (M - mu_c) @ Vt[:k].T
                 F = F / (F[tr_l].std(axis=0, keepdims=True) + 1e-8)
+                # held-out line can project far outside the training range;
+                # unclipped, the ReLU trunk extrapolates it into huge residuals
+                F = np.clip(F, -4.0, 4.0)
                 CTX = T(F[row_line].astype(np.float32))
             else:
                 CTX = LF
