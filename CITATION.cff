@@ -1,0 +1,38 @@
+cff-version: 1.2.0
+message: "If you use this software or its results, please cite it as below."
+title: "scPerturbModel: context-dependent models of single-cell drug perturbation response on Tahoe-100M"
+abstract: >-
+  Analysis and modelling framework for the Tahoe-100M single-cell perturbation
+  atlas: paper replication probes, must-beat baselines, context-residual and
+  conditional-VAE response models, generalization benchmarks (held-out
+  condition / cell line / drug, few-shot transfer), and an independent
+  cell-type identity audit of the atlas cell lines against Tabula Sapiens.
+authors:
+  - family-names: Meena
+    given-names: Narendra
+    email: nm667@cam.ac.uk
+    affiliation: "University of Cambridge"
+repository-code: "https://github.com/narendrameena/scPerturbModel"
+license: MIT
+version: "0.1.0"
+date-released: "2026-08-27"
+keywords:
+  - single-cell
+  - perturbation modelling
+  - transcriptomics
+  - Tahoe-100M
+  - cell line authentication
+references:
+  - type: article
+    title: "Tahoe-100M: A Giga-Scale Single-Cell Perturbation Atlas for Context-Dependent Gene Function and Cellular Modeling"
+    authors:
+      - family-names: Zhang
+        given-names: Jesse
+    year: 2025
+    doi: 10.1101/2025.02.20.639398
+  - type: article
+    title: "The Tabula Sapiens: A multiple-organ, single-cell transcriptomic atlas of humans"
+    authors:
+      - name: "The Tabula Sapiens Consortium"
+    year: 2022
+    doi: 10.1126/science.abl4896
