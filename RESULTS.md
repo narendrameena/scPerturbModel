@@ -86,7 +86,13 @@ modulation:
 | driver mutations + organ (dev8, 8-fold) | 0.764 | 0.768 |
 | driver mutations + organ (dev47, 47-fold) | 0.692 | 0.692 |
 | the line's own baseline (DMSO) transcriptome, PCA (dev47) | 0.692 | 0.692 |
-| probe-fitted embedding, frozen head — *including an oracle using all ~30 probe drugs* | 0.764 | 0.765 |
+| probe-fitted embedding, frozen head (dev8, 8-fold) | 0.765 | 0.767 |
+| probe-fitted embedding, frozen head (dev47, 47-fold × 3 seeds, 8,420 conditions) | 0.692 | 0.691 |
+
+The frozen-head result holds at both scales and even with an **oracle** that
+fits the embedding on all ~30 available probe drugs (dev8 −0.0008, dev47
++0.0009 — i.e. nothing), while the embedding demonstrably moves. The failure is
+therefore not a shortage of probe data.
 
 The structure diagnostic explains all four at once. Writing a condition's
 **context residual** as `delta − additive_prior`, its correlation is:
