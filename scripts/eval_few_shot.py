@@ -85,6 +85,33 @@ def fit_base(model, li, fp, ld, P, Y, fit_idx, val_idx,
     return model
 
 
+def finetune_with_probes(model, held_idx, mean_emb, probe_idx, train_idx,
+                         li, fp, ld, P, Y, epochs=60, lr=3e-4, probe_frac=0.15):
+    """Adaptation variant: fine-tune the WHOLE model on training rows plus the
+    new line's probe rows, so the residual head can co-adapt to the new
+    embedding instead of treating it as an unseen point. Probe rows are
+    oversampled to `probe_frac` of each epoch or they are drowned out."""
+    with torch.no_grad():
+        model.line_emb.weight[held_idx] = mean_emb
+    if len(probe_idx) == 0:
+        return 0.0
+    opt = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=1e-4)
+    rng = np.random.default_rng(SEED)
+    reps = max(1, int(probe_frac * len(train_idx) / max(len(probe_idx), 1)))
+    pool = np.concatenate([train_idx, np.tile(probe_idx, reps)])
+    model.train()
+    for _ in range(epochs):
+        perm = rng.permutation(pool)
+        for s in range(0, len(perm), 128):
+            b = perm[s:s + 128]
+            opt.zero_grad()
+            torch.mean((model(li[b], fp[b], ld[b], P[b]) - Y[b]) ** 2).backward()
+            opt.step()
+    model.eval()
+    with torch.no_grad():
+        return float(torch.norm(model.line_emb.weight[held_idx] - mean_emb))
+
+
 def fit_embedding(model, held_idx, mean_emb, probe_idx, li, fp, ld, P, Y):
     """Fit ONLY the held-out line's embedding on the probe conditions.
 
@@ -126,8 +153,17 @@ def main():
                     help="pilot: only the first N lines (0 = all)")
     ap.add_argument("--seeds", type=int, default=3,
                     help="probe draws per fold")
+    ap.add_argument("--adapt", choices=["embedding", "finetune"],
+                    default="embedding",
+                    help="'embedding': fit only the new line's embedding "
+                         "(frozen head). 'finetune': retrain the whole model "
+                         "with the probe rows included (head co-adapts).")
+    ap.add_argument("--k-values", type=int, nargs="*", default=None,
+                    help="override the k sweep (e.g. --k-values 1 5 20)")
+    ap.add_argument("--strategies", nargs="*", default=["random", "high_effect"])
     ap.add_argument("--replot", action="store_true")
     args = ap.parse_args()
+    k_values = args.k_values if args.k_values is not None else K_VALUES
     suf = f"_{args.tag}" if args.tag else ""
     torch.manual_seed(SEED)
 
@@ -195,7 +231,7 @@ def main():
             # 'oracle' = fit the embedding on the ENTIRE probe pool: the
             # architecture's ceiling for this line, so a flat k-curve can be
             # attributed to missing headroom rather than to few-shot data.
-            plan = [(s, k) for s in ("random", "high_effect") for k in K_VALUES]
+            plan = [(s, k) for s in args.strategies for k in k_values]
             plan.append(("oracle", -1))
             for strategy, k in plan:
                 if strategy == "random":
@@ -212,8 +248,13 @@ def main():
                     test_mask & G.drug.isin(probes).to_numpy())[0] \
                     if probes else np.array([], dtype=int)
                 model.load_state_dict(base_state)
-                shift = fit_embedding(model, held_idx, mean_emb, probe_idx,
-                                      li, FP, ld, P, Y)
+                if args.adapt == "embedding":
+                    shift = fit_embedding(model, held_idx, mean_emb, probe_idx,
+                                          li, FP, ld, P, Y)
+                else:
+                    shift = finetune_with_probes(
+                        model, held_idx, mean_emb, probe_idx,
+                        np.where(train_mask & ~val)[0], li, FP, ld, P, Y)
                 with torch.no_grad():
                     pr = model(li[eval_idx], FP[eval_idx], ld[eval_idx],
                                P[eval_idx]).numpy()
@@ -236,8 +277,8 @@ def main():
     print(summ.to_string())
     base = res[res.strategy == "additive"].r_de100.median()
     orac = res[res.strategy == "oracle"].r_de100.median()
-    print(f"\nheadroom (oracle - additive): {orac - base:+.4f}")
-    for k in K_VALUES:
+    print(f"\nadapt={args.adapt}; headroom (oracle - additive): {orac - base:+.4f}")
+    for k in k_values:
         s = res[(res.strategy == "random") & (res.k == k)].r_de100.median()
         frac = (s - base) / (orac - base) if orac > base else float("nan")
         print(f"  k={k:>2}: {s - base:+.4f} ({frac:.0%} of headroom)")
