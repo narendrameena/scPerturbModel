@@ -173,7 +173,40 @@ of measured compounds and a fine-tuning pass.
 model trained with prior-dropout reaches r_de100 0.388 vs 0.267 for a
 nearest-drug-by-fingerprint baseline (dev47, 5-fold drug-grouped CV).
 
-## 6. Independent audit: the atlas's cell-line identities hold up
+## 6. Patient anchoring (TCGA): genotype yes, survival no
+
+The six components were scored across **10,921 TCGA tumours** (31–33 cancer
+types), using each component's top ±100 loading genes and z-scoring **within**
+cancer type so lineage cannot manufacture the signal.
+
+- **Coherence — no.** Component genes are no more co-expressed in tumours than
+  size-matched random gene sets (z −0.83 to +0.63). These are *response*
+  programs, apparent when cells are perturbed, not standing co-expression
+  modules. A real constraint on how far they generalise.
+- **Genotype — yes.** 2,128 of 106,896 (driver × component) tests reach
+  FDR < 0.05, led by KRAS×C7, BRAF×C7 (both MAPK, same component), IDH1×C10,
+  TP53×C1, CTNNB1×C1. Where 49 cell lines showed nothing, ~8,700 patients
+  resolve the association — though effect sizes are small (0.05–0.11 z).
+- **Survival — does not survive adjustment.** Cox models fitted within each
+  cancer type and combined across them give C6 z = +3.63 (p = 3e-4) and
+  C7 z = −2.19 unadjusted; after adjusting for age, sex, stage, grade and
+  stromal/immune infiltration, **no component remains significant** once the
+  six tests are accounted for (largest: C10 z = +2.32, p = 0.02, which does not
+  survive correction across components). The apparent unadjusted associations
+  are largely explained by disease burden and sample composition.
+
+> **Correction.** An earlier median-split log-rank version of this analysis
+> reported C1 as predicting worse and C7 better survival. Its sign convention
+> was computed from median survival among events only via `(x or 0)`, which
+> returns NaN rather than 0 because NaN is truthy, so the signs were unreliable.
+> The Cox analysis supersedes it and that claim is withdrawn.
+
+Caveat on purity: the TCGA ABSOLUTE table is not publicly downloadable from the
+endpoints available here, so purity is proxied by hallmark stromal (EMT) and
+immune infiltration scores. This captures the dominant non-tumour axis but is
+weaker than ABSOLUTE.
+
+## 7. Independent audit: the atlas's cell-line identities hold up
 `results/figures/05_audit/`
 
 47 lines scored against **184 (tissue, cell-type) signatures** built from 12

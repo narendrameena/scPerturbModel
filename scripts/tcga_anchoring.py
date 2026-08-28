@@ -198,9 +198,16 @@ def main():
             hi = v > v.median()
             chi2, p = logrank(t[hi].to_numpy(), e[hi].to_numpy(),
                               t[~hi].to_numpy(), e[~hi].to_numpy())
+            # NOTE: this median-split log-rank is superseded by the Cox models
+            # in tcga_survival_adjusted.py, which estimate a signed coefficient
+            # directly. The sign below was previously derived from median
+            # survival among events only, using `(x or 0)` — which returns NaN
+            # for NaN because NaN is truthy — and produced unreliable signs.
             med_hi = t[hi][e[hi] == 1].median()
             med_lo = t[~hi][e[~hi] == 1].median()
-            sign = 1.0 if (med_hi or 0) < (med_lo or 0) else -1.0
+            if np.isnan(med_hi) or np.isnan(med_lo):
+                continue
+            sign = 1.0 if med_hi < med_lo else -1.0
             zs.append(sign * stats.norm.isf(max(p, 1e-300) / 2))
             ns += 1
         if ns >= 5:
