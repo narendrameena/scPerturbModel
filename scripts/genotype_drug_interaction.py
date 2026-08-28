@@ -69,6 +69,11 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--pb-dir", default="data/processed/pseudobulk_dev47")
     ap.add_argument("--tag", default="dev47")
+    ap.add_argument("--by-moa", action="store_true",
+                    help="test (driver gene x MOA CLASS) instead of per drug: "
+                         "averages mechanistically related compounds, which "
+                         "raises signal and cuts the multiple-testing burden "
+                         "from ~1,650 tests to ~25 classes x drivers")
     args = ap.parse_args()
     FIG.mkdir(parents=True, exist_ok=True)
 
@@ -108,9 +113,19 @@ def main():
     state_pcs = Bc @ Vt[:N_STATE_PC].T
     state_pcs /= state_pcs.std(0, keepdims=True) + 1e-9
 
-    # ---------------- per-drug response axis ----------------
+    # ---------------- per-drug (or per-MOA) response axis ----------------
+    if args.by_moa:
+        dm = pd.read_parquet(ROOT / "data/metadata/metadata/drug_metadata.parquet")
+        moa = dict(zip(dm.drug, dm["moa-fine"]))
+        G = G.assign(unit=G.drug.map(moa).fillna("unclear"))
+        G = G[G.unit != "unclear"]          # unclear MOA carries no hypothesis
+        print(f"grouping by MOA: {G.unit.nunique()} classes, "
+              f"{len(G)} conditions retained")
+    else:
+        G = G.assign(unit=G.drug)
+
     recs, state_recs = [], []
-    for drug, grp in G.groupby("drug", observed=True):
+    for drug, grp in G.groupby("unit", observed=True):
         if drug == "DMSO_TF" or grp.cell_line_id.nunique() < MIN_LINES:
             continue
         # line x gene matrix: mean delta over doses for this drug
