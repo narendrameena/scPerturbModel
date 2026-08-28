@@ -52,8 +52,66 @@ N_EVAL_DRUGS = 20          # fixed evaluation panel per (fold, seed)
 FEWSHOT_STEPS = 300
 FEWSHOT_LR = 1e-2
 FEWSHOT_L2 = 0.01
-COLORS = {"random": "#2a78d6", "high_effect": "#1baf7a", "additive": "#eb6834"}
+COLORS = {"random": "#2a78d6", "high_effect": "#1baf7a", "additive": "#eb6834",
+          "discriminative": "#e87ba4", "moa_diverse": "#eda100",
+          "chem_diverse": "#4a3aa7", "oracle": "#9e9e9e"}
 T = lambda a: torch.as_tensor(a)
+
+
+def rank_discriminative(G, R, train_mask, resp, pool):
+    """Drugs whose context residual varies MOST across training lines.
+
+    Optimal-design intuition: to identify a new line, probe with the compounds
+    that most separate known lines. Uses training lines only."""
+    scores = {}
+    sub = np.where(train_mask)[0]
+    df = pd.DataFrame({"i": sub, "drug": G.drug.to_numpy()[sub],
+                       "line": G.cell_line_id.to_numpy()[sub]})
+    for d, grp in df.groupby("drug", observed=True):
+        if d not in pool or grp.line.nunique() < 3:
+            continue
+        per_line = np.stack([R[g.i.to_numpy()][:, resp].mean(0)
+                             for _, g in grp.groupby("line", observed=True)])
+        scores[d] = float(per_line.var(axis=0).mean())
+    return [d for d, _ in sorted(scores.items(), key=lambda x: -x[1])]
+
+
+def rank_moa_diverse(pool, moa_of, effect_rank):
+    """Round-robin across distinct fine MOA classes, strongest drug first
+    within each class — the panel a pharmacologist would design."""
+    by_moa = {}
+    for d in effect_rank:
+        if d in pool:
+            by_moa.setdefault(moa_of.get(d, "unclear"), []).append(d)
+    order, moas = [], sorted(by_moa, key=lambda m: -len(by_moa[m]))
+    depth = 0
+    while len(order) < len(pool):
+        added = False
+        for m in moas:
+            if depth < len(by_moa[m]):
+                order.append(by_moa[m][depth]); added = True
+        if not added:
+            break
+        depth += 1
+    return order
+
+
+def rank_chem_diverse(pool, fp_of, effect_rank):
+    """Farthest-point sampling in ECFP Tanimoto space: maximally spread
+    chemistry, requiring no annotation at all."""
+    cand = [d for d in effect_rank if d in pool]
+    if not cand:
+        return []
+    F = np.stack([fp_of[d] for d in cand])
+    inter = F @ F.T
+    tot = F.sum(1)
+    tan = inter / (tot[:, None] + tot[None, :] - inter + 1e-9)
+    chosen = [0]
+    while len(chosen) < len(cand):
+        mind = tan[:, chosen].max(axis=1)      # similarity to nearest chosen
+        mind[chosen] = np.inf
+        chosen.append(int(np.argmin(mind)))
+    return [cand[i] for i in chosen]
 
 
 def fit_base(model, li, fp, ld, P, Y, fit_idx, val_idx,
@@ -175,6 +233,8 @@ def main():
     G, DELTA = build_deltas(X, cond)
     ecfp = np.load(ROOT / "data/processed/drug_ecfp.npz", allow_pickle=True)
     fp_of = dict(zip(ecfp["drugs"].tolist(), ecfp["fp"]))
+    dm = pd.read_parquet(ROOT / "data/metadata/metadata/drug_metadata.parquet")
+    moa_of = dict(zip(dm.drug, dm["moa-fine"]))
     FP = T(np.stack([fp_of[d] for d in G.drug]).astype(np.float32))
     logdose = np.log10(G.conc.to_numpy(dtype=np.float64))
     lines = sorted(G.cell_line_id.unique())
@@ -211,6 +271,7 @@ def main():
                              "m": np.abs(DELTA[train_mask][:, resp]).mean(1)})
                .groupby("drug").m.mean().sort_values(ascending=False))
         test_drugs = sorted(set(G.drug[test_mask]))
+        R_resid = DELTA - PRIOR       # context residual, for discriminative
 
         for seed in range(args.seeds):
             rng = np.random.default_rng(1000 * seed + fi)
@@ -227,7 +288,18 @@ def main():
                              "conc": G.conc[i],
                              **delta_metrics(PRIOR[i], DELTA[i], resp)})
 
-            pool_by_effect = [d for d in eff.index if d in pool]
+            pool_set = set(pool)
+            pool_by_effect = [d for d in eff.index if d in pool_set]
+            ranked = {"high_effect": pool_by_effect}
+            if "discriminative" in args.strategies:
+                ranked["discriminative"] = rank_discriminative(
+                    G, R_resid, train_mask, resp, pool_set)
+            if "moa_diverse" in args.strategies:
+                ranked["moa_diverse"] = rank_moa_diverse(
+                    pool_set, moa_of, pool_by_effect)
+            if "chem_diverse" in args.strategies:
+                ranked["chem_diverse"] = rank_chem_diverse(
+                    pool_set, fp_of, pool_by_effect)
             # 'oracle' = fit the embedding on the ENTIRE probe pool: the
             # architecture's ceiling for this line, so a flat k-curve can be
             # attributed to missing headroom rather than to few-shot data.
@@ -236,12 +308,12 @@ def main():
             for strategy, k in plan:
                 if strategy == "random":
                     probes = list(rng.permutation(pool)[:k])
-                elif strategy == "high_effect":
+                elif strategy == "oracle":
+                    probes = list(pool)
+                else:
                     if k == 0:
                         continue          # identical to random k=0
-                    probes = pool_by_effect[:k]
-                else:
-                    probes = list(pool)
+                    probes = ranked[strategy][:k]
                 if k > 0 and len(probes) < k:
                     continue
                 probe_idx = np.where(
@@ -322,27 +394,41 @@ def make_figure(res: pd.DataFrame, suf: str):
                       fontweight="bold", fontsize=9.5)
     axes[0].legend(frameon=False, fontsize=8.5)
 
-    # B: paired per-condition gain over additive, random strategy
+    # B: paired gain vs additive. With several strategies present, compare
+    # panel designs at the largest k; otherwise show the k sweep for random.
     key = ["line", "seed", "drug", "conc"]
     a = add.set_index(key).r_de100
-    ks = sorted(res[res.strategy == "random"].k.dropna().unique())
-    data, labels = [], []
-    for k in ks:
-        s = res[(res.strategy == "random") & (res.k == k)].set_index(key).r_de100
-        d = (s - a).dropna()
-        data.append(d.to_numpy())
-        labels.append(f"k={int(k)}")
+    strats = [s for s in ("random", "high_effect", "discriminative",
+                          "moa_diverse", "chem_diverse")
+              if (res.strategy == s).any()]
+    data, labels, cols = [], [], []
+    if len(strats) > 1:
+        kmax = res[res.strategy.isin(strats)].k.dropna().max()
+        for s in strats:
+            v = res[(res.strategy == s) & (res.k == kmax)].set_index(key).r_de100
+            data.append((v - a).dropna().to_numpy())
+            labels.append(s.replace("_", "\n"))
+            cols.append(COLORS[s])
+        panel_title = f"B  Probe-panel design at k={int(kmax)}"
+    else:
+        for k in sorted(res[res.strategy == "random"].k.dropna().unique()):
+            v = res[(res.strategy == "random") & (res.k == k)].set_index(key).r_de100
+            data.append((v - a).dropna().to_numpy())
+            labels.append(f"k={int(k)}")
+            cols.append(COLORS["random"])
+        panel_title = "B  Per-condition gain (random probes)"
     vp = axes[1].violinplot(data, positions=range(len(data)), widths=0.7,
                             showmedians=True, showextrema=False)
-    for body in vp["bodies"]:
-        body.set_facecolor(COLORS["random"]); body.set_alpha(0.55)
-        body.set_edgecolor("none")
+    for body, c in zip(vp["bodies"], cols):
+        body.set_facecolor(c); body.set_alpha(0.55); body.set_edgecolor("none")
     vp["cmedians"].set_color("#333333")
+    for x, d in enumerate(data):
+        axes[1].text(x, np.percentile(d, 97), f"{np.median(d):+.3f}",
+                     ha="center", fontsize=8, color="#444444")
     axes[1].axhline(0, color="#888888", lw=0.9, ls="--", zorder=0)
-    axes[1].set_xticks(range(len(labels)), labels)
+    axes[1].set_xticks(range(len(labels)), labels, fontsize=8.5)
     axes[1].set_ylabel("paired gain in r vs additive")
-    axes[1].set_title("B  Per-condition gain (random probes)", loc="left",
-                      fontweight="bold", fontsize=10)
+    axes[1].set_title(panel_title, loc="left", fontweight="bold", fontsize=10)
     fig.suptitle("Few-shot transfer to an unseen cell line "
                  "(leave-one-line-out, fixed evaluation panel)",
                  fontsize=11, x=0.01, ha="left")
