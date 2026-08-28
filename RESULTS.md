@@ -95,18 +95,36 @@ fits the embedding on all ~30 available probe drugs (dev8 −0.0008, dev47
 therefore not a shortage of probe data.
 
 The structure diagnostic explains all four at once. Writing a condition's
-**context residual** as `delta − additive_prior`, its correlation is:
+**context residual** as `delta − additive_prior`, and comparing conditions
+measured on **different plates** (see the batch caveat below), its correlation
+is:
 
-- **+0.13** across *doses* of the same (line, drug) — the residual is real,
+- **+0.067** across *doses* of the same (line, drug) — the residual is real,
   reproducible signal;
-- **+0.04** across *drugs* within the same line — almost no line-level transfer;
-- **−0.01** across *lines* for the same drug;
+- **+0.013** across *drugs* within the same line — almost no line-level transfer;
+- **−0.009** across *lines* for the same drug;
 - ≈ 0.00 for permuted nulls in all three cases.
+
+> **Batch caveat, and why it matters.** Restricting to cross-plate pairs is
+> essential. The same comparisons *within* a plate give +0.48 and +0.40 — about
+> sevenfold higher — because residual plate structure survives plate-matched
+> DMSO normalisation. Any analysis of this atlas that pools within- and
+> cross-plate comparisons will substantially overstate reproducibility, and an
+> earlier version of this section did exactly that.
 
 So line-specific drug response is a **line × drug interaction, not a line
 property**. There is no line-level quantity for a covariate, a baseline
 profile, or a probe-fitted embedding to recover — which is exactly why all
 three fail, and why the measured gains are small wherever the effect is real.
+
+**Variance decomposition** (per gene, cross-plate dose pairs only, 47 lines ×
+50 drugs): additive drug×dose effect **6.9%** of response variance, line×drug
+interaction **2.7%**, noise 90.4%. Of the *reproducible* signal, roughly
+**72% is the drug's average effect and 28% is context interaction**. The genes
+carrying the interaction are biologically coherent rather than random —
+acute-phase (SAA1, SAA2, SAA2-SAA4), imprinted/oncofetal (H19), secreted
+protease inhibitors (SERPINB2, SERPINB3) and MAPK feedback (SPRY4) — none of
+them canonical drug-target genes.
 
 ## 5. What does work for a new line: measure ~20 compounds and fine-tune
 `results/figures/04_generalization/few_shot_eval_dev8ft/`

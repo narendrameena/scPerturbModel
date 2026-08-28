@@ -27,17 +27,23 @@ def load_pseudobulk(pb_dir: str | Path):
 
 def build_deltas(X: np.ndarray, cond: pd.DataFrame,
                  min_cells: int = MIN_CELLS,
-                 exclude_plates: tuple = ("plate14",)):
+                 exclude_plates: tuple = ("plate14",),
+                 keep_plate: bool = False):
     """Plate-matched, cell-weighted deltas per (line, drug, conc) triple.
 
     Returns (G, DELTA): G is a DataFrame with KEY columns (reset index aligns
     with DELTA rows), DELTA is float32 [n_triples x n_genes].
+
+    With keep_plate=True the per-plate rows are returned instead of the
+    cell-weighted average over plates, and G carries a 'plate' column. Needed
+    to test whether within-(line, drug) agreement is inflated by shared plate
+    effects rather than real biology.
     """
     cond = cond[~cond.plate.isin(exclude_plates)]
     ctrl = cond[(cond.drug == "DMSO_TF") & (cond.n_cells >= min_cells)]
     ctrl_idx = {(r.cell_line_id, r.plate): r.row for r in ctrl.itertuples()}
 
-    rows, keys, weights = [], [], []
+    rows, keys, weights, plates = [], [], [], []
     treated = cond[(cond.drug != "DMSO_TF") & (cond.n_cells >= min_cells)]
     for r in treated.itertuples():
         ci = ctrl_idx.get((r.cell_line_id, r.plate))
@@ -45,10 +51,16 @@ def build_deltas(X: np.ndarray, cond: pd.DataFrame,
             continue
         keys.append((r.cell_line_id, r.drug, float(r.conc)))
         weights.append(r.n_cells)
+        plates.append(r.plate)
         rows.append(X[r.row] - X[ci])
     key_df = pd.DataFrame(keys, columns=KEY)
     key_df["w"] = weights
     deltas_all = np.stack(rows)
+
+    if keep_plate:
+        out = key_df[KEY].copy()
+        out["plate"] = plates
+        return out.reset_index(drop=True), deltas_all.astype(np.float32)
 
     key_df["gid"] = key_df.groupby(KEY, observed=True).ngroup()
     n = key_df.gid.nunique()

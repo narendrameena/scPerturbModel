@@ -60,7 +60,9 @@ def main():
     rng = np.random.default_rng(0)
 
     X, cond = load_pseudobulk(ROOT / args.pb_dir)
-    G, DELTA = build_deltas(X, cond)
+    # per-plate rows, so within-(line,drug) agreement can be split into
+    # same-plate and cross-plate pairs (plate-confound control)
+    G, DELTA = build_deltas(X, cond, keep_plate=True)
     allm = np.ones(len(G), dtype=bool)
     resp = responsive_genes(DELTA, allm)
     PRIOR = additive_prior(G, DELTA, allm, loo=True)   # leave-one-out prior
@@ -91,6 +93,8 @@ def main():
             out = [out[t] for t in rng.choice(len(out), n, replace=False)]
         return np.array(out)
 
+    plates = G.plate.to_numpy()
+
     tests = {
         "within_line_across_drug": (["line"], ["drug"]),
         "within_drug_across_line": (["drug"], ["line"]),
@@ -101,6 +105,20 @@ def main():
         pairs = sample_pairs(m, d)
         if len(pairs) == 0:
             continue
+        # PLATE CONFOUND CONTROL: a dose pair measured on the same plate shares
+        # residual batch structure that a cross-drug pair need not. Stratify so
+        # the headline dose reproducibility can be read off cross-plate pairs
+        # only, where no shared plate effect can inflate it.
+        if len(pairs):
+            same_plate = plates[pairs[:, 0]] == plates[pairs[:, 1]]
+            for lab, sel in (("same_plate", same_plate),
+                             ("cross_plate", ~same_plate)):
+                if sel.sum() < 30:
+                    continue
+                rr = corr_rows(R[pairs[sel, 0]], R[pairs[sel, 1]])
+                recs += [{"test": name, "kind": lab, "r": v} for v in rr]
+                print(f"{name:28s} [{lab:11s}] median r = "
+                      f"{np.nanmedian(rr):+.3f} (n={sel.sum()})")
         r = corr_rows(R[pairs[:, 0]], R[pairs[:, 1]])
         # permuted null: same pair count, random condition pairs
         pi = rng.integers(0, len(G), len(pairs))

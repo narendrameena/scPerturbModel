@@ -12,9 +12,14 @@ Per gene g, over all (line, drug, dose) conditions:
   residual  R      = delta - prior                      (line-specific part)
   var_total(g)     = Var[delta]                         total response variance
   var_resid(g)     = Var[R]                             line-specific + noise
-  var_interact(g)  = Cov[R_dose_i, R_dose_j] within the same (line, drug)
+  var_interact(g)  = Cov[R_dose_i, R_dose_j] within the same (line, drug),
+                     restricted to pairs measured on DIFFERENT PLATES
                      -> the REPRODUCIBLE part of R, i.e. real interaction,
-                        since independent noise does not covary across doses
+                        since independent noise does not covary across doses.
+                        The cross-plate restriction is essential: same-plate
+                        dose pairs correlate at r~0.48 versus r~0.07 across
+                        plates, so residual batch structure would otherwise
+                        inflate this term roughly sevenfold.
   noise(g)         = var_resid - var_interact
 
 Reported per gene: interaction_fraction = var_interact / var_total, plus the
@@ -51,7 +56,7 @@ def main():
     args = ap.parse_args()
 
     X, cond = load_pseudobulk(ROOT / args.pb_dir)
-    G, DELTA = build_deltas(X, cond)
+    G, DELTA = build_deltas(X, cond, keep_plate=True)
     allm = np.ones(len(G), dtype=bool)
     PRIOR = additive_prior(G, DELTA, allm, loo=True)
     R = DELTA - PRIOR
@@ -69,16 +74,21 @@ def main():
 
     # reproducible (interaction) variance: covariance of residuals between
     # different doses of the SAME (line, drug); independent noise cancels.
-    pair_i, pair_j = [], []
+    pair_i, pair_j, n_same_plate = [], [], 0
     idx = pd.DataFrame({"i": np.arange(len(G)), "line": G.cell_line_id,
-                        "drug": G.drug})
+                        "drug": G.drug, "plate": G.plate, "conc": G.conc})
     for _, grp in idx.groupby(["line", "drug"], observed=True):
         v = grp.i.to_numpy()
+        pl = grp.plate.to_numpy()
         for a in range(len(v)):
             for b in range(a + 1, len(v)):
+                if pl[a] == pl[b]:
+                    n_same_plate += 1
+                    continue          # drop: shares plate batch structure
                 pair_i.append(v[a]); pair_j.append(v[b])
     pair_i, pair_j = np.array(pair_i), np.array(pair_j)
-    print(f"{len(pair_i)} within-(line,drug) dose pairs", flush=True)
+    print(f"{len(pair_i)} cross-plate within-(line,drug) pairs used; "
+          f"{n_same_plate} same-plate pairs excluded", flush=True)
 
     A = R[pair_i][:, keep]
     B = R[pair_j][:, keep]
