@@ -126,6 +126,26 @@ acute-phase (SAA1, SAA2, SAA2-SAA4), imprinted/oncofetal (H19), secreted
 protease inhibitors (SERPINB2, SERPINB3) and MAPK feedback (SPRY4) — none of
 them canonical drug-target genes.
 
+**The interaction is not a viability artefact.** The obvious deflationary
+explanation is the rank-1 model implicit in MIX-Seq (McFarland et al. 2020):
+residual ≈ (that pair's sensitivity) × (one shared death/stress direction),
+which would explain both the interaction and its failure to transfer. Testing
+it with split-half validation over plates (2,247 line×drug pairs measured on
+≥2 plates, components fitted on one half and scored on the other):
+
+- component 1 carries only **34%** of reproducible residual variance (top 3:
+  49%) — not rank-1;
+- **at least six components reproduce** on held-out plates (split-half
+  r = 0.33–0.48), while components 3, 4 and 8 do not (r < 0), confirming the
+  procedure discriminates signal from noise;
+- component 1 is **uncorrelated with cell-cycle arrest** measured independently
+  from the single-cell data (G2M r = −0.05, G1 r = +0.05).
+
+Component 1 instead loads on stress and stemness/adhesion genes — HMOX1
+(oxidative stress), HSPA1B (proteotoxic stress), LGR5 (Wnt/stem), COL17A1,
+SEMA7A, PLA2R1. So context-specific drug response is a **multi-dimensional set
+of reproducible programs**, not a single "some lines die more" axis.
+
 ## 5. What does work for a new line: measure ~20 compounds and fine-tune
 `results/figures/04_generalization/few_shot_eval_dev8ft/`
 
