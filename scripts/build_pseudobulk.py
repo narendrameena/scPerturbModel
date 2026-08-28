@@ -26,10 +26,27 @@ def token_lut() -> tuple[np.ndarray, pd.DataFrame]:
     return lut, gm.reset_index(drop=True)
 
 
+def dose_lookup() -> dict:
+    """sample -> concentration, parsed from sample_metadata (raw mode only)."""
+    import ast
+    sm = pd.read_parquet(META / "sample_metadata.parquet")
+    out = {}
+    for s, dnc in zip(sm["sample"], sm.drugname_drugconc):
+        try:
+            out[s] = float(ast.literal_eval(dnc)[0][1])
+        except Exception:
+            out[s] = float("nan")
+    return out
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--src", default="data/interim/dev_subset/data")
     ap.add_argument("--out", default="data/processed/pseudobulk_dev")
+    ap.add_argument("--raw", action="store_true",
+                    help="read the untouched atlas shards (all 379 drugs, all "
+                         "lines) and join dose from sample_metadata on the fly, "
+                         "instead of a pre-extracted subset")
     args = ap.parse_args()
     src, out = ROOT / args.src, ROOT / args.out
     out.mkdir(parents=True, exist_ok=True)
@@ -38,12 +55,16 @@ def main():
     n_genes = len(gm)
     acc: dict[tuple, np.ndarray] = {}
     ncells: dict[tuple, int] = {}
+    doses = dose_lookup() if args.raw else None
 
     shards = sorted(src.glob("train-*.parquet"))
     for si, shard in enumerate(shards, 1):
-        t = pq.read_table(shard, columns=["genes", "expressions", "cell_line_id",
-                                          "drug", "conc", "plate"])
+        cols = ["genes", "expressions", "cell_line_id", "drug", "plate"]
+        cols += ["sample"] if args.raw else ["conc"]
+        t = pq.read_table(shard, columns=cols)
         df = t.to_pandas()
+        if args.raw:
+            df["conc"] = df["sample"].map(doses).astype("float32")
         for key, grp in df.groupby(["cell_line_id", "drug", "conc", "plate"],
                                    observed=True):
             genes = [np.asarray(g[1:] if e[0] < 0 else g, dtype=np.int64)
@@ -53,7 +74,7 @@ def main():
             G, E = np.concatenate(genes), np.concatenate(exprs)
             cols = lut[G]
             ok = cols >= 0
-            vec = acc.setdefault(key, np.zeros(n_genes, dtype=np.float64))
+            vec = acc.setdefault(key, np.zeros(n_genes, dtype=np.float32))
             np.add.at(vec, cols[ok], E[ok])
             ncells[key] = ncells.get(key, 0) + len(grp)
         if si % 50 == 0 or si == len(shards):
