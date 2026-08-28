@@ -151,8 +151,11 @@ def main():
 
     out = comp_df.copy()
     out.to_csv(TAB / f"rank1_viability_{args.tag}.csv", index=False)
-    pd.DataFrame({"component1_gene": sym, "loading": v1}).to_csv(
-        TAB / f"rank1_component1_genes_{args.tag}.csv", index=False)
+    # full loading matrix so components can be named by pathway enrichment
+    load_df = pd.DataFrame(comps.T, columns=[f"comp{k + 1}" for k in
+                                             range(comps.shape[0])])
+    load_df.insert(0, "gene_symbol", sym)
+    load_df.to_csv(TAB / f"rank1_component_loadings_{args.tag}.csv", index=False)
 
     # ---------------- figure ----------------
     plt.rcParams.update({"font.size": 10, "axes.spines.top": False,
