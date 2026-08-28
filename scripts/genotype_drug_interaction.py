@@ -107,7 +107,14 @@ def main():
         np.average(X[g.row.to_numpy()], axis=0, weights=g.n_cells)
         for _, g in dmso.groupby("cell_line_id", observed=True)])
     base_lines = sorted(dmso.cell_line_id.unique())
-    assert base_lines == lines
+    if base_lines != lines:
+        # full atlas: a few lines have controls but no usable treated deltas
+        # (or vice versa) - restrict everything to the intersection
+        keep = [l for l in lines if l in set(base_lines)]
+        base = base[[base_lines.index(l) for l in keep]]
+        lines = keep
+        mut = mut.loc[lines]
+        print(f"aligned to {len(lines)} lines present in both controls and deltas")
     Bc = base[:, resp] - base[:, resp].mean(0, keepdims=True)
     _, _, Vt = np.linalg.svd(Bc, full_matrices=False)
     state_pcs = Bc @ Vt[:N_STATE_PC].T
