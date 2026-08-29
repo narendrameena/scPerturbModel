@@ -6,12 +6,13 @@ All numbers below are reproducible from this repository; every figure is a
 bundle (PNG+SVG+PDF + source CSVs + generating script) under
 `results/figures/`, and every heavy job ran through SLURM (`jobs/`).
 
-Two working subsets are used throughout:
+Three working subsets are used throughout:
 
 | Subset | Lines | Drugs | Cells | Purpose |
 |---|---|---|---|---|
 | `dev8` | 8 (coverage-picked, mutation-stratified) | 50 | 5.88 M | fast iteration, largest context signal |
 | `dev47` | all 47 analysed lines | 50 | 20.47 M | scale, cross-line generalization |
+| `full` | all 50 lines | **379** | 95.6 M | every drug; mechanism-level analyses |
 
 Metrics are computed on plate-matched pseudobulk deltas (log1p CPM):
 `r_hvg` = Pearson r over the 2,000 most response-variable genes (selected on
@@ -120,8 +121,18 @@ three fail, and why the measured gains are small wherever the effect is real.
 **Variance decomposition** (per gene, cross-plate dose pairs only, 47 lines ×
 50 drugs): additive drug×dose effect **6.9%** of response variance, line×drug
 interaction **2.7%**, noise 90.4%. Of the *reproducible* signal, roughly
-**72% is the drug's average effect and 28% is context interaction**. The genes
-carrying the interaction are biologically coherent rather than random —
+**72% is the drug's average effect and 28% is context interaction**.
+
+Repeating this on the **full atlas** — all 379 drugs, 65,918 conditions
+aggregated from every one of the 95.6 M cells — replicates the structure and
+shifts the balance toward context: additive **4.8%**, interaction **3.3%**,
+noise 91.9%, i.e. **59% / 41%** of the reproducible signal. The three residual
+correlations reproduce almost exactly (dose +0.062, drug +0.019, line −0.002),
+as does the plate confound (same-plate +0.447 vs cross-plate +0.062). More
+mechanistically diverse compounds yield proportionally more context-specific
+response, which section 5 explains.
+
+The genes carrying the interaction are biologically coherent rather than random —
 acute-phase (SAA1, SAA2, SAA2-SAA4), imprinted/oncofetal (H19), secreted
 protease inhibitors (SERPINB2, SERPINB3) and MAPK feedback (SPRY4) — none of
 them canonical drug-target genes.
@@ -146,7 +157,58 @@ Component 1 instead loads on stress and stemness/adhesion genes — HMOX1
 SEMA7A, PLA2R1. So context-specific drug response is a **multi-dimensional set
 of reproducible programs**, not a single "some lines die more" axis.
 
-## 5. What does work for a new line: measure ~20 compounds and fine-tune
+## 5. What *is* predictable: context-dependence is set by the drug's mechanism
+`results/figures/10_drugs/`
+
+Sections 3–4 ask what makes a *cell line* respond differently. The
+complementary question has a positive answer. For each of 367 drugs we split
+its reproducible effect into a **conserved** part (its dose-matched mean
+response across lines) and a **context** part (line-specific variance,
+estimated from cross-plate, cross-dose residual covariance), and define
+
+    CDI = context / (conserved + context)
+
+so 0 means the drug does the same thing in every line and 1 means its
+reproducible effect is entirely line-specific. Median CDI is 0.160, and
+**mechanism explains a significant share of it** (Kruskal–Wallis H = 46.9,
+p = 2.3 × 10⁻³ across 24 classes):
+
+| most context-dependent | CDI | most conserved | CDI |
+|---|---|---|---|
+| Glucocorticoid receptor agonist | 0.363 | Glucose transporter inhibitor | 0.087 |
+| Proteasome inhibitor | 0.334 | Other MAPK inhibitor | 0.109 |
+| MEK inhibitor | 0.324 | RAF inhibitor | 0.119 |
+| Retinoic receptor agonist | 0.232 | Other TK inhibitor | 0.122 |
+
+The leading class is mechanistically expected, which is what makes it both a
+positive control and a result: glucocorticoid receptor agonists act through a
+nuclear receptor whose transcriptional output is set by each cell's own
+enhancer landscape, so their effects *should* be maximally context-specific.
+Four of the twelve most context-dependent individual compounds are
+corticosteroids (budesonide 0.428, dexamethasone 0.376, betamethasone 0.363,
+triamcinolone 0.342), and retinoic receptor agonists — also nuclear receptors —
+rank fourth by class. Clobetasol propionate ranks fifth overall (0.359) while
+the atlas's GPT-derived annotation calls it "unclear", so the analysis
+recovers a corticosteroid the metadata mislabels.
+
+The **MEK versus RAF contrast** is the sharpest pharmacological observation
+here: MEK inhibition is among the most context-dependent mechanisms (0.324)
+while RAF inhibition is among the most conserved (0.119), one step apart in the
+same pathway.
+
+Two constraints on the claim. Chemical structure alone predicts CDI only weakly
+(cross-validated r = 0.19, ridge on ECFP4), so context-dependence is a property
+of the target and mechanism rather than of the molecule — it cannot be read off
+a compound before choosing its target. And CDI correlates modestly with effect
+size (Spearman ρ = +0.38), so potent drugs are somewhat more context-dependent,
+though that does not account for the mechanism ranking.
+
+**Practical consequence.** How many cell models a compound must be screened in
+is predictable from its mechanism: nuclear-receptor, proteasome and MEK
+pharmacology needs broad panels, whereas RAF, metabolic and most TK inhibitors
+transfer.
+
+## 6. What does work for a new line: measure ~20 compounds and fine-tune
 `results/figures/04_generalization/few_shot_eval_dev8ft/`
 
 Adapting to a new line succeeds only if the residual head is allowed to
@@ -169,11 +231,22 @@ lines rather than a space one can interpolate into. Practically, a new cell
 model needs neither its genotype nor its baseline profile — it needs a handful
 of measured compounds and a fine-tuning pass.
 
+**And the panel needs no design.** Comparing five ways of choosing those
+compounds over 47 folds and 2,809 held-out conditions (median paired gain over
+additive, win rate): at k = 5, chemically diverse +0.018 (76%) and **random
++0.017 (76%)** lead, while MOA-diverse +0.010 (64%), most-discriminative +0.006
+(60%) and strongest-effect +0.005 (57%) trail. By **k = 20 every strategy
+converges** on the oracle (0.721 vs 0.7217). Selecting the most potent or the
+most line-discriminating compounds is therefore *worse* than sampling at
+random, presumably because both pick atypical compounds while random sampling
+matches the distribution the model is scored on. The protocol is simply: measure
+~20 arbitrary compounds and fine-tune.
+
 **Unseen drugs**, by contrast, generalize through chemistry: an ECFP-conditioned
 model trained with prior-dropout reaches r_de100 0.388 vs 0.267 for a
 nearest-drug-by-fingerprint baseline (dev47, 5-fold drug-grouped CV).
 
-## 6. Patient anchoring (TCGA): genotype yes, survival no
+## 7. Patient anchoring (TCGA): genotype yes, survival no
 
 The six components were scored across **10,921 TCGA tumours** (31–33 cancer
 types), using each component's top ±100 loading genes and z-scoring **within**
@@ -206,7 +279,7 @@ endpoints available here, so purity is proxied by hallmark stromal (EMT) and
 immune infiltration scores. This captures the dominant non-tumour axis but is
 weaker than ABSOLUTE.
 
-## 7. Independent audit: the atlas's cell-line identities hold up
+## 8. Independent audit: the atlas's cell-line identities hold up
 `results/figures/05_audit/`
 
 47 lines scored against **184 (tissue, cell-type) signatures** built from 12
