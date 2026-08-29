@@ -21,6 +21,47 @@ differentially expressed genes.
 
 ---
 
+## Headline findings
+
+**Methodological.**
+1. **A mean baseline is only as good as the number of contexts it averages.**
+   Going from 5 to 45 cell lines improves the additive baseline by **+10.6%**
+   (r 0.649 → 0.718) with everything else held fixed — the same order as the
+   improvement recent models report over baselines estimated from six lines.
+   Benchmarks that subsample contexts for tractability will overstate headroom
+   (§2).
+2. **Plate structure survives plate-matched normalisation.** Within-plate
+   comparisons in this atlas agree ~7× better than cross-plate ones
+   (r 0.45 vs 0.06); pooling them overstates reproducibility (§4).
+
+**Architecture of drug response.**
+3. Of the *reproducible* transcriptional response, **~59% is the drug's average
+   effect and ~41% is line×drug interaction** (full atlas, 379 drugs) (§4).
+4. That interaction is a **line×drug interaction, not a line property**: it
+   reproduces across doses (r = 0.062) but barely transfers across drugs
+   (0.019) or lines (−0.002). Hence no line-level descriptor can predict it (§4).
+5. It is **not a viability artefact** — the rank-1 model is falsified; at least
+   six components reproduce on held-out plates, and the leading one is
+   uncorrelated with cell-cycle arrest (§4).
+6. At the cell level it is a **uniform population shift, not a pre-existing
+   subpopulation** (20.5M cells; median shape excess 0.91× the noise floor) (§4).
+
+**Predictability.**
+7. **Context-dependence is set by the drug's mechanism** (Kruskal–Wallis
+   p = 2×10⁻³): nuclear-receptor agonists are the most context-specific
+   (glucocorticoid 0.363), metabolic and RAF inhibitors the most conserved
+   (0.087–0.119). Chemistry alone predicts it only weakly (r = 0.19) (§5).
+8. For a **new cell line**, genotype, organ and baseline expression all fail —
+   but measuring ~20 **arbitrary** compounds and fine-tuning recovers 98% of the
+   achievable gain. Probe-panel design does not help (§4, §6).
+
+**Clinical.**
+9. In 10,921 TCGA tumours the programs track driver genotype (2,128 associations
+   at FDR<0.05) but their **survival associations do not survive** adjustment for
+   stage, grade and infiltration (§7).
+
+---
+
 ## 1. The atlas reproduces, and so do its published analyses
 `results/figures/01_paper_replication/`
 
