@@ -53,6 +53,29 @@ structure. This independently reproduces the field's central critique
 ([Nature Methods 2025](https://www.nature.com/articles/s41592-025-02772-6)) on
 chemical rather than genetic perturbations.
 
+**The baseline's strength depends on how many contexts it averages — which may
+explain why the field disagrees about it.** The additive prior is a mean, so it
+should sharpen as more cell lines contribute. Holding the evaluation conditions
+fixed (leave-one-line-out on the full atlas) and varying only the number of
+other lines averaged:
+
+| lines averaged | additive r (top-100 DE) |
+|---|---|
+| 5 | 0.649 |
+| 10 | 0.690 |
+| 20 | 0.709 |
+| 45 | **0.718** |
+
+That is a **+10.6%** improvement from 5 to 45 lines, attributable to context
+count alone. For comparison, MAP ([Nat Mach Intell 2026](https://doi.org/10.1038/s42256-026-01286-w))
+reports +12.3% for its model over the best baseline while restricting
+Tahoe-100M to **six** cell lines. The gap a sparse benchmark opens up in the
+baseline is therefore of the same order as the gap such benchmarks attribute to
+the model. This does not show that any particular model's gains are artefactual
+— a well-estimated baseline may still be beaten — but it does mean **a mean
+baseline must be estimated from all available contexts before headroom is
+claimed**, and that studies using few contexts will systematically overstate it.
+
 ## 3. A context-residual model beats the baseline, and the gain is real
 `results/figures/03_models/`
 
