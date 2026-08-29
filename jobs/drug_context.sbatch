@@ -2,7 +2,7 @@
 #SBATCH --job-name=drug_ctx
 #SBATCH --partition=2204
 #SBATCH --cpus-per-task=8
-#SBATCH --mem=400G
+#SBATCH --mem=120G
 #SBATCH --time=06:00:00
 #SBATCH --output=logs/%x_%j.out
 #SBATCH --error=logs/%x_%j.err
