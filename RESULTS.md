@@ -272,6 +272,23 @@ is predictable from its mechanism: nuclear-receptor, proteasome and MEK
 pharmacology needs broad panels, whereas RAF, metabolic and most TK inhibitors
 transfer.
 
+**It is not a target-genetics phenomenon.** For the 254 drugs with mappable
+annotated targets, CDI is *uncorrelated* with how often the target is mutated
+across the panel (Spearman ρ = +0.10, p = 0.10) and with target expression
+level (ρ = +0.08, p = 0.21); it is weakly *negatively* correlated with target
+expression variance (ρ = −0.21, p = 8×10⁻⁴). The clearest case is the leading
+class itself: nuclear-receptor drugs have a median CDI of 0.342 versus 0.154
+overall, yet their targets are mutated in **zero** atlas lines.
+
+Taken with the failure of the genotype scans (§4, 0/825 mechanism × driver
+tests surviving FDR) and the identity of the response programs themselves
+(§4: epithelial-vs-neuronal, EMT, chromatin/senescence), this points to a
+single conclusion: **context-dependence in drug response is set by the cell's
+regulatory and chromatin state, not by mutations in the drug's target or by
+driver genotype.** That is why nuclear receptors — whose output is read out
+through each cell's enhancer landscape — sit at the top of the ranking, and why
+no mutation-level descriptor predicts the interaction.
+
 ## 6. What does work for a new line: measure ~20 compounds and fine-tune
 `results/figures/04_generalization/few_shot_eval_dev8ft/`
 
