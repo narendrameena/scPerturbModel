@@ -140,3 +140,47 @@ transfer can be predicted; we ask what context-dependence *is*. The two are
 complementary rather than competing, which is useful — but MAP now occupies
 the "predict unseen drugs well" ground firmly, so our contribution must stay
 on the architecture/mechanism side rather than on prediction accuracy.
+
+## 8. XPert (Nature Machine Intelligence 8:96-112, Jan 2026) — read in full
+`papers/s42256-025-01165-w.pdf`, doi:10.1038/s42256-025-01165-w (Guo, Zhang,
+Cao, Hsieh, Yang; Zhejiang University). Received May 2025, accepted Dec 2025.
+
+**What it is.** A dual-branch transformer that encodes pre- and
+post-perturbation cellular states *separately*, so the model disentangles a
+cell's intrinsic transcriptional pattern from the shift the drug causes.
+Explicitly models dose-time dynamics. Trained on **L1000** (not single-cell).
+Adds preclinical -> clinical transfer (+15.04% on patient-specific response)
+and attention-based interpretability that recovers resistance biomarkers
+(TIAM1, HK1, CDKN1B).
+
+**Splits**: warm-start (unseen cell-drug pairs), cold-drug (unseen drugs),
+**cold-cell** (unseen cell lines) — our three splits under different names.
+Baselines include TranSiGen, PRnet, DeepCE, CIGER, two MLPs, and crucially
+three mean baselines: Mean, Mean_cell, Mean_drug.
+
+**Three findings that directly corroborate ours.**
+
+1. *Mean baselines are hard to beat.* Verbatim: "the context-specific mean
+   baselines (Mean_cell and Mean_drug) were highly competitive, outranking some
+   complex models." This is our additive-baseline result, independently, on
+   L1000 — and it sits inside a paper whose own model is the headline.
+2. *Unseen cell lines are the hardest setting by a wide margin.* "The cold-cell
+   setting proved the most challenging due to cell-specific drug responses,
+   with an average performance drop of 121% versus the warm-start scenario."
+   That is our unseen-line negative, quantified on another dataset.
+3. *VAE-based models fail specifically in the unseen-context setting* —
+   TranSiGen scores negative R2 despite good correlation, "suggesting a failure
+   to adapt to unseen cellular contexts". Compare our scVI latent-shift
+   failure (r_de100 0.62 vs 0.90 additive).
+
+**One finding that refines ours.** XPert reports that accuracy tracks how
+similar a held-out line is to the training lines (MSE 0.24 -> 0.66 from
+high- to low-similarity), and proposes similarity as a confidence proxy. This
+is compatible with our result that baseline expression does not *improve*
+predictions: similarity predicts how hard a line will be, without giving the
+model anything it can use to do better. Worth citing as the distinction.
+
+**Neither MAP nor XPert audits the residual.** Both ask how accurately context
+transfer can be predicted; neither asks what context-dependence *is*, decomposes
+response variance, or tests whether the interaction is a line property. That
+gap remains ours.
