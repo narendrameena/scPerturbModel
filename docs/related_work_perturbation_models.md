@@ -86,3 +86,57 @@ Web survey of the field, with our own dev-subset results positioned against it.
    (our CVAE evaluates population match with E-distance already), Tahoe-x1's
    evaluation protocol on the very same dataset, and PRnet/biolord's
    unseen-drug splits vs our ECFP prior-dropout model.
+
+## 7. MAP (Nature Machine Intelligence 2026) — the closest competitor, read in full
+`papers/s42256-026-01286-w.pdf`, doi:10.1038/s42256-026-01286-w (Feng, Zhao,
+Zhang et al., Shanghai Jiao Tong). Received Mar 2026, accepted Jul 2026.
+
+**What it is.** MAP predicts single-cell transcriptional responses to
+*unprofiled* compounds by injecting structured pharmacological knowledge.
+Three parts: (i) **MAP-KG**, a knowledge graph unifying 14 public resources —
+187,089 drugs, 22,924 genes, 694,246 mechanistic relations; (ii) contrastive
+pretraining that aligns molecular structure (SMILES), protein sequence and
+free-text mechanism descriptions into one embedding space; (iii) those
+embeddings condition a perturbation predictor built on a single-cell
+foundation model, mapping (control cells, drug) -> perturbed profile.
+
+**Evaluation — the same two splits we use.**
+1. *Unseen cell line-drug combinations*: hold out 5% of drugs per cell line,
+   non-overlapping across lines, so every test drug is seen in OTHER lines.
+   This is our held-out-condition split.
+2. *Unprofiled drugs*: remove a drug's profiles entirely, and also delete it
+   and its edges from the knowledge graph to prevent leakage. This is our
+   held-out-drug split, done more carefully than ours on the leakage side.
+Datasets: Tahoe-100M, OP3, SciPlex3, plus ComboSciPlex for drug combinations.
+Baselines: chemCPA, PRnet, XPert, CRISP, STATE, and **trainMean**, "a
+competitive linear baseline which predicts perturbation effects using mean
+responses estimated from the training set" — i.e. essentially our additive
+baseline. Metrics: Pearson delta correlation and direction accuracy on top-50
+DEGs (DEGs ranked by absolute observed log fold change, as we do), HVG
+perturbation discrimination, MSE, Wasserstein — all at pseudobulk.
+
+**Headline results.** +12.3% top-50 DEG Pearson delta over the best baseline
+(STATE) on unseen combinations, +11.8% on unprofiled drugs; per-line delta
+correlations 0.90-0.95; 4 of 5 approved anti-cancer drugs prioritised in the
+top 15 of 58 held-out compounds for A-549 by GSEA-based in-silico screening.
+
+**Two things that matter for us.**
+
+*It uses only SIX Tahoe cell lines* (A-172, A-498, A-549, Hep-G2/C3A, PANC-1,
+SK-MEL-2) — "to provide a proof-of-concept evaluation and keeping computation
+tractable". So the additive/trainMean baseline is estimated from at most five
+other lines, whereas ours averages 46. This is a plausible reconciliation of a
+real contradiction in the literature: MAP reports deep models beating the mean
+baseline substantially, while Nature Methods 2025, DrEval and our own results
+find that baseline nearly unbeatable. **The strength of the additive baseline
+should scale with the number of contexts averaged** — a directly testable
+prediction we can evaluate by recomputing our additive baseline with 5, 10, 20
+and 46 lines. If it holds, it explains the field's disagreement and is worth
+reporting on its own.
+
+*It does no residual analysis.* Zero mentions of variance decomposition,
+interaction terms, or line-by-drug structure. MAP asks how well context
+transfer can be predicted; we ask what context-dependence *is*. The two are
+complementary rather than competing, which is useful — but MAP now occupies
+the "predict unseen drugs well" ground firmly, so our contribution must stay
+on the architecture/mechanism side rather than on prediction accuracy.
