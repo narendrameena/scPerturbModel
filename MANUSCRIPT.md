@@ -44,8 +44,10 @@ and transcriptional and viability context-dependence are **decoupled**
 (ρ = −0.09 across 67 mechanism classes). Genome-wide mutation status has **no
 cross-validated predictive power** for the interaction (median CV *R*² = +0.0002,
 50.8% of compounds positive), whereas **baseline expression predicts it in 92.5%
-of compounds** (+0.093) and baseline protein nearly as well (+0.073); lineage
-(+0.020) adds nothing once expression is included. Finally, of the line-specific response that
+of compounds** (+0.093) and baseline protein nearly as well (+0.073); copy number
+falls between (+0.005), beating mutations but trailing expression by 0.088, and
+lineage (+0.020) adds nothing once expression is included — the ordering places
+DNA-level features last. Finally, of the line-specific response that
 an assay reproduces with itself, only **56% survives transfer to another
 laboratory** — but **87%** survives once cell-line identity is verified from the
 data rather than assumed from an identifier, on held-out compounds. Only 5–12% of
