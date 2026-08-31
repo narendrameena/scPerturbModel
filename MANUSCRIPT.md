@@ -1,4 +1,4 @@
-# Cell-line identity, not protocol, limits the reproducibility of context-dependent drug response
+# Laboratory, not assay, limits the reproducibility of context-dependent drug response
 
 **Draft manuscript.** Every number below is reproducible from this repository;
 figure bundles (PNG/SVG/PDF + source data + generating script) are under
@@ -26,7 +26,7 @@ specific to a cellular context rather than shared across contexts — is widely
 quoted but rarely measured properly. We show that measuring it requires
 independent replicates at matched dose, that the flagship single-cell atlas
 largely lacks them, and that the dominant obstacle to transferring the quantity
-between studies is not protocol but cell-line identity. In LINCS phase 1, where
+between studies is the laboratory rather than the assay. In LINCS phase 1, where
 6.1 million genuine same-dose replicate pairs are available, **43% of the
 reproducible transcriptional response is the compound's shared effect and 57% is
 a context × compound interaction**. In Tahoe-100M only **4.7% of (line, compound,
@@ -77,9 +77,11 @@ We treat the residual as the measurement, and we treat its measurability as the
 first question rather than an assumption. Three findings follow, in order of
 consequence: the estimator is fragile in ways that change conclusions; the
 flagship atlas lacks the replicate structure the estimator requires; and the
-quantity, where it can be estimated, is limited in transfer by cell-line
-divergence between laboratories rather than by protocol — the scaled-up form of
-what Ben-David and colleagues demonstrated in a single cell line.
+quantity, where it can be estimated, transfers between laboratories far less well
+than it repeats within one, and the loss is attributable to the laboratory rather
+than the assay. Ben-David and colleagues showed cultures of one cell line diverge
+between institutions; whether that divergence is what we are measuring is a
+question our data can pose but, as we show, not settle.
 
 ---
 
@@ -196,7 +198,7 @@ mutational burden, and neighbouring recurrent variants that are synonymous. The
 same pipeline recovers 11 of 11 known biomarkers in GDSC (BRAF V600E ×
 dabrafenib, *P* = 3×10⁻³¹), so the negative is informative.
 
-### Cell-line identity, not protocol, limits cross-laboratory transfer
+### Cross-laboratory transfer is limited by the laboratory, not the assay
 
 Against within-laboratory ceilings of r = 0.473 (PRISM replicate plates) and
 0.438 (GDSC1 vs GDSC2), the line-specific response transfers between institutions
@@ -263,17 +265,17 @@ the power curve — 4% recovery at 47 contexts, 72% at 400 — this gives a conc
 design target: an atlas of roughly 400 lines, two plates per condition, and
 one-tenth the cells per condition would answer what the present one cannot.
 
-**Cross-atlas integration should verify identity, not assume it.** Most of the
-apparent irreproducibility between laboratories is cell-line divergence rather
-than protocol difference — the laboratory step costs 84% of the loss, the assay
-step 16% — and it is largely recoverable: checking that a line is its own best
+**Cross-atlas integration should verify identity, not assume it.** The
+laboratory step costs 84% of the loss and the assay step 16%, so the problem is
+not protocol; and much of the loss is recoverable: checking that a line is its own best
 match by response fingerprint lifts transfer from 56% to 87% of the achievable
 ceiling. Combined with weighting compounds by the strength of their line-specific
 component, this is a cheap and immediate improvement to any analysis that pools
-atlases. It also dissolves two puzzles of our own: the mechanism ranking's
-failure to replicate across datasets needs no biological explanation, and the
-genotype negatives have a second cause besides power, since for most lines the
-genotype and the phenotype were not measured on behaviourally identical cultures.
+atlases. It also dissolves one puzzle of our own: the mechanism ranking's failure to
+replicate across datasets needs no biological explanation, since a ~56%
+reproducible fraction concentrated in strong-interaction compounds suffices. What
+the loss consists of — divergent cultures, unmeasured protocol variables, or
+simply a noisy line-specific signal — we can bound but not resolve.
 
 ### Limitations
 
