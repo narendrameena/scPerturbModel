@@ -344,7 +344,10 @@ plates) aggregated to 65,918 (line, drug, dose, plate) pseudobulk profiles; LINC
 phase 1 (GSE92742) and phase 2 (GSE70138) Level 4, landmark genes only; PRISM
 Repurposing secondary screen (738 lines, ~1,500 compounds, 8 doses, replicate
 detection plates); GDSC1 and GDSC2 fitted dose response (978 lines, 542 drugs);
-CCLE mutation calls via Cellosaurus; OP3 and sciPlex3 for architecture
+CCLE mutation calls via Cellosaurus, together with CCLE baseline expression
+(19,221 genes), gene-level copy number and RPPA protein (214 antibodies) from
+the legacy CCLE distribution and the DepMap figshare release; OP3 and sciPlex3
+for architecture
 replication.
 
 **Decomposition.** Responses are batch-matched deltas against controls of the
@@ -362,10 +365,14 @@ ceilings from PRISM replicate plates and GDSC1 vs GDSC2. Identity is verified by
 response fingerprint on one random half of the shared compounds and evaluated on
 the disjoint half.
 
-**Genetic architecture.** Per compound, 5-fold cross-validated ridge with alpha
+**Predictor blocks.** Per compound, 5-fold cross-validated ridge with alpha
 selected inside each training fold, solved in the dual when predictors exceed
-samples. Synonymous and nonsynonymous blocks are restricted to the same 3,435
-genes so they are matched in size and identity.
+samples. Blocks are matched so that none wins on capacity or coverage:
+synonymous and nonsynonymous variants are restricted to the same 3,435 genes;
+baseline expression and gene-level copy number are each reduced to their 2,000
+most variable features; and every block is scored on the same cell lines for a
+given compound. Copy number, expression and protein are compared on the subset
+of lines present in all three.
 
 **Statistics.** Nulls are matched to the confound in each case: cross-context
 pairs for the residual offset, size-matched solid panels for the immune
@@ -384,12 +391,16 @@ correlation for MSI, and lineage stratification for allele associations.
    not across compounds or contexts. (c) Dose curve: rise to a peak below
    lethality, then collapse.
 3. **What does and does not predict it.** (a) Cross-validated *R*² by predictor
-   block — baseline expression, baseline protein, lineage and nonsynonymous
-   variants, all on identical compounds and lines. (b) The synonymous control,
-   plotted as the per-compound nonsynonymous-minus-synonymous difference, since
-   both blocks are individually negative and the claim is about their gap.
-   (c) Power curve for genotype linkage versus context count. (d) Readout
-   decoupling: transcription versus viability mechanism rankings.
+   block — baseline expression, baseline protein, lineage, gene-level copy
+   number and nonsynonymous variants — on identical compounds and lines, with
+   expression and copy number capped at the same 2,000 most-variable features so
+   neither block wins on capacity. Copy number beats mutations (p = 6×10⁻⁴) but
+   trails expression by 0.088 (p = 3×10⁻²¹), placing DNA-level features at the
+   bottom of the ordering. (b) The synonymous control, plotted as the
+   per-compound nonsynonymous-minus-synonymous difference, since both blocks are
+   individually negative and the claim is about their gap. (c) Power curve for
+   genotype linkage versus context count. (d) Readout decoupling: transcription
+   versus viability mechanism rankings.
 4. **Cross-laboratory reproducibility.** (a) The ladder from repeat plates to a
    different laboratory. (b) Rank of the identifier-matched line by response
    similarity. (c) Reproducible fraction before and after identity verification,
