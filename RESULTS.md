@@ -820,6 +820,63 @@ viability. The earlier ρ = +0.56 reported against LINCS was produced by the
 biased per-perturbation estimator and disappears once both sides use the same
 corrected one — it should not be cited.
 
+## 17. Genotype has no cross-validated predictive power; lineage has a little
+
+§11 showed that at 738 cell lines the genotype scan recovers the clinical
+biomarker set, and reported that a single allele explains a median 5.5% of a
+compound's interaction. **That 5.5% figure was in-sample and is withdrawn** — it
+was a point-biserial R² for an allele chosen on the same data, so selection
+inflated it. Cross-validated, it is approximately zero.
+
+The proper question is how much of the line × compound interaction *any* genotype
+block predicts out of sample. Testing four blocks per compound with 5-fold
+cross-validated ridge (alpha chosen inside each training fold), across 150
+compounds at ~740 lines:
+
+| predictor block | median CV R² | compounds with R² > 0 | p |
+|---|---|---|---|
+| **lineage** (primary tissue) | **+0.0145** | **72.7%** | 4.9×10⁻¹⁵ |
+| mutational burden | −0.0023 | 32.0% | 1.4×10⁻² |
+| nonsynonymous variants | −0.0058 | 33.3% | 7.3×10⁻⁷ |
+| synonymous variants | −0.0064 | 22.0% | 6.9×10⁻¹³ |
+| everything together | −0.0029 | 42.7% | 1.9×10⁻² |
+
+A negative cross-validated R² means the block predicts *worse than the mean*.
+**Genome-wide mutation status carries no generalisable information about which
+compounds a cell line responds to unusually.** Lineage does, but explains only
+about 1.5% of the interaction.
+
+**The synonymous control isolates the mechanistic part.** A synonymous variant
+cannot change a protein, so it cannot cause a response difference — but it
+carries the same ancestry, lineage and germline-contamination structure as a
+nonsynonymous variant in the same gene. Restricting both blocks to the 3,435
+genes carrying each class in ≥20 lines makes them the same size and the same
+genes, so only protein-changing capacity differs. The excess is:
+
+- nonsynonymous − synonymous, marginal: **+0.0025** (57.3% positive, p = 0.028)
+- the same, each added over lineage: **+0.0036** (58.0% positive, p = 0.025)
+
+So a genuine mechanistic component exists and is statistically detectable, but it
+is **~0.3% of the interaction variance**. Everything else that looked genetic is
+population structure and lineage.
+
+**One caveat runs in our favour.** Ben-David et al. (2018, Nature) show germline
+variant calls are far more reproducible across laboratories than somatic ones
+(allelic-fraction r = 0.95 vs 0.86; a median 19% of non-silent mutations appear
+in only one of CCLE/GDSC). Synonymous variants are largely germline, so the
+synonymous block carries *less* measurement error than the nonsynonymous somatic
+block. The comparison is therefore conservative — the true mechanistic excess
+could be somewhat larger than 0.3%, though not by enough to change the reading.
+
+**Context.** In UK Biobank, genome-wide common variation explains 9–17% of drug
+response (Sadowski et al. 2024, *Cell Genomics*: statin–LDL 9%, statin–A1c 10%,
+statin–glucose 11%, metformin–BMI 17%). Our cell-line system yields far less.
+Two explanations are live and we cannot separate them here: cell lines genuinely
+have less genetic determination of response than patients, or the cross-dataset
+genotype–phenotype mismatch Ben-David quantifies destroys it before we measure.
+
+Figure bundle: `results/figures/15_architecture/genetic_architecture/`.
+
 ## Reproducing
 
 ```bash
