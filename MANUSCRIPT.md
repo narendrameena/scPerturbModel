@@ -380,13 +380,20 @@ correlation for MSI, and lineage stratification for allele associations.
    not across compounds or contexts. (c) Dose curve: rise to a peak below
    lethality, then collapse.
 3. **What does and does not predict it.** (a) Cross-validated *R*² by predictor
-   block, with the synonymous control. (b) Power curve for genotype linkage
-   versus context count. (c) Readout decoupling: transcription versus viability
-   mechanism rankings.
+   block — baseline expression, baseline protein, lineage and nonsynonymous
+   variants, all on identical compounds and lines. (b) The synonymous control,
+   plotted as the per-compound nonsynonymous-minus-synonymous difference, since
+   both blocks are individually negative and the claim is about their gap.
+   (c) Power curve for genotype linkage versus context count. (d) Readout
+   decoupling: transcription versus viability mechanism rankings.
 4. **Cross-laboratory reproducibility.** (a) The ladder from repeat plates to a
    different laboratory. (b) Rank of the identifier-matched line by response
    similarity. (c) Reproducible fraction before and after identity verification,
    on held-out compounds. (d) Transfer versus strength of the line-specific
    component.
-5. **Matching strategy.** Fingerprint similarity under random, same-tissue,
-   identifier and best-hit pairing.
+5. **Matching strategy, and why the divergence reading was withdrawn.**
+   (a) Fingerprint similarity under random, same-tissue, identifier and best-hit
+   pairing. (b) Their distributions. (c) Expression rank of the line that
+   outranked the identifier match: near chance, and sharing tissue only 7% of
+   the time, which is why best-hit failure is read as metric noise rather than
+   demonstrated culture divergence.

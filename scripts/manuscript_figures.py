@@ -244,54 +244,87 @@ def figure2():
 
 # ---------------------------------------------------------------- figure 3
 def figure3():
+    EA = read("expression_architecture.csv")
     ga = read("genetic_architecture_summary.csv")
     pw = read("prism_genotype_power.csv")
     tp = read("three_platform_mechanism_cdi.csv")
-    fig, ax = plt.subplots(1, 3, figsize=(13.5, 4.0), constrained_layout=True)
+    fig, ax = plt.subplots(1, 4, figsize=(17.5, 4.1), constrained_layout=True)
 
-    if ga is not None and len(ga):
-        lab = {"lineage": "lineage", "burden": "mutational\nburden",
-               "synonymous": "synonymous\n(control)",
-               "nonsynonymous": "nonsynonymous", "all": "all"}
-        ga = ga[ga.block.isin(lab)]
-        cols = [AQUA if b == "lineage" else (GREY if b == "synonymous" else
-                ORANGE) for b in ga.block]
-        ax[0].bar(range(len(ga)), ga.median_cv_r2, width=0.6, color=cols)
+    # a: all blocks measured on the SAME compounds and lines, so the comparison
+    # is fair; the synonymous control sits in panel b because it was run on a
+    # different compound set
+    if EA is not None and len(EA):
+        blocks = [("baseline\nexpression", "r2_expression", VIOLET),
+                  ("baseline\nprotein", "r2_protein", BLUE),
+                  ("lineage", "r2_lineage", AQUA),
+                  ("nonsynonymous\nvariants", "r2_nonsyn", ORANGE)]
+        blocks = [b for b in blocks if b[1] in EA.columns
+                  and EA[b[1]].notna().any()]
+        data = [EA[c].dropna() for _, c, _ in blocks]
+        bp = ax[0].boxplot(data, showfliers=False, patch_artist=True,
+                           medianprops=dict(color="black", lw=1.5))
+        for p_, (_, _, c) in zip(bp["boxes"], blocks):
+            p_.set_facecolor(c); p_.set_alpha(0.82)
+        for i, d_ in enumerate(data):
+            ax[0].text(i + 1, np.median(d_) + 0.012, f"{np.median(d_):+.3f}",
+                       ha="center", fontsize=7.4, fontweight="bold")
         ax[0].axhline(0, color="#444", lw=1.0)
-        ax[0].set_xticks(range(len(ga)), [lab[b] for b in ga.block],
+        ax[0].set_xticks(range(1, len(blocks) + 1), [b[0] for b in blocks],
                          fontsize=6.8)
-        ax[0].set_ylabel("median cross-validated $R^2$")
-        ax[0].text(0.98, 0.95, "negative = worse\nthan the mean",
-                   transform=ax[0].transAxes, ha="right", va="top",
-                   fontsize=6.8, color="#555")
-    panel(ax[0], "a", "Only lineage predicts, and weakly")
+        ax[0].set_ylabel("cross-validated $R^2$")
+        ax[0].text(0.97, 0.95, f"n = {len(EA)} compounds\nidentical lines "
+                   f"per block", transform=ax[0].transAxes, ha="right",
+                   va="top", fontsize=6.4, color="#666")
+    panel(ax[0], "a", "Molecular state predicts; genotype does not")
+
+    # b: the synonymous control. Plotting the two blocks side by side hides the
+    # point, because both are negative; the claim is about their DIFFERENCE, so
+    # that is what is plotted. Synonymous variants cannot change a protein but
+    # carry the same ancestry and lineage structure, so the excess of
+    # nonsynonymous over synonymous is the mechanistic part.
+    gafull = read("genetic_architecture.csv")
+    if gafull is not None and "mechanistic" in gafull.columns:
+        d = gafull.mechanistic.dropna()
+        ax[1].hist(d.clip(-0.06, 0.06), bins=42, color=VIOLET, alpha=0.85)
+        ax[1].axvline(0, color="#444", lw=1.4)
+        ax[1].axvline(d.median(), color=ORANGE, lw=2.2,
+                      label=f"median {d.median():+.4f}")
+        ax[1].set_xlabel("nonsynonymous − synonymous $R^2$ (over lineage)")
+        ax[1].set_ylabel("compounds")
+        ax[1].legend(frameon=False, fontsize=7)
+        ax[1].text(0.03, 0.95, f"{(d > 0).mean():.0%} of compounds positive\n"
+                   f"p = 0.025 — real but ≈0.3%\nof the interaction variance",
+                   transform=ax[1].transAxes, va="top", fontsize=6.5,
+                   color="#444")
+    panel(ax[1], "b", "The synonymous control isolates mechanism")
 
     if pw is not None and len(pw):
-        ax[1].plot(pw.n_contexts, pw.detection_rate, "o-", color=VIOLET, lw=2,
+        ax[2].plot(pw.n_contexts, pw.detection_rate, "o-", color=VIOLET, lw=2,
                    ms=5)
-        ax[1].axvline(47, color=ORANGE, ls="--", lw=1.3)
-        ax[1].annotate("Tahoe\n47 lines", (47, 0.80), fontsize=7,
+        ax[2].axvline(47, color=ORANGE, ls="--", lw=1.3)
+        ax[2].annotate("Tahoe\n47 lines", (47, 0.62), fontsize=7,
                        color=ORANGE, xytext=(6, 0), textcoords="offset points")
-        ax[1].axhline(0.8, color="#888", ls=":", lw=1)
-        ax[1].set_xscale("log")
-        ax[1].set_xlabel("cell lines sampled")
-        ax[1].set_ylabel("true associations recovered")
-        ax[1].set_ylim(-0.02, 1.02)
-    panel(ax[1], "b", "Genotype linkage needs ~400 contexts")
+        ax[2].axhline(0.8, color="#888", ls=":", lw=1)
+        ax[2].set_xscale("log")
+        ax[2].set_xlabel("cell lines sampled")
+        ax[2].set_ylabel("true associations recovered")
+        ax[2].set_ylim(-0.02, 1.02)
+    panel(ax[2], "c", "Genotype linkage needs ~400 contexts")
 
     if tp is not None and {"Tahoe", "PRISM"} <= set(tp.columns):
         v = tp[["Tahoe", "PRISM"]].dropna()
-        ax[2].scatter(v.Tahoe, v.PRISM, s=34, color=VIOLET, edgecolors="none")
+        ax[3].scatter(v.Tahoe, v.PRISM, s=34, color=VIOLET, edgecolors="none")
         from scipy import stats as st
         rho = st.spearmanr(v.Tahoe, v.PRISM)
-        ax[2].set_xlabel("mechanism CDI — transcription (Tahoe)")
-        ax[2].set_ylabel("mechanism CDI — viability (PRISM)")
-        ax[2].text(0.04, 0.94, f"ρ = {rho.statistic:+.2f}\n(n.s., n={len(v)})",
-                   transform=ax[2].transAxes, va="top", fontsize=8)
-    panel(ax[2], "c", "Transcription and viability are decoupled")
+        ax[3].set_xlabel("mechanism CDI — transcription (Tahoe)")
+        ax[3].set_ylabel("mechanism CDI — viability (PRISM)")
+        ax[3].text(0.04, 0.94, f"ρ = {rho.statistic:+.2f}\n(n.s., n={len(v)})",
+                   transform=ax[3].transAxes, va="top", fontsize=8)
+    panel(ax[3], "d", "Transcription and viability are decoupled")
     fig.suptitle("Figure 3 — What does and does not predict the interaction",
                  fontsize=10.5, x=0.005, ha="left", fontweight="bold")
-    return fig, {"architecture": ga if ga is not None else pd.DataFrame(),
+    return fig, {"blocks_matched": EA if EA is not None else pd.DataFrame(),
+                 "synonymous_control": ga if ga is not None else pd.DataFrame(),
                  "power": pw if pw is not None else pd.DataFrame()}
 
 
@@ -347,7 +380,7 @@ def figure4():
                    f"{m.rank_of_id_match.median():.0f} of "
                    f"{m.n_candidates.median():.0f}",
                    transform=ax[1].transAxes, ha="right", va="top", fontsize=7)
-    panel(ax[1], "b", "Identifiers usually are not confirmed")
+    panel(ax[1], "b", "Identifier matches are rarely the single best")
 
     fr = [getv("reproducible fraction (all)"),
           getv("reproducible fraction (identity-validated)")]
@@ -401,7 +434,10 @@ def figure4():
 # ---------------------------------------------------------------- figure 5
 def figure5():
     M = read("matching_strategy.csv")
-    fig, ax = plt.subplots(1, 2, figsize=(10.5, 4.0), constrained_layout=True)
+    EI = read("expression_identity.csv")
+    ncol = 3 if (EI is not None and len(EI)) else 2
+    fig, ax = plt.subplots(1, ncol, figsize=(5.2 * ncol, 4.0),
+                           constrained_layout=True)
     if M is not None and len(M):
         order = ["random pairing", "same tissue,\nrandom line",
                  "identifier\n(standard practice)",
@@ -434,10 +470,37 @@ def figure5():
         ax[1].set_xlabel("fingerprint similarity"); ax[1].set_ylabel("density")
         ax[1].legend(frameon=False, fontsize=6.4)
         panel(ax[1], "b", "Distributions")
+
+    # c: is a failed identifier match evidence of divergence, or just noise?
+    # If the line that outranks the identifier match were a genuinely divergent
+    # culture's nearest relative, it should sit among that line's closest
+    # expression neighbours. It does not — the distribution is centred near
+    # chance, which is why the divergence reading was withdrawn.
+    if EI is not None and len(EI):
+        ax[2].hist(EI.expr_rank_of_best_match,
+                   bins=np.logspace(0, np.log10(max(EI.n_candidates.max(), 10)),
+                                    34), color=AQUA, alpha=0.85)
+        ax[2].set_xscale("log")
+        med = EI.expr_rank_of_best_match.median()
+        chance = EI.n_candidates.median() / 2
+        ax[2].axvline(chance, color="#666", ls=":", lw=1.6, label="chance")
+        ax[2].axvline(med, color=ORANGE, lw=2, label=f"observed median ({med:.0f})")
+        ax[2].set_xlabel("expression rank of the line that outranked the "
+                         "identifier")
+        ax[2].set_ylabel("cell lines")
+        ax[2].legend(frameon=False, fontsize=6.8)
+        ax[2].text(0.03, 0.95, f"only {EI.same_tissue.mean():.0%} share the "
+                   f"primary tissue\n→ outranking lines are near-random "
+                   f"neighbours,\n   so best-hit failure is metric noise, "
+                   f"not\n   demonstrated culture divergence",
+                   transform=ax[2].transAxes, va="top", fontsize=6.3,
+                   color="#444")
+        panel(ax[2], "c", "Why the divergence reading was withdrawn")
     fig.suptitle("Figure 5 — Matching cell lines across atlases: what "
                  "identifiers assume, what the data supports", fontsize=10.5,
                  x=0.005, ha="left", fontweight="bold")
-    return fig, {"per_pair": M if M is not None else pd.DataFrame()}
+    return fig, {"per_pair": M if M is not None else pd.DataFrame(),
+                 "expression_identity": EI if EI is not None else pd.DataFrame()}
 
 
 def main():
