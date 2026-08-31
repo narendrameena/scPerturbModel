@@ -411,6 +411,26 @@ shown in primary human immune cells as well as cancer cell lines, across three
 platforms, three labs, and three different kinds of replicate (plate, donor,
 experimental repeat).
 
+**The per-drug ranking does not replicate — for a quantifiable reason.** We also
+recomputed the per-compound context-dependence index (§5) in OP3. It fails, and
+the failure is one of power rather than of biology: a compound in OP3 has a
+median of **18** cross-replicate pairs from which to estimate its own
+interaction (6 cell types × 3 donors), against **142** in Tahoe-100M. The
+consequence is stark — only **23%** of OP3 compounds yield a positive
+interaction estimate at all, versus **96%** in Tahoe; the rest come out negative
+and clamp to zero, which is what an unbiased but noisy covariance estimator does
+when the true value is small. Only 15 compounds are shared by name between the
+two panels, too few for a cross-system correlation (Spearman ρ = +0.06,
+p = 0.84). Of the three OP3 compounds with enough signal to estimate, two agree
+closely with their Tahoe values (belinostat 0.270 vs 0.215; LY2090314 0.144 vs
+0.160) and one does not (dabrafenib 0.276 vs 0.119) — an anecdote, not evidence.
+
+So the **aggregate** decomposition replicates because it pools 10,317 pairs,
+while the **per-compound** ranking needs per-compound replication that OP3 does
+not have. This is the same lesson as §10 applied to a different axis: pooled
+estimates are robust, stratified ones are limited by the replication depth
+available within each stratum.
+
 Two caveats worth stating. The across-context row is partly forced negative by
 the leave-one-out prior (expected ≈ −1/(k−1), i.e. −0.20 at k = 6 and −0.022 at
 k = 47), so the informative contrast is replicates versus perturbations, not
