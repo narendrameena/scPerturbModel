@@ -1,329 +1,376 @@
-# Transcriptional drug response transfers between cellular contexts to a degree set by drug mechanism
+# Cell-line identity, not protocol, limits the reproducibility of context-dependent drug response
 
 **Draft manuscript.** Every number below is reproducible from this repository;
 figure bundles (PNG/SVG/PDF + source data + generating script) are under
 `results/figures/`, and each analysis ran as a recorded SLURM job in `jobs/`.
-See `RESULTS.md` for the full result set and `docs/methodology_positioning.md`
-for an audit of these methods against the published literature.
+See `RESULTS.md` for the full result set, `docs/methodology_rationale.md` for why
+each method was chosen over its alternatives, and `docs/pertdecomp.md` for the
+tool.
+
+> **Revision note (2026-08-31).** An earlier draft of this manuscript was titled
+> *"Transcriptional drug response transfers between cellular contexts to a degree
+> set by drug mechanism."* That framing has been withdrawn. The mechanism ranking
+> is significant within Tahoe-100M (P = 8.7×10⁻⁴) but does **not** reproduce
+> against LINCS phase 1 (ρ = +0.09) or PRISM viability (ρ = −0.09 over 67
+> classes, a well-powered null). The earlier supporting value of ρ = +0.56 was
+> produced by a biased per-perturbation estimator and does not survive its
+> correction. The paper below is built on what replicates.
 
 ---
 
 ## Abstract
 
-Giga-scale single-cell perturbation atlases are being built to predict how any
-cell responds to any drug, yet how much of a drug's effect is shared between
-cellular contexts — and what the unshared part consists of — has not been
-measured. Decomposing 95.6 million single-cell transcriptomes spanning 47 cancer
-cell lines and 379 compounds, we find that **59% of the reproducible
-transcriptional response to a drug is its context-averaged effect and 41% is a
-cell-line × drug interaction**. That interaction is real but is *not a property
-of the cell line*: it reproduces across independent replicates of the same
-line–drug pair (r = 0.062) yet barely transfers to other drugs in the same line
-(r = 0.019). The same architecture holds in primary human immune cells and in a
-second cancer-line atlas, across three platforms and three kinds of replicate.
-It is not a viability artefact — at least six transcriptional programmes carry
-it, and the leading one is uncorrelated with cell-cycle arrest — and at
-single-cell resolution it is a uniform population shift rather than selection of
-a pre-existing subpopulation. How much of a compound's effect is
-context-specific is predictable from **mechanism** (P = 2×10⁻³ across 24
-classes): nuclear-receptor agonists are the least transferable (index 0.363) and
-metabolic and RAF inhibitors the most conserved (0.087–0.119), while chemical
-structure alone predicts poorly (r = 0.19) and target genotype not at all. For a
-cell line never seen during training, no descriptor we tested — driver
-mutations, tissue of origin, baseline transcriptome, DNA methylation — recovers
-its interaction; measuring roughly 20 *arbitrary* compounds and fine-tuning
-recovers 98% of the achievable gain, and panel design does not help. Finally,
-the apparent strength of the mean baseline that such models must beat depends on
-benchmark design: averaging 45 contexts rather than 5 improves it by 10.6%,
-comparable to gains recently attributed to models evaluated on six contexts.
-These results quantify what is transferable in drug response, what is not, and
-what it costs to obtain.
+Giga-scale perturbation atlases are being built to predict how any cell responds
+to any drug, and their central quantity — the part of a drug's effect that is
+specific to a cellular context rather than shared across contexts — is widely
+quoted but rarely measured properly. We show that measuring it requires
+independent replicates at matched dose, that the flagship single-cell atlas
+largely lacks them, and that the dominant obstacle to transferring the quantity
+between studies is not protocol but cell-line identity. In LINCS phase 1, where
+6.1 million genuine same-dose replicate pairs are available, **43% of the
+reproducible transcriptional response is the compound's shared effect and 57% is
+a context × compound interaction**. In Tahoe-100M only **4.7% of (line, compound,
+dose) combinations are measured on more than one plate**; its apparent replicates
+are different *doses*, and on true replicates the interaction is not detectable
+(*P* = 0.97), so the atlas cannot resolve the quantity it is most used to report.
+Estimating the interaction is subject to four failure modes that are invisible in
+the output — using residual variance rather than replicate covariance, pooling
+same-batch comparisons, taking an in-sample rather than leave-one-context-out
+shared response, and treating doses as replicates — each of which we quantify and
+guard against in a released tool. Applying the corrected estimator across four
+atlases, the interaction is dose-dependent, rising roughly fourfold to a peak
+just below lethality and collapsing where every line is dying (*P* = 4×10⁻⁹²),
+and transcriptional and viability context-dependence are **decoupled**
+(ρ = −0.09 across 67 mechanism classes). Genome-wide mutation status has **no
+cross-validated predictive power** for the interaction; only lineage predicts it,
+and weakly (median CV *R*² = 0.015). Finally, of the line-specific response that
+an assay reproduces with itself, only **56% survives transfer to another
+laboratory** — but **87%** survives once cell-line identity is verified from the
+data rather than assumed from an identifier, on held-out compounds. Only 5–12% of
+identifier-matched lines are their own best match across atlases. Apportioning
+the loss, changing assay within one laboratory costs 16% of it and changing
+laboratory the remaining 84%. Context count and replication, not cell count, are
+the binding constraints on what these atlases can answer.
 
 ---
 
 ## Introduction
 
-Single-cell perturbation atlases now measure the transcriptional consequences of
-thousands of chemical interventions across dozens of cellular contexts, and are
-explicitly motivated by the goal of predictive "virtual cell" models. The
-central difficulty such models face is *context transfer*: predicting a
-compound's effect in a cell state that was not profiled with it.
+Single-cell and pooled perturbation atlases now measure the consequences of
+thousands of chemical interventions across dozens to hundreds of cellular
+contexts, motivated by predictive "virtual cell" models. The difficulty such
+models face is *context transfer*: predicting a compound's effect in a cell state
+it was not profiled with. Progress is judged almost entirely by prediction
+accuracy, and the picture is contested — benchmarks report that deep models do
+not beat simple mean baselines, while method papers report substantial gains.
 
-Progress is assessed almost entirely by prediction accuracy, and the picture is
-contested. Several benchmarks report that deep models do not outperform simple
-mean baselines, while individual method papers report substantial gains. What
-has not been established is the quantity that determines what any model can
-achieve: how much of a drug's transcriptional effect is actually shared between
-contexts, how much is context-specific, and what the context-specific part is
-made of. The additive main-effects model appears throughout this literature as a
-*baseline* and nowhere as an *object of study*; its residual is not analysed.
+Underneath that dispute sits a quantity nobody has measured carefully: how much
+of a drug's effect is actually shared between contexts, how much is
+context-specific, and how reliably either can be estimated. The additive
+main-effects model appears throughout this literature as a *baseline* and nowhere
+as an *object of study*; its residual is not analysed, and the conditions under
+which that residual can be estimated at all are not stated.
 
-We treat that residual as the measurement. Using Tahoe-100M — 95.6 million cells
-across 47 analysable cancer cell lines and 379 compounds at three doses — we
-decompose the response into a context-averaged component and a context ×
-compound interaction, establish that the interaction is reproducible signal
-rather than noise using the atlas's own replicate structure, characterise what
-it consists of, test every cell-line descriptor we could obtain against it, and
-measure what it costs to acquire for a new context.
+We treat the residual as the measurement, and we treat its measurability as the
+first question rather than an assumption. Three findings follow, in order of
+consequence: the estimator is fragile in ways that change conclusions; the
+flagship atlas lacks the replicate structure the estimator requires; and the
+quantity, where it can be estimated, is limited in transfer by cell-line
+divergence between laboratories rather than by protocol — the scaled-up form of
+what Ben-David and colleagues demonstrated in a single cell line.
 
 ---
 
 ## Results
 
-### The additive component dominates, and the remainder is an interaction
+### Estimating a context × compound interaction is fragile in four specific ways
 
-For every (line, drug, dose) condition we computed a plate-matched response
-delta and an additive prior — the mean delta for that drug and dose over *other*
-lines. Per gene, the additive component accounts for 4.8% of response variance
-and the line × drug interaction 3.3%, the remainder being noise (91.9%); of the
-**reproducible** signal, **59% is additive and 41% interaction** (Fig. 1a).
+The interaction is naturally estimated as the covariance of response residuals
+between independent replicates of the same context × compound × dose. Four
+apparently reasonable shortcuts each corrupt it, and none is visible in the
+output. On our data:
 
-That the interaction is reproducible rather than residual noise is established
-by the atlas's replicate structure. Comparing context residuals between
-independent measurements, correlation is **+0.062** between doses of the same
-line–drug pair, **+0.019** between different drugs in the same line, and
-**−0.002** between lines for the same drug, against ≈0 permuted nulls (Fig. 1b).
-The residual therefore contains real, repeatable signal that is specific to the
-*pair* and does not generalise to the line.
+| shortcut | why it fails | measured cost |
+|---|---|---|
+| residual **variance** instead of replicate covariance | noise does not cancel | 82% "interaction" against a true value near zero |
+| pooling **same-batch** comparisons | batch state is shared signal | within-plate pairs agree ~7× better than cross-plate; 41% vs 28% |
+| **in-sample** shared response | residuals sum to zero, forcing E[r_a·r_b] = −σ²/n | per-drug covariance driven negative for 21 of 24 drugs; clamping then yields exact zeros |
+| treating **doses as replicates** | doses are different conditions | true replicates covary −0.0031 vs +0.0062 for cross-dose pairs (*P* = 3×10⁻¹²⁰) |
 
-**A batch caveat that changes the numbers.** All of the above is restricted to
-comparisons made on different plates. The identical comparisons *within* a plate
-give +0.45 to +0.48 — roughly sevenfold higher — because residual plate
-structure survives plate-matched DMSO normalisation. Analyses of this atlas that
-pool within- and cross-plate comparisons will substantially overstate
-reproducibility.
+The third has a counterintuitive property worth stating because we got it wrong
+twice: the obvious repair, leave-one-*condition*-out, makes the bias *worse*,
+because the mean subtracted from replicate A still contains replicate B. Only
+removing the whole context eliminates the coupling. We additionally report the
+interaction against a **matched cross-context null**, which removes the residual
+construction offset without assuming its magnitude; where the signal is strong
+this changes nothing (LINCS phase 2: 45% → 47%), and where it is weak it was the
+entire result. These guards are released as `pertdecomp`.
 
-### The architecture replicates across atlases, platforms and replicate designs
+### The flagship single-cell atlas cannot measure the quantity it is used to report
 
-We re-ran the decomposition unchanged on two external atlases by mapping their
-columns onto the same three roles (context, perturbation, independent
-replicate):
+Tahoe-100M comprises 95.6 million cells across 47 analysable lines and 379
+compounds. Only **2,549 of its 53,881 (line, compound, dose) combinations — 4.7%
+— appear on more than one plate**. The 96.4% of (line, compound) pairs that span
+plates do so because the atlas places different *doses* on different plates.
 
-| | Tahoe-100M | OP3 | sciPlex3 |
+Splitting the two pairings against a matched null:
+
+| pairing | pairs | interaction share | *P* vs null |
 |---|---|---|---|
-| contexts | 47 cancer lines | 6 immune cell types | 3 cancer lines |
-| replicate axis | plates | donors | experimental repeats |
-| interaction share | 41% | 33% | 30% |
-| residual across replicates | +0.062 | +0.135 | +0.048 |
-| residual across perturbations | +0.019 | +0.007 | +0.026 |
+| true replicate (same line, compound **and dose**) | 6,482 | **0.0%** | 0.97 |
+| cross-dose (the pairing this implies) | 58,630 | 21.6% | 7×10⁻²⁵ |
 
-The defining contrast — reproducible across replicates, non-transferable across
-perturbations — holds in primary human immune cells as well as cancer lines
-(Fig. 1c). The additive share rises as contexts fall (59% → 67% → 70% at 47, 6
-and 3 contexts), consistent with a prior estimated from fewer contexts being
-noisier; we quantify that effect directly below.
+Restricted to identical (line, compound) sets so only same-dose versus
+different-dose differs, true replicates covary *less* than different doses do
+(*P* = 3×10⁻¹²⁰) — which no reproducible interaction can produce. The
+true-replicate arm covers only 25 of 379 compounds, and weak-effect ones, so it is
+underpowered rather than decisive. **Neither number is the answer: the atlas
+cannot resolve it**, and the value is bracketed between 0% and 21.6%.
 
-### The interaction is multi-dimensional and is not a viability artefact
+Where genuine replicates exist the quantity is large and well determined. LINCS
+phase 1 supplies 6.1 million same-dose cross-plate pairs across 2,834 compounds
+and 70 lines, giving **43% shared / 57% interaction**.
 
-The obvious deflationary explanation is that the residual is rank-1 — each
-pair's sensitivity times one shared cytotoxic direction — which would explain
-both its existence and its failure to transfer. Fitting components on one half
-of each pair's plates and scoring them on the other half, the leading component
-carries only **34%** of reproducible residual variance, at least **six**
-components reproduce (split-half r = 0.33–0.48) while others return negative
-values, and the leading component is **uncorrelated with cell-cycle arrest**
-measured independently from the same cells (G2M r = −0.05) (Fig. 2a–c). By
-pathway enrichment the reproducible components correspond to epithelial-versus-
-neuronal identity, ERBB4/PI3K signalling, immune-versus-ECM, EMT, ribosome
-biogenesis, and chromatin/senescence programmes (Fig. 2d).
+### The interaction is dose-dependent and peaks just below lethality
 
-At single-cell resolution, projecting 20.5 million cells onto these components
-shows the typical context-specific response is a **uniform shift of the whole
-population**: the median Kolmogorov–Smirnov distance between treated cells and
-shifted controls is 0.91× the within-control noise floor, with only 11% of
-comparisons exceeding twice it. The strongest decile does change shape (2.13×)
-but with variance *decreasing* (0.87), i.e. convergence rather than a
-subpopulation separating (Fig. 2e). Context-dependence at 24 h is therefore not
-selection of a pre-existing responsive subpopulation.
+Pooling doses, as all prior treatments do, hides a curve. Within compound, the
+context-dependence index rises with dose (PRISM, 1,443 compounds, median
+Spearman ρ = +0.33, 74% positive, *P* = 4×10⁻⁹²), climbing roughly fourfold to a
+peak near 2.5 µM and then **collapsing at the top dose**, where the average line
+has lost 1.67 log₂ of viability (0.391 vs 0.218 paired within compound,
+*P* = 1×10⁻⁵⁹). The collapse is a ceiling effect: when every line is dying there
+is little left to differ about. The rising limb replicates in LINCS transcription
+(ρ = +0.20, *P* = 1×10⁻⁵), where the interaction grows faster than the shared
+response (+74% vs +36%), which is why the ratio rises. A context-dependence index
+is therefore only comparable at matched dose.
 
-### Context-dependence is set by drug mechanism
+### Transcriptional and viability context-dependence are decoupled
 
-For each of 367 compounds we computed a context-dependence index (CDI) —
-reproducible interaction as a fraction of total reproducible effect. Mechanism
-explains a significant share of it (Kruskal–Wallis H = 46.9, P = 2.3×10⁻³ across
-24 classes; Fig. 3a):
+With every dataset on one corrected estimator, mechanism structures
+context-dependence *within* Tahoe (Kruskal–Wallis *P* = 8.7×10⁻⁴ across 24
+classes) but the ordering does not transfer: ρ = +0.09 (n.s.) against LINCS phase
+1 and **ρ = −0.09 against PRISM viability over 67 shared classes — a well-powered
+null**. A drug whose transcriptional response is highly line-specific is not
+thereby a drug whose killing is line-specific. Since the two readouts are used
+interchangeably as "drug response", this is a substantive caution.
 
-| most context-dependent | CDI | most conserved | CDI |
-|---|---|---|---|
-| Glucocorticoid receptor agonist | 0.363 | Glucose transporter inhibitor | 0.087 |
-| Proteasome inhibitor | 0.334 | Other MAPK inhibitor | 0.109 |
-| MEK inhibitor | 0.324 | RAF inhibitor | 0.119 |
-| Retinoic receptor agonist | 0.232 | Other TK inhibitor | 0.122 |
+### Genotype does not predict the interaction; lineage weakly does
 
-The leading class is mechanistically expected: nuclear-receptor agonists signal
-through receptors whose transcriptional output is set by each cell's own
-enhancer landscape, so their effects should be maximally context-specific. Four
-of the twelve most context-dependent individual compounds are corticosteroids,
-and retinoic-receptor agonists rank fourth by class. MEK inhibition is among the
-most context-dependent mechanisms while RAF inhibition is among the most
-conserved, despite acting one step apart in the same pathway.
+At 738 PRISM cell lines the genotype scan recovers the clinical biomarker set de
+novo (TP53 with MDM2 inhibitors, BRAF with vemurafenib and dabrafenib, PIK3CA
+with alpelisib, KRAS with a MEK inhibitor; 80 associations at FDR < 0.05 over 1.5
+million tests), confirming the estimator and the genotype join. But out of
+sample, across 150 compounds with 5-fold cross-validated ridge:
 
-Chemical structure alone predicts CDI only weakly (cross-validated r = 0.19 on
-ECFP4 fingerprints; Fig. 3b), so this is a property of the target and mechanism
-rather than of the molecule.
+| predictor block | median CV *R*² |
+|---|---|
+| lineage | **+0.0145** (72.7% of compounds positive) |
+| mutational burden | −0.0023 |
+| nonsynonymous variants | −0.0058 |
+| synonymous variants | −0.0064 |
 
-### It is a regulatory, not a target-genetic, phenomenon
+Negative values mean worse than predicting the mean. **Genome-wide mutation
+status carries no generalisable information.** Using synonymous variants as a
+control — silent changes cannot alter a protein but carry identical ancestry,
+lineage and germline-contamination structure, and we match both blocks to the
+same 3,435 genes — isolates a genuinely mechanistic excess of **+0.0036**
+(*P* = 0.025), about 0.3% of the interaction variance.
 
-Three independent tests fail to link the interaction to genotype. A scan of 25
-mechanism classes against 33 driver genes yields no association surviving
-correction (0/825 at FDR < 0.10) once each line's overall responsiveness is
-removed. Across 254 compounds with annotated targets, CDI is uncorrelated with
-how often the target is mutated in the panel (ρ = +0.10, P = 0.10) and with
-target expression level (ρ = +0.08). The clearest case is the leading class
-itself: nuclear-receptor compounds have a median CDI of 0.342 against 0.154
-overall, yet their targets are mutated in **zero** atlas lines.
+Subsampling the confirmed PRISM associations quantifies why line-level tests fail
+in smaller atlases: recovery is 4% at 47 cell lines, 45% at 250, 72% at 400 and
+96% at 600. The genotype negatives reported in 47-line atlases are a power
+ceiling, not a biological absence.
 
-Together with the identity of the response programmes — epithelial and
-mesenchymal identity, chromatin and senescence — this indicates that
-context-dependence is set by the cell's regulatory state rather than by
-mutations in the drug's target.
+Screening 111,589 allele × compound tests for associations that are *not* known
+pharmacogenomics and are invisible to a gene-level indicator yields four
+candidates; none survives validation in GDSC, and all three testable ones are
+identified as **germline** by a single shared genomic position, no excess
+mutational burden, and neighbouring recurrent variants that are synonymous. The
+same pipeline recovers 11 of 11 known biomarkers in GDSC (BRAF V600E ×
+dabrafenib, *P* = 3×10⁻³¹), so the negative is informative.
 
-### No cell-line descriptor predicts the interaction for an unseen line
+### Cell-line identity, not protocol, limits cross-laboratory transfer
 
-For a line held out entirely, we tested every descriptor available: driver
-mutations plus tissue of origin, the line's own baseline transcriptome
-(per-fold PCA), and DNA methylation level and heterogeneity from CCLE bisulfite
-profiles covering 45 of our lines. None improves on the additive baseline
-(0.692 versus 0.692 for the first two; 0/20 methylation features at FDR < 0.10)
-(Fig. 4a). This follows from the structure above: if the interaction is a
-property of the *pair*, no line-level quantity exists for a descriptor to
-recover.
+Against within-laboratory ceilings of r = 0.473 (PRISM replicate plates) and
+0.438 (GDSC1 vs GDSC2), the line-specific response transfers between institutions
+at r = 0.255 — **56% of what the assay achieves with itself**. The ceiling is
+itself low: even repeating a measurement in one laboratory, the line's
+compound-specific deviation agrees at only r ≈ 0.45.
 
-### Adaptation is possible, but requires the model to change, not just its input
+Cross-atlas comparisons assert that a line in one atlas is the same as a line in
+another, from an identifier that is never checked. Verifying it — each line must
+be its own best match among all candidates by **response fingerprint**, its
+residual across the compounds both atlases share — shows the assertion usually
+fails: of 488 COSMIC→DepMap-matched lines, **only 5–12% are their own best
+match**, ranking a median 82nd of 971 candidates. That is far better than chance
+(~486), so identity carries real information; it is simply not unique.
 
-Fitting only a held-out line's embedding with the rest of the model frozen
-yields **nothing** at any number of probe compounds — including an oracle using
-every available probe drug (+0.0009 over 8,420 conditions) — even though the
-embedding demonstrably moves. Retraining the model with the same probe
-measurements included instead recovers the gain: +0.020 at five compounds and
-**+0.034 at twenty**, or 98% of the achievable ceiling (Fig. 4b). The barrier is
-therefore architectural, not informational: the learned context space cannot be
-entered post hoc.
+**Verifying identity raises transfer from 56% to 87% of the ceiling.** This is
+not circular: identity is validated on one random half of the shared compounds
+and agreement measured on the disjoint other half (all-lines control on the same
+held-out compounds: 59%).
 
-Panel design does not matter. Comparing five selection strategies over 47 folds,
-choosing the most potent or the most line-discriminating compounds performs
-*worse* than random at five compounds, and by twenty compounds every strategy
-converges on the oracle (Fig. 4c). Practically, a new cell model needs neither
-its genotype nor its baseline profile: roughly twenty arbitrary compounds and a
-fine-tuning pass.
+A matching ladder shows what each rule buys: random pairing r = −0.002,
+same-tissue random pairing 0.048, identifier 0.235, best available partner 0.419.
+Identifier matching beats same-tissue pairing decisively (*P* = 1.5×10⁻¹²⁴), so
+identity carries information well beyond lineage — but the best available partner
+reaches nearly twice what the identifier finds.
 
-### The apparent headroom for models depends on benchmark design
+Apportioning the loss across the ladder — repeat plates (0.473) → different assay
+version within one laboratory (0.438) → different laboratory and assay (0.255) —
+**changing assay costs 16% of the total drop and changing laboratory the
+remaining 84%.**
 
-The mean baseline that perturbation models are measured against is itself an
-average, so its quality depends on how many contexts contribute. Holding
-evaluation conditions fixed and varying only that number, the additive baseline
-improves from r = 0.649 (5 lines) to 0.718 (45), **+10.6%** (Fig. 5). For
-comparison, a recent model reports +12.3% over the best baseline while
-restricting this atlas to six cell lines. We do not conclude that any specific
-model's gains are artefactual — a well-estimated baseline may still be beaten —
-but a mean baseline must be estimated from all available contexts before
-headroom is claimed, and benchmarks that subsample contexts for tractability
-will systematically overstate it.
+Transfer scales steeply with signal strength (ρ = +0.54, *P* = 1.8×10⁻²⁹): the
+strongest quartile of compounds transfers *at* the within-laboratory ceiling,
+the weakest at 36%.
 
-### Context count, not cell count, is the binding constraint
-
-Four independent line-level predictors failed above. At 43–50 lines a
-line-level correlation requires |ρ| > 0.30 to reach nominal significance, so
-effects of realistic size are invisible; these four negatives are plausibly one
-power ceiling encountered four times. The atlas contains 95.6 million cells but
-only ~47 usable contexts, and for line-level questions the latter determines
-power. The same accounting explains a failed replication: the per-compound
-mechanism ranking is not estimable in OP3, where a compound has a median of 18
-cross-replicate pairs against 142 here, and only 23% of compounds yield a
-positive interaction estimate against 96%.
+The result is a property of laboratories rather than of a killing assay. Repeating
+the analysis on transcription gives **52%** (LINCS phase 1 vs phase 2 within-lab
+r = 0.061; Tahoe vs LINCS cross-lab 0.032), and the identity check behaves the
+same way: 16 of 16 name-matched lines are reciprocal best matches within the
+Broad, but only 3 of 6 across laboratories.
 
 ---
 
 ## Discussion
 
-We set out to measure rather than predict, and the measurements bound what
-prediction can achieve. Most of a drug's reproducible transcriptional effect —
-about 59% — is shared across cellular contexts, which is why simple additive
-baselines are hard to beat and why reports of their weakness are partly an
-artefact of evaluating on few contexts. The remaining 41% is real and
-reproducible, but it is an interaction between a specific drug and a specific
-cell rather than a property of either, which is a sufficient explanation for the
-repeated failure of cell-line descriptors in this field: there is no line-level
-quantity to predict.
+Three conclusions follow, in increasing order of consequence for how these
+atlases are built and used.
 
-Two results are directly actionable. First, how broadly a compound must be
-screened is predictable from its mechanism before any experiment: nuclear
-receptor, proteasome and MEK pharmacology require broad panels, whereas RAF,
-metabolic and most tyrosine-kinase inhibitors transfer. Second, a new cell model
-can be brought into a trained model with roughly twenty arbitrary compounds and
-a fine-tuning pass, and effort spent designing that panel is wasted.
+**The estimator must be stated, because it decides the answer.** The same data
+yield 82%, 41%, 28%, 21.6% or 0% interaction depending on choices that are rarely
+reported: variance or covariance, pooled or cross-batch, in-sample or
+leave-one-context-out prior, doses or true replicates as the replicate axis. Any
+figure quoted for "the context-specific fraction" is uninterpretable without
+them.
 
-Our results also identify what these atlases should optimise. Effort is
-currently directed at cell count and model capacity, but for context transfer —
-the problem the atlases exist to solve — the binding constraint is the number of
-distinct contexts profiled, and for per-compound statements the replication
-depth available within each. An atlas with 500 lines and one-tenth the cells per
-condition would answer questions this one cannot.
+**Replication, not scale, is what a perturbation atlas most lacks.** Tahoe-100M
+holds 100 million cells and cannot measure a context × compound interaction,
+because 95.3% of its conditions are unreplicated at matched dose. LINCS phase 1,
+far smaller in cells, answers the question cleanly with 6.1 million replicate
+pairs. Cells were spent where replicates and contexts were needed. Together with
+the power curve — 4% recovery at 47 contexts, 72% at 400 — this gives a concrete
+design target: an atlas of roughly 400 lines, two plates per condition, and
+one-tenth the cells per condition would answer what the present one cannot.
 
-**Limitations.** These are computational analyses of existing data with no new
-experiments and no prospective validation. Every result derives from 24 h
-transcriptional responses; nothing here speaks to survival, persistence or
-resistance over longer timescales, where pre-existing subpopulations are known
-to matter. The mechanism ranking rests on a single atlas and on mechanism
-annotations that are partly machine-generated and demonstrably imperfect — we
-independently identified two mislabelled compounds. The cell-line descriptor
-tests are underpowered as described. Finally, chromatin accessibility, the most
-direct test of the regulatory hypothesis, is unavailable for these lines; DNA
-methylation is an imperfect proxy.
+**Cross-atlas integration should verify identity, not assume it.** Most of the
+apparent irreproducibility between laboratories is cell-line divergence rather
+than protocol difference — the laboratory step costs 84% of the loss, the assay
+step 16% — and it is largely recoverable: checking that a line is its own best
+match by response fingerprint lifts transfer from 56% to 87% of the achievable
+ceiling. Combined with weighting compounds by the strength of their line-specific
+component, this is a cheap and immediate improvement to any analysis that pools
+atlases. It also dissolves two puzzles of our own: the mechanism ranking's
+failure to replicate across datasets needs no biological explanation, and the
+genotype negatives have a second cause besides power, since for most lines the
+genotype and the phenotype were not measured on behaviourally identical cultures.
+
+### Limitations
+
+*Design.* These are computational analyses of existing data, with no new
+experiments and no prospective validation.
+
+*Laboratory versus assay.* PRISM and GDSC differ in institution and in assay, so
+neither is isolated by that comparison alone. We apportion them using GDSC1
+versus GDSC2, which changes screening version, concentration range and assay
+chemistry within one institution, and conclude that laboratory dominates
+(84% versus 16%). This is a partial separation from two points on a ladder, not
+a factorial design; a cross-laboratory comparison with the assay held exactly
+fixed would settle it, and CTRP would have provided one but its NCI data portal
+has been retired.
+
+*Identity verification.* Response fingerprinting is not the ideal identity check.
+Baseline-expression or genotype matching would be more direct, but is impossible
+across these particular datasets: LINCS Level 4 is z-scored within plate, which
+removes the cell-line baseline such matching keys on, and neither PRISM nor GDSC
+ships expression. Fingerprinting also cannot distinguish culture divergence from
+misidentification, and related lines are genuinely similar, so reciprocal-best-hit
+failure is an upper bound on the rate of true identity problems. The median rank
+of 82 out of 971 shows identity is informative but not unique.
+
+*Transcriptional arm.* Its within-laboratory ceiling is only r ≈ 0.06, so the 52%
+reproducible fraction is a ratio of two small numbers and is correspondingly
+uncertain. It agrees with the viability arm, which is the substantive point, but
+should not be quoted to two significant figures.
+
+*Interaction magnitude in Tahoe.* We report a bracket (0–21.6%) rather than a
+point estimate, and this propagates: any Tahoe-derived share in this work is an
+upper bound obtained from a pairing the atlas's design forced on us.
+
+*Withdrawn claims.* Three earlier results in this project did not survive: the
+mechanism ranking outside Tahoe; a median 5.5% of interaction variance explained
+by a single allele, which was in-sample and is ~0 cross-validated; and the
+survival associations of §7, which did not survive adjustment for stage, grade
+and purity. They are retained in `RESULTS.md` with the reasons.
+
+*Scope.* All transcriptional results derive from short-timescale responses;
+nothing here speaks to persistence or acquired resistance, where pre-existing
+subpopulations are known to matter. Mechanism annotations are partly
+machine-generated and demonstrably imperfect. Chromatin accessibility, the most
+direct test of the regulatory hypothesis, is unavailable for these lines.
 
 ---
 
 ## Methods (summary)
 
 Full implementations are in `scripts/`, with the SLURM job for each analysis in
-`jobs/` and per-figure source data in each figure bundle.
+`jobs/`, per-figure source data in each figure bundle, and the rationale for each
+methodological choice — including the alternatives rejected and what they cost —
+in `docs/methodology_rationale.md`.
 
-**Data.** Tahoe-100M (95.6M cells passing full filters; 50 lines, 379 compounds,
-three doses, 14 plates) aggregated to 65,918 (line, drug, dose, plate)
-pseudobulk profiles. External replication used OP3 (NeurIPS 2023; 6 immune cell
-types, 147 compounds, 3 donors) and sciPlex3 (3 lines, 189 compounds, 2
-replicates, 24 h subset).
+**Data.** Tahoe-100M (95.6M cells; 50 lines, 379 compounds, three doses, 14
+plates) aggregated to 65,918 (line, drug, dose, plate) pseudobulk profiles; LINCS
+phase 1 (GSE92742) and phase 2 (GSE70138) Level 4, landmark genes only; PRISM
+Repurposing secondary screen (738 lines, ~1,500 compounds, 8 doses, replicate
+detection plates); GDSC1 and GDSC2 fitted dose response (978 lines, 542 drugs);
+CCLE mutation calls via Cellosaurus; OP3 and sciPlex3 for architecture
+replication.
 
-**Decomposition.** Responses are plate-matched deltas in log1p CPM against DMSO
-controls of the same line and plate. The additive prior for a condition is the
-mean delta of the same drug and dose over other lines (leave-one-out).
-Reproducible interaction is the covariance of residuals between *independent
-replicates* — different plates, donors or experimental repeats — of the same
-context × perturbation, so independent noise and shared batch structure cancel.
-All reported reproducibility statistics exclude same-plate comparisons.
+**Decomposition.** Responses are batch-matched deltas against controls of the
+same context and batch. The shared response is the **leave-one-context-out** mean
+for the same compound and dose. The interaction is the covariance of residuals
+between independent replicates of the same context × compound × **dose**, with
+same-batch pairs excluded, reported against a **matched cross-context null**.
+Perturbation-level indices carry their replicate-pair counts and an `estimable`
+flag; with no replicate axis the tool refuses to report an interaction.
 
-**Components.** Fitted by SVD on one half of each pair's plates and scored on
-the other; only components whose per-pair loadings reproduce are interpreted.
-Enrichment uses hypergeometric tests against the responsive-gene universe with
-Benjamini–Hochberg correction.
+**Cross-laboratory analysis.** Per (line, compound) residuals in each dataset;
+per-compound Spearman correlation across shared lines for viability, and
+residual-profile correlation over shared genes for transcription. Within-lab
+ceilings from PRISM replicate plates and GDSC1 vs GDSC2. Identity is verified by
+response fingerprint on one random half of the shared compounds and evaluated on
+the disjoint half.
 
-**Models.** `prediction = additive_prior + residual(line embedding, ECFP4, log
-dose)`, residual zero-initialised so the model begins at the additive baseline;
-leave-one-line-out priors on training rows prevent target leakage. Splits are
-defined on (line, drug, dose) triples and, for the strict variant, on whole
-(line, drug) pairs.
+**Genetic architecture.** Per compound, 5-fold cross-validated ridge with alpha
+selected inside each training fold, solved in the dual when predictors exceed
+samples. Synonymous and nonsynonymous blocks are restricted to the same 3,435
+genes so they are matched in size and identity.
 
-**Statistics.** Nulls are matched to the confound in each case: expression- and
-size-matched gene sets for target-abundance tests, permuted pairs for residual
-correlations, within-cancer-type z-scoring before pooling TCGA, and sequencing
-depth as an explicit covariate in the methylation analysis.
+**Statistics.** Nulls are matched to the confound in each case: cross-context
+pairs for the residual offset, size-matched solid panels for the immune
+comparison, permuted pairings for identity, burden-conditioned partial
+correlation for MSI, and lineage stratification for allele associations.
 
 ---
 
 ## Figures
 
-1. **The architecture of drug response.** (a) Variance shares. (b) The three
-   residual correlations with permuted nulls, and the within- versus cross-plate
-   contrast. (c) Replication in OP3 and sciPlex3.
-2. **What the interaction consists of.** (a) Component variance shares.
-   (b) Split-half reproducibility. (c) Leading component versus cell-cycle
-   arrest. (d) Pathway enrichment of reproducible components. (e) Uniform shift
-   versus subpopulation at single-cell resolution.
-3. **Mechanism sets context-dependence.** (a) CDI by mechanism class.
-   (b) Predictability from chemical structure. (c) Independence from target
-   genetics.
-4. **Predicting an unseen context.** (a) Failure of every line descriptor.
-   (b) Frozen versus fine-tuned adaptation across probe counts. (c) Probe-panel
-   strategies.
-5. **Benchmark design determines apparent headroom.** Additive baseline quality
-   versus the number of contexts averaged.
+1. **Estimating the interaction.** (a) The four failure modes and their measured
+   cost. (b) Tahoe's replicate structure: 4.7% of conditions replicated. (c) True
+   replicate versus cross-dose pairing against a matched null.
+2. **Architecture where it can be measured.** (a) Shared/interaction shares in
+   LINCS phase 1 and 2, PRISM, OP3. (b) Residual reproduces across replicates but
+   not across compounds or contexts. (c) Dose curve: rise to a peak below
+   lethality, then collapse.
+3. **What does and does not predict it.** (a) Cross-validated *R*² by predictor
+   block, with the synonymous control. (b) Power curve for genotype linkage
+   versus context count. (c) Readout decoupling: transcription versus viability
+   mechanism rankings.
+4. **Cross-laboratory reproducibility.** (a) The ladder from repeat plates to a
+   different laboratory. (b) Rank of the identifier-matched line by response
+   similarity. (c) Reproducible fraction before and after identity verification,
+   on held-out compounds. (d) Transfer versus strength of the line-specific
+   component.
+5. **Matching strategy.** Fingerprint similarity under random, same-tissue,
+   identifier and best-hit pairing.

@@ -305,6 +305,26 @@ def main():
     print("  i.e. of the line-specific response an assay can reproduce with "
           "itself,\n  this much survives moving to another laboratory and assay.")
 
+    # Partially separating LABORATORY from ASSAY. PRISM vs GDSC changes both at
+    # once, so on its own it cannot apportion the loss. GDSC1 and GDSC2 are
+    # separate screening versions run at the same institution on different
+    # concentration ranges (GDSC1 0.0004-16 uM, GDSC2 0.00001-8 uM) and
+    # different assay chemistry, so that comparison changes the ASSAY with the
+    # laboratory held fixed. The ladder therefore apportions the drop.
+    step_assay = ceil_p - ceil_g
+    step_lab = ceil_g - cross
+    tot = ceil_p - cross
+    print(f"\napportioning the loss (same experiment -> new assay -> new lab):")
+    print(f"  same lab, same assay, repeat plates      r={ceil_p:.3f}")
+    print(f"  same lab, different assay version        r={ceil_g:.3f}  "
+          f"({-step_assay:+.3f})")
+    print(f"  different lab AND assay                  r={cross:.3f}  "
+          f"({-step_lab:+.3f})")
+    if tot > 0:
+        print(f"  -> changing assay within a lab costs {step_assay/tot:.0%} of "
+              f"the total drop;\n     changing laboratory costs the remaining "
+              f"{step_lab/tot:.0%}. Laboratory dominates.")
+
     # does agreement depend on how strong the compound is?
     xl = R[R.comparison.str.contains("CROSS-LAB")].copy()
     strength = {norm(k): float(np.mean(v.to_numpy() ** 2))
@@ -332,7 +352,11 @@ def main():
          "value": xl_val},
         {"quantity": "reproducible fraction (all)", "value": frac},
         {"quantity": "reproducible fraction (identity-validated)",
-         "value": xl_val / ceiling if ceiling > 0 else np.nan}])
+         "value": xl_val / ceiling if ceiling > 0 else np.nan},
+        {"quantity": "share of loss from changing assay within a lab",
+         "value": step_assay / tot if tot > 0 else np.nan},
+        {"quantity": "share of loss from changing laboratory",
+         "value": step_lab / tot if tot > 0 else np.nan}])
     summary.to_csv(TAB / "cross_lab_summary.csv", index=False)
 
     plt.rcParams.update({"font.size": 9, "axes.spines.top": False,

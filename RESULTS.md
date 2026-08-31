@@ -171,6 +171,10 @@ unperturbed control on 69.6% of held-out conditions (E-distance 1.24 vs 1.66,
 noise floor ≈ 0), with delta fidelity r_de100 0.701.
 
 ## 4. Unseen cell lines: a triple negative, and its explanation
+
+> **Variance shares here are upper bounds — see §14.** Tahoe replicates only 4.7%
+> of its (line, drug, dose) combinations, so the pairing behind these shares is
+> largely cross-dose rather than true replicate.
 `results/figures/04_generalization/`, `results/figures/06_diagnostics/`
 
 Nothing we tried lets the model predict a **never-seen** line's response
@@ -252,6 +256,10 @@ SEMA7A, PLA2R1. So context-specific drug response is a **multi-dimensional set
 of reproducible programs**, not a single "some lines die more" axis.
 
 ## 5. What *is* predictable: context-dependence is set by the drug's mechanism
+
+> **Scope narrowed by §16.** This ranking is significant *within* Tahoe
+> (Kruskal–Wallis p = 8.7×10⁻⁴) but does not reproduce against LINCS phase 1 or
+> PRISM. Read it as a within-atlas result.
 `results/figures/10_drugs/`
 
 Sections 3–4 ask what makes a *cell line* respond differently. The
@@ -599,6 +607,11 @@ Tables: `prism_decomposition.csv`, `prism_genotype_scan.csv`,
 `prism_genotype_power.csv`.
 
 ## 12. Which drugs transfer depends on what you measure
+
+> **Superseded in part by §16 and §18.** The cross-dataset comparisons here were
+> computed before the estimator correction (§14) and before cross-laboratory
+> reproducibility was measured (§18). The readout-decoupling result stands; the
+> transcription-to-transcription agreement does not.
 
 The mechanism ranking (§5) was tested against LINCS phase 2 and looked shaky,
 but that comparison shared only **six** mechanism classes with Tahoe — too few
@@ -996,11 +1009,46 @@ identity from the data rather than trusting the identifier, and should weight or
 filter compounds by the strength of their line-specific component. Doing both
 recovers agreement from 56% to 87% of what the assay can achieve with itself.
 
-Limitations stated plainly: PRISM vs GDSC changes laboratory *and* assay at once,
-so neither is isolated; and baseline-expression matching — the natural
-alternative identity check — is impossible here because LINCS Level 4 is z-scored
-within plate, which removes cell-line baseline, and neither PRISM nor GDSC ships
-expression at all.
+### Separating laboratory from assay
+
+PRISM vs GDSC changes institution *and* assay at once, so on its own it cannot
+apportion the loss. GDSC1 and GDSC2 are separate screening versions run at the
+same institution over different concentration ranges (GDSC1 0.0004–16 µM, GDSC2
+0.00001–8 µM) with different assay chemistry, so that comparison changes the
+**assay with the laboratory held fixed**. The ladder therefore apportions it:
+
+| step | r | cost |
+|---|---|---|
+| same lab, same assay, repeat plates | 0.473 | — |
+| same lab, **different assay version** | 0.438 | −0.035 (**16%** of the drop) |
+| **different laboratory** and assay | 0.255 | −0.183 (**84%** of the drop) |
+
+**Changing the assay within one laboratory costs 16% of the total loss; changing
+laboratory costs the remaining 84%.** The limitation is now partial rather than
+total: this is two points on a ladder, not a factorial design, and a cross-lab
+comparison with the assay held exactly fixed would settle it. CTRP would have
+provided one, but the NCI CTD2 data portal has been retired (every historic URL
+now redirects to `studycatalog.cancer.gov`), so it could not be obtained.
+
+### Remaining limitations
+
+*Identity verification.* Response fingerprinting is not the ideal check.
+Baseline-expression or genotype matching would be more direct but is impossible
+across these datasets: LINCS Level 4 is z-scored within plate, removing the
+cell-line baseline such matching keys on, and neither PRISM nor GDSC ships
+expression. Fingerprinting also cannot separate culture divergence from
+misidentification, and genuinely related lines are similar, so the 5–12%
+reciprocal-best-hit rate is an **upper bound on the rate of true identity
+problems** — the median rank of 82 of 971 shows identity is informative but not
+unique.
+
+*Transcriptional arm.* Its within-lab ceiling is only r ≈ 0.06, so the 52%
+figure is a ratio of two small numbers. It agrees with the viability arm, which
+is the substantive point, but should not be quoted precisely.
+
+*Selection.* The identity-validated rungs in the matching ladder are selected on
+the outcome and bound the available room rather than estimating it; the
+non-circular value is the held-out-compound result (59% → 87%).
 
 Figure bundles: `results/figures/16_crosslab/cross_lab_reproducibility/`,
 `.../matching_strategy/`, `.../cross_lab_transcription/`.
