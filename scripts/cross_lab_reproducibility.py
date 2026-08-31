@@ -269,6 +269,11 @@ def main():
                                   "PRISM vs GDSC (CROSS-LAB, held-out "
                                   "compounds, all lines)")
     R = pd.DataFrame(rows)
+    # persist the strength measure so downstream figures use the same
+    # definition rather than re-deriving a similar-looking one
+    _stren = {norm(k): float(np.mean(v.to_numpy() ** 2))
+              for k, v in p_full.items()}
+    R["interaction_strength"] = R.compound.map(_stren)
     R.to_csv(TAB / "cross_lab_reproducibility.csv", index=False)
 
     print("\n=== per-compound Spearman of the line-specific residual ===")
