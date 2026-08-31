@@ -108,8 +108,8 @@ def figure1():
               "Tahoe, full atlas"),
              ("pooled vs cross-batch\nreplicate pairs", 0.280, 0.410,
               "Tahoe, dev47"),
-             ("doses vs true replicates\nas the replicate axis", 0.000, 0.216,
-              "Tahoe, full atlas")]
+             ("doses vs true replicates\nas the replicate axis", 0.115, 0.207,
+              "Tahoe, plate 6 vs 14")]
     y = np.arange(len(modes))[::-1] * 1.0
     for yy, (lab, good, bad, src) in zip(y, modes):
         ax[0].plot([good, bad], [yy, yy], color="#c8c8c8", lw=3, zorder=1,
@@ -128,21 +128,33 @@ def figure1():
     ax[0].set_xlabel("interaction share reported")
     ax[0].scatter([], [], s=80, color=AQUA, label="correct estimator")
     ax[0].scatter([], [], s=80, color=ORANGE, label="shortcut")
-    ax[0].legend(frameon=False, loc="lower right", ncol=2, fontsize=7,
-                 handletextpad=0.3, columnspacing=1.0)
+    ax[0].legend(frameon=False, loc="center right", ncol=1, fontsize=7,
+                 handletextpad=0.3)
     ax[0].text(0.5, -0.92, "a fourth mode — an in-sample shared response — drives "
                "the\ncovariance negative for 21 of 24 drugs, so it has no share "
                "to plot", ha="center", va="center", fontsize=6.1, color="#666")
     panel(ax[0], "a", "Ways to get it wrong, and what each reports")
 
-    # b: Tahoe replicate structure
-    rep, unrep = 2549, 53881 - 2549
-    ax[1].pie([unrep, rep], labels=[f"unreplicated\n{unrep:,} (95.3%)",
-                                    f"replicated\n{rep:,} (4.7%)"],
-              colors=[GREY, ORANGE], startangle=90,
-              wedgeprops=dict(width=0.45, edgecolor="white"),
-              textprops=dict(fontsize=7.5))
-    panel(ax[1], "b", "Tahoe (line, drug, dose) on >1 plate")
+    # b: Tahoe replicate structure, counted from the RELEASED metadata rather
+    # than our pseudobulk, and shown with and without the replicate plate the
+    # authors withhold from training
+    tot = 56877
+    with14, without14 = 7691, 3045
+    ax[1].bar([0, 1], [with14 / tot, without14 / tot], width=0.5,
+              color=[ORANGE, GREY])
+    for i, (v, n) in enumerate([(with14 / tot, with14),
+                                (without14 / tot, without14)]):
+        ax[1].text(i, v + 0.004, f"{v:.1%}\n{n:,} triples", ha="center",
+                   fontsize=7.4, fontweight="bold")
+    ax[1].set_xticks([0, 1], ["plate 14 kept\n(as released)",
+                              "plate 14 dropped\n(training convention)"],
+                     fontsize=7)
+    ax[1].set_ylim(0, 0.175)
+    ax[1].set_ylabel("(line, drug, dose) replicated on >1 plate")
+    ax[1].text(0.5, 0.86, "plate 14 is a designed replicate of plate 6\n"
+               "(6.2M cells, 50 lines, 95 drugs)", transform=ax[1].transAxes,
+               ha="center", fontsize=6.3, color="#555")
+    panel(ax[1], "b", "The replication exists — if it is kept")
 
     # c: true replicate vs cross-dose against a matched null
     if tr is not None and len(tr):
@@ -166,8 +178,9 @@ def figure1():
         ax[2].set_ylim(0, max(tr.share_hi.max() * 1.55, 0.05))
     panel(ax[2], "c", "The pairing decides the answer")
     fig.suptitle("Figure 1 — Estimating a context × compound interaction is "
-                 "fragile, and Tahoe-100M cannot do it", fontsize=10.5, x=0.005,
-                 ha="left", fontweight="bold")
+                 "fragile, and the replication that makes it possible is easy "
+                 "to discard", fontsize=10.5, x=0.005, ha="left",
+                 fontweight="bold")
     return fig, {"failure_modes": pd.DataFrame(
         modes, columns=["failure_mode", "correct_estimator", "shortcut",
                         "dataset"]),

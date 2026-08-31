@@ -1,12 +1,19 @@
 #!/usr/bin/env python3
-"""What is Tahoe's interaction share when only TRUE replicates are used?
+"""What is Tahoe's interaction share when its designed replicate plate is used?
 
 The interaction is defined as the covariance of residuals between independent
-replicates of the same context x perturbation x dose. Tahoe-100M turns out to
-supply very few of those: 2,549 of its 53,881 (line, drug, dose) combinations
-(4.7%) appear on more than one plate. 96.4% of (line, drug) PAIRS span multiple
-plates, but that is because the atlas puts different DOSES on different plates,
-so a "cross-plate pair" is nearly always a cross-dose pair.
+replicates of the same context x perturbation x dose. Tahoe-100M supplies these through a
+deliberate design choice that is easy to discard: **plate 14 is a biological
+replicate of plate 6**, 6.2M cells over 50 lines and 95 drugs, included by the
+authors to demonstrate platform reproducibility and reserved by them for
+validation rather than training.
+
+Counted from the released metadata, 7,691 of 56,877 (line, drug, dose)
+combinations -- **13.5%** -- sit on more than one plate. Removing plate 14, as
+model-training pipelines do and as ours did by default, drops that to **5.4%**.
+Meanwhile 96.8% of (line, drug) PAIRS span plates, but only because different
+DOSES sit on different plates, so a "cross-plate pair" is otherwise a cross-dose
+pair and not a replicate at all.
 
 That matters because a cross-dose pair is not a replicate. A line's response at
 0.05 uM and at 5 uM genuinely differ -- we measured exactly that in §13 -- so
@@ -53,6 +60,8 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--pb-dir", default="data/processed/pseudobulk_full")
     ap.add_argument("--n-boot", type=int, default=400)
+    ap.add_argument("--drop-plate14", action="store_true",
+                    help="reproduce the earlier, mistaken exclusion")
     args = ap.parse_args()
     FIG.mkdir(parents=True, exist_ok=True)
     rng = np.random.default_rng(0)
@@ -61,7 +70,16 @@ def main():
                                                     load_pseudobulk,
                                                     responsive_genes)
     X, cond = load_pseudobulk(ROOT / args.pb_dir)
-    G, DELTA = build_deltas(X, cond, keep_plate=True)
+    # Plate 14 is an explicit biological replicate of plate 6, included by the
+    # Tahoe authors "to highlight the reproducibility of the Mosaic platform".
+    # They excluded it from TRAINING and reserved it for validation, and our
+    # pipeline inherited that exclusion as a default -- correct for fitting a
+    # model, and exactly wrong for measuring replicate agreement, since plate 14
+    # is the atlas's only source of same-dose replicates at scale. Excluding it
+    # drops replication from 13.5% of conditions to 5.4%.
+    excl = ("plate14",) if args.drop_plate14 else ()
+    G, DELTA = build_deltas(X, cond, keep_plate=True, exclude_plates=excl)
+    print(f"plates included: {sorted(G.plate.unique())}", flush=True)
     resp = responsive_genes(DELTA, np.ones(len(G), bool))
     D = DELTA[:, resp].astype(np.float32)
     del DELTA

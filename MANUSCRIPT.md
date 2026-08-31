@@ -24,15 +24,17 @@ Giga-scale perturbation atlases are being built to predict how any cell responds
 to any drug, and their central quantity — the part of a drug's effect that is
 specific to a cellular context rather than shared across contexts — is widely
 quoted but rarely measured properly. We show that measuring it requires
-independent replicates at matched dose, that the flagship single-cell atlas
-largely lacks them, and that the dominant obstacle to transferring the quantity
-between studies is the laboratory rather than the assay. In LINCS phase 1, where
-6.1 million genuine same-dose replicate pairs are available, **43% of the
-reproducible transcriptional response is the compound's shared effect and 57% is
-a context × compound interaction**. In Tahoe-100M only **4.7% of (line, compound,
-dose) combinations are measured on more than one plate**; its apparent replicates
-are different *doses*, and on true replicates the interaction is not detectable
-(*P* = 0.97), so the atlas cannot resolve the quantity it is most used to report.
+independent replicates at matched dose, that the replicate structure supplying
+them is routinely discarded, and that the dominant obstacle to transferring the
+quantity between studies is the laboratory rather than the assay. Tahoe-100M
+contains a deliberate biological replicate — plate 14 duplicates plate 6 across
+50 lines and 95 compounds — which its authors withhold from training and which
+downstream pipelines therefore drop. Retaining it, **13.5% of (line, compound,
+dose) combinations are replicated and the interaction is 11.5% [10.5–12.5%] of
+reproducible variance** (*P* = 2×10⁻⁷); dropping it leaves only cross-dose pairs,
+which are not replicates and **inflate the estimate to 20.7%, nearly double**. In
+LINCS phase 1, where 6.1 million same-dose replicate pairs are available, the
+interaction is 57%.
 Estimating the interaction is subject to four failure modes that are invisible in
 the output — using residual variance rather than replicate covariance, pooling
 same-batch comparisons, taking an in-sample rather than leave-one-context-out
@@ -78,7 +80,8 @@ which that residual can be estimated at all are not stated.
 We treat the residual as the measurement, and we treat its measurability as the
 first question rather than an assumption. Three findings follow, in order of
 consequence: the estimator is fragile in ways that change conclusions; the
-flagship atlas lacks the replicate structure the estimator requires; and the
+replicate structure the estimator requires exists in the flagship atlas but is
+discarded by convention, which doubles the reported value; and the
 quantity, where it can be estimated, transfers between laboratories far less well
 than it repeats within one, and the loss is attributable to the laboratory rather
 than the assay. Ben-David and colleagues showed cultures of one cell line diverge
@@ -101,7 +104,7 @@ output. On our data:
 | residual **variance** instead of replicate covariance | noise does not cancel | 82% "interaction" against a true value near zero |
 | pooling **same-batch** comparisons | batch state is shared signal | within-plate pairs agree ~7× better than cross-plate; 41% vs 28% |
 | **in-sample** shared response | residuals sum to zero, forcing E[r_a·r_b] = −σ²/n | per-drug covariance driven negative for 21 of 24 drugs; clamping then yields exact zeros |
-| treating **doses as replicates** | doses are different conditions | true replicates covary −0.0031 vs +0.0062 for cross-dose pairs (*P* = 3×10⁻¹²⁰) |
+| treating **doses as replicates** | doses are different conditions | 11.5% on true replicates vs 20.7% cross-dose — nearly double (Tahoe, plate 6 vs 14) |
 
 The third has a counterintuitive property worth stating because we got it wrong
 twice: the obvious repair, leave-one-*condition*-out, makes the bias *worse*,
@@ -112,30 +115,40 @@ construction offset without assuming its magnitude; where the signal is strong
 this changes nothing (LINCS phase 2: 45% → 47%), and where it is weak it was the
 entire result. These guards are released as `pertdecomp`.
 
-### The flagship single-cell atlas cannot measure the quantity it is used to report
+### The replicate structure exists, and discarding it doubles the estimate
 
 Tahoe-100M comprises 95.6 million cells across 47 analysable lines and 379
-compounds. Only **2,549 of its 53,881 (line, compound, dose) combinations — 4.7%
-— appear on more than one plate**. The 96.4% of (line, compound) pairs that span
-plates do so because the atlas places different *doses* on different plates.
+compounds, and it was built with the replication this measurement needs: **plate
+14 is a biological replicate of plate 6**, 6.2M cells over 50 lines and 95
+compounds, included by the authors to demonstrate platform reproducibility. All
+4,746 of its (line, compound, dose) triples also appear on plate 6.
 
-Splitting the two pairings against a matched null:
+Counted from the released metadata with no filtering of ours, **7,691 of 56,877
+triples — 13.5% — sit on more than one plate**, a figure stable across the
+atlas's own quality filter (13.52%) and a ≥10-cells-per-plate requirement
+(13.06%). Separately, 96.8% of (line, compound) *pairs* span plates, but only
+because different **doses** sit on different plates; those are not replicates.
+
+The authors withhold plate 14 from training and reserve it for validation, which
+is correct for fitting a model. Any analysis pipeline that copies the convention
+— ours did, by default — loses the atlas's only same-dose replicates and drops
+replication to 5.4%. Measured against a matched cross-context null:
 
 | pairing | pairs | interaction share | *P* vs null |
 |---|---|---|---|
-| true replicate (same line, compound **and dose**) | 6,482 | **0.0%** | 0.97 |
-| cross-dose (the pairing this implies) | 58,630 | 21.6% | 7×10⁻²⁵ |
+| **true replicate** (same line, compound **and dose**) | 11,492 | **11.5% [10.5–12.5%]** | 2×10⁻⁷ |
+| cross-dose (what remains without plate 14) | 67,744 | 20.7% [20.5–20.9%] | 1×10⁻³² |
+| pooled | 79,236 | 19.5% [19.3–19.8%] | 7×10⁻²⁸ |
 
-Restricted to identical (line, compound) sets so only same-dose versus
-different-dose differs, true replicates covary *less* than different doses do
-(*P* = 3×10⁻¹²⁰) — which no reproducible interaction can produce. The
-true-replicate arm covers only 25 of 379 compounds, and weak-effect ones, so it is
-underpowered rather than decisive. **Neither number is the answer: the atlas
-cannot resolve it**, and the value is bracketed between 0% and 21.6%.
+The interaction is real and well determined at **11.5%**, and the cross-dose
+pairing **nearly doubles it**. That pairing also attenuates with dose separation
+(ρ = −0.020, *P* = 2×10⁻⁷), as expected if those pairs are different conditions
+rather than repeats.
 
-Where genuine replicates exist the quantity is large and well determined. LINCS
-phase 1 supplies 6.1 million same-dose cross-plate pairs across 2,834 compounds
-and 70 lines, giving **43% shared / 57% interaction**.
+LINCS phase 1, with 6.1 million same-dose cross-plate pairs across 2,834
+compounds and 70 lines, gives **43% shared / 57% interaction** — a different
+platform with plate-wise z-scoring rather than log-CPM deltas, so the magnitudes
+are not directly comparable, but the estimator is the same.
 
 ### The interaction is dose-dependent and peaks just below lethality
 
@@ -262,14 +275,18 @@ leave-one-context-out prior, doses or true replicates as the replicate axis. Any
 figure quoted for "the context-specific fraction" is uninterpretable without
 them.
 
-**Replication, not scale, is what a perturbation atlas most lacks.** Tahoe-100M
-holds 100 million cells and cannot measure a context × compound interaction,
-because 95.3% of its conditions are unreplicated at matched dose. LINCS phase 1,
-far smaller in cells, answers the question cleanly with 6.1 million replicate
-pairs. Cells were spent where replicates and contexts were needed. Together with
-the power curve — 4% recovery at 47 contexts, 72% at 400 — this gives a concrete
-design target: an atlas of roughly 400 lines, two plates per condition, and
-one-tenth the cells per condition would answer what the present one cannot.
+**Replication is what gets discarded, not what is missing.** Tahoe-100M was
+built with a replicate plate and can measure the interaction — 11.5%
+[10.5–12.5%]. The problem is that the replicate plate is withheld from training
+by convention, and pipelines inherit that exclusion, leaving a cross-dose pairing
+that doubles the estimate. We made this mistake ourselves and reported the
+opposite conclusion before catching it. The practical recommendation is
+therefore analytical rather than architectural: **keep the replicate plate in
+when measuring, and never treat doses as replicates.** Where atlases genuinely
+are short is contexts — the power curve gives 4% recovery of genotype
+associations at 47 contexts against 72% at 400 — so an atlas of roughly 400
+lines with two plates per condition and one-tenth the cells per condition remains
+the design target.
 
 **Cross-atlas integration should verify identity, not assume it.** The
 laboratory step costs 84% of the loss and the assay step 16%, so the problem is
@@ -385,9 +402,13 @@ correlation for MSI, and lineage stratification for allele associations.
 
 ## Figures
 
-1. **Estimating the interaction.** (a) The four failure modes and their measured
-   cost. (b) Tahoe's replicate structure: 4.7% of conditions replicated. (c) True
-   replicate versus cross-dose pairing against a matched null.
+1. **Estimating the interaction, and the replication that makes it possible.**
+   (a) The four failure modes and what each reports, each labelled with the data
+   it was measured on. (b) Tahoe's replicate structure counted from the released
+   metadata: 13.5% of (line, drug, dose) triples sit on more than one plate, but
+   only 5.4% once plate 14 — a designed replicate of plate 6 — is dropped under
+   the training convention. (c) True replicate versus cross-dose pairing against
+   a matched null: 11.5% versus 20.7%.
 2. **Architecture where it can be measured.** (a) Shared/interaction shares in
    LINCS phase 1 and 2, PRISM, OP3. (b) Residual reproduces across replicates but
    not across compounds or contexts. (c) Dose curve: rise to a peak below

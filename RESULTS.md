@@ -35,13 +35,13 @@ differentially expressed genes.
    (r 0.45 vs 0.06); pooling them overstates reproducibility (§4).
 
 **Architecture of drug response.**
-3. Of the *reproducible* transcriptional response, roughly **43% is the drug's
-   average effect and 57% is context×drug interaction** — measured in LINCS
-   phase 1, which has 6.1M genuine same-dose replicate pairs. **Tahoe cannot
-   measure this**: only 4.7% of its (line, drug, dose) combinations are on more
-   than one plate, so its "replicates" are almost all different doses, and its
-   21.6% is an upper bound from a pairing that conflates interaction with
-   dose-response (§4, §14).
+3. Of the *reproducible* transcriptional response, the context×drug interaction
+   is **11.5% [10.5–12.5%] in Tahoe** measured on its designed replicate plate,
+   and **57% in LINCS phase 1** (6.1M same-dose replicate pairs; different
+   platform and normalisation, so magnitudes are not directly comparable).
+   Tahoe's replicate plate 14 is a deliberate copy of plate 6 that training
+   pipelines discard; without it the only available pairing is cross-dose, which
+   inflates the estimate to 20.7% — **nearly double** (§4, §14).
 4. That interaction is a **line×drug interaction, not a line property**: it
    reproduces across doses (r = 0.062) but barely transfers across drugs
    (0.019) or lines (−0.002). Hence no line-level descriptor can predict it (§4).
@@ -701,53 +701,66 @@ Figure bundles: `results/figures/13_prism/dose_vs_context/`,
 
 ---
 
-## 14. RESOLVED: Tahoe cannot estimate the interaction share, and LINCS can
+## 14. CORRECTED: Tahoe *can* measure the interaction — on the replicate plate everyone discards
 
-The OPEN ISSUE raised on 2026-08-31 is resolved, and the answer is worse than a
-correction: the Tahoe interaction share was not merely mis-scaled, it rests on a
-pairing that is not a replicate comparison at all.
+> **This section replaces an earlier version that claimed the opposite.** That
+> version reported 4.7% of conditions replicated and an undetectable interaction
+> (0.0%, p = 0.97). Both figures were artefacts of our own pipeline, which
+> inherited a `plate14` exclusion. The corrected analysis is below; the error and
+> its cause are kept because the cause is the finding.
 
-**Tahoe-100M has almost no true replicates.** Only **2,549 of its 53,881
-(line, drug, dose) combinations — 4.7% — appear on more than one plate**. The
-96.4% of (line, drug) pairs that do span plates get there because the atlas puts
-different *doses* on different plates. So a "cross-plate replicate pair" in this
-atlas is nearly always a **cross-dose** pair, which is not a replicate: §13 shows
-a line's response genuinely changes with dose.
+**Plate 14 is a deliberate biological replicate of plate 6.** The Tahoe authors
+state it explicitly — it was included "to highlight the reproducibility of the
+Mosaic platform" — and it carries 6.2M cells across 50 lines and 95 drugs, with
+**100% of its 4,746 (line, drug, dose) triples also present on plate 6**. They
+then excluded it from *training* and reserved it for validation, which is correct
+for fitting a model and exactly wrong for measuring replicate agreement. Our
+`build_deltas` inherited that exclusion as a default, and every downstream
+estimate silently lost the atlas's only source of same-dose replicates.
 
-Splitting the two pairings, against a matched cross-context null:
+**Replication counted from the released metadata**, with no processing of ours
+(`scripts/verify_tahoe_replicates.py`, 100.6M cell records):
 
-| pairing | pairs | interaction share | p vs null |
+| filter | (line, drug, dose) triples | replicated | % |
 |---|---|---|---|
-| **true replicate** (same line, drug, **and dose**) | 6,482 | **0.0%** | 0.97 |
-| cross-dose (the pairing used in §4) | 58,630 | 21.6% | 7×10⁻²⁵ |
-| pooled | 65,112 | 19.8% | 2×10⁻²⁰ |
+| all cells | 56,879 | 7,714 | **13.56%** |
+| atlas's own `pass_filter == full` | 56,877 | 7,691 | **13.52%** |
+| ≥10 cells per plate | 56,395 | 7,366 | **13.06%** |
+| *excluding plate 14* | 56,877 | 3,045 | *5.35%* |
 
-Restricting both pairings to the *same* (line, drug) combinations, so they differ
-only in same-dose versus different-dose, the gap holds: −0.00307 versus +0.00620,
-p = 3×10⁻¹²⁰. True replicates agree *less* than different doses do, which no
-genuine reproducible interaction can produce.
+The three inclusive filters agree, so 13.5% is a property of the experimental
+design rather than of any threshold. Dropping plate 14 more than halves it.
 
-**Neither number is the truth, and that is the finding.** The true-replicate
-estimate covers only **25 of 379 drugs**, and those happen to be weak-effect ones
-(mean squared response 0.218 versus 0.459 for the atlas), so it is underpowered
-rather than decisive. The cross-dose estimate covers everything but conflates
-interaction with dose-response. The real value is bracketed and **Tahoe-100M
-cannot resolve it**. The §4 figure should be read as an upper bound obtained from
-a pairing the atlas's design forced on us.
+**Measured on the designed replicates**, against a matched cross-context null:
 
-**LINCS is the dataset that can answer this.** Phase 1 supplies 6.1M genuine
-same-dose cross-plate replicate pairs. Against the matched null it gives
-**43% shared / 57% interaction**, with the null offset small enough to barely
-matter (phase 2: raw covariance +0.359 against an offset of −0.030, moving the
-share 45%→47%). The offset that wrecked the Tahoe estimate is negligible where
-the signal is real.
+| pairing | pairs | interaction share | *P* vs null |
+|---|---|---|---|
+| **true replicate** (same line, drug **and dose**) | 11,492 | **11.5% [10.5–12.5%]** | 1.7×10⁻⁷ |
+| cross-dose (same line and drug, different dose) | 67,744 | 20.7% [20.5–20.9%] | 1.1×10⁻³² |
+| pooled | 79,236 | 19.5% [19.3–19.8%] | 7.0×10⁻²⁸ |
 
-This reframes the project's own headline. The interaction is real — it is
-unambiguous in LINCS — but **the single-cell atlas built to study it is the one
-dataset here that cannot measure it**, because it traded replication for
-coverage. That is the same design critique as §10–11 (context count) arriving
-through a second, independent route: cells were spent where replicates and
-contexts were needed.
+So the interaction in Tahoe is real, well determined, and **11.5%** — while the
+cross-dose pairing, which is what remains once plate 14 is dropped, inflates it
+to **20.7%, nearly twice the true value**. Cross-dose covariance also decays with
+dose separation (ρ = −0.020, p = 1.5×10⁻⁷), the attenuation expected if those
+pairs are different conditions rather than repeats.
+
+**What this means, and it is more useful than the claim it replaces.** The atlas
+was designed with the replication needed to measure context-dependence. The
+difficulty is that the replicate plate is routinely discarded — the atlas authors
+withhold it from training, and any pipeline that copies that convention, as ours
+did, is left with a cross-dose pairing that silently doubles the estimate. The
+recommendation is therefore not "build a better atlas" but **"analyse the one you
+have with the replicate plate in, and never treat doses as replicates"**.
+
+Where genuine replicates are abundant the same estimator gives larger values —
+LINCS phase 1, with 6.1M same-dose cross-plate pairs, gives 43% shared / 57%
+interaction — but that is a different platform with different normalisation
+(plate-wise z-scores rather than log-CPM deltas) and the two shares are not
+directly comparable in magnitude.
+
+Figure bundle: `results/figures/04_decomposition/tahoe_true_replicates/`.
+Tables: `tahoe_replicate_structure.csv`, `tahoe_true_replicates.csv`.
 
 ## 15. No novel allele survives independent validation in GDSC
 
