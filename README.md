@@ -20,6 +20,42 @@ via scvi-tools (itself PyTorch) as the paper-matching baseline.
 | Methodological positioning | `docs/methodology_positioning.md` |
 | Novelty audit | `docs/novelty_audit.md` |
 
+## The tool: `pertdecomp`
+
+Replicate-validated decomposition of any perturbation atlas into the response
+that is *shared* across cellular contexts and the response that is
+*context-specific* — with the checks that make the second number trustworthy
+built in rather than left to the user.
+
+```bash
+python -m perturbmodel.decompose --h5ad atlas.h5ad \
+    --context cell_line --perturbation drug --replicate plate \
+    --dose dose --control DMSO
+```
+
+```python
+from perturbmodel.decompose import decompose
+res = decompose(adata, context="cell_line", perturbation="drug",
+                replicate="plate", control="DMSO")
+print(res.report()); res.per_perturbation.head()
+```
+
+It enforces three things that are easy to get wrong:
+
+- **Replicates are mandatory.** Context-specific variance is the covariance of
+  residuals between *independent* replicates of the same context × perturbation,
+  so it cannot be confused with noise. Without a replicate column the tool
+  refuses to report an interaction share.
+- **Batch structure is excluded, not regressed.** Same-batch comparisons are
+  dropped everywhere, and the within- versus cross-batch inflation is reported
+  (~7× in Tahoe-100M *after* batch-matched control normalisation).
+- **Stratified estimates need stratified power.** Per-perturbation indices carry
+  their replicate-pair counts and are flagged when unsupported — the difference
+  between "not context-dependent" and "not estimable here".
+
+Validated against synthetic data with a known interaction and reproduces the
+published numbers for Tahoe-100M, OP3 and sciPlex3.
+
 ## Dataset at a glance
 
 - ~100.6M cells passing minimal QC, **95.6M passing full QC** (used for analyses)
