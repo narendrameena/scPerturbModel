@@ -16,6 +16,7 @@ via scvi-tools (itself PyTorch) as the paper-matching baseline.
 | Modeling roadmap | `docs/project_roadmap.md` |
 | **Findings so far** | **`RESULTS.md`** |
 | Related work survey | `docs/related_work_perturbation_models.md` |
+| Methodological positioning | `docs/methodology_positioning.md` |
 
 ## Dataset at a glance
 
