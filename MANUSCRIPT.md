@@ -42,8 +42,10 @@ atlases, the interaction is dose-dependent, rising roughly fourfold to a peak
 just below lethality and collapsing where every line is dying (*P* = 4×10⁻⁹²),
 and transcriptional and viability context-dependence are **decoupled**
 (ρ = −0.09 across 67 mechanism classes). Genome-wide mutation status has **no
-cross-validated predictive power** for the interaction; only lineage predicts it,
-and weakly (median CV *R*² = 0.015). Finally, of the line-specific response that
+cross-validated predictive power** for the interaction (median CV *R*² = +0.0002,
+50.8% of compounds positive), whereas **baseline expression predicts it in 92.5%
+of compounds** (+0.093) and baseline protein nearly as well (+0.073); lineage
+(+0.020) adds nothing once expression is included. Finally, of the line-specific response that
 an assay reproduces with itself, only **56% survives transfer to another
 laboratory** — but **87%** survives once cell-line identity is verified from the
 data rather than assumed from an identifier, on held-out compounds. Only 5–12% of
@@ -154,7 +156,7 @@ null**. A drug whose transcriptional response is highly line-specific is not
 thereby a drug whose killing is line-specific. Since the two readouts are used
 interchangeably as "drug response", this is a substantive caution.
 
-### Genotype does not predict the interaction; lineage weakly does
+### Molecular state predicts the interaction; genotype does not
 
 At 738 PRISM cell lines the genotype scan recovers the clinical biomarker set de
 novo (TP53 with MDM2 inhibitors, BRAF with vemurafenib and dabrafenib, PIK3CA
@@ -162,15 +164,20 @@ with alpelisib, KRAS with a MEK inhibitor; 80 associations at FDR < 0.05 over 1.
 million tests), confirming the estimator and the genotype join. But out of
 sample, across 150 compounds with 5-fold cross-validated ridge:
 
-| predictor block | median CV *R*² |
-|---|---|
-| lineage | **+0.0145** (72.7% of compounds positive) |
-| mutational burden | −0.0023 |
-| nonsynonymous variants | −0.0058 |
-| synonymous variants | −0.0064 |
+| predictor block | median CV *R*² | compounds positive |
+|---|---|---|
+| **baseline expression** (2,000 genes) | **+0.0927** | **92.5%** |
+| **baseline protein** (RPPA, 214 antibodies) | **+0.0731** | 88.3% |
+| lineage | +0.0201 | 74.2% |
+| nonsynonymous variants | +0.0002 | 50.8% |
+| mutational burden | −0.0023 | 32.0% |
+| synonymous variants | −0.0064 | 22.0% |
 
-Negative values mean worse than predicting the mean. **Genome-wide mutation
-status carries no generalisable information.** Using synonymous variants as a
+**Genome-wide mutation status carries no generalisable information; baseline
+molecular state does.** Expression beats lineage by 4.6× (p = 4.7×10⁻²⁰) and
+lineage adds nothing on top of expression, so lineage was acting as a coarse
+proxy for expression state. The absolute effect remains modest (≈9% of variance)
+but is highly consistent across compounds. Using synonymous variants as a
 control — silent changes cannot alter a protein but carry identical ancestry,
 lineage and germline-contamination structure, and we match both blocks to the
 same 3,435 genes — isolates a genuinely mechanistic excess of **+0.0036**
@@ -208,7 +215,9 @@ match**, ranking a median 82nd of 971 candidates. That is far better than chance
 **Verifying identity raises transfer from 56% to 87% of the ceiling.** This is
 not circular: identity is validated on one random half of the shared compounds
 and agreement measured on the disjoint other half (all-lines control on the same
-held-out compounds: 59%).
+held-out compounds: 59%). We initially attributed this to detecting divergent
+cultures; baseline expression does not support that (below), so the gain is
+reported as a practical filter whose mechanism is unresolved.
 
 A matching ladder shows what each rule buys: random pairing r = −0.002,
 same-tissue random pairing 0.048, identifier 0.235, best available partner 0.419.
@@ -280,14 +289,19 @@ a factorial design; a cross-laboratory comparison with the assay held exactly
 fixed would settle it, and CTRP would have provided one but its NCI data portal
 has been retired.
 
-*Identity verification.* Response fingerprinting is not the ideal identity check.
-Baseline-expression or genotype matching would be more direct, but is impossible
-across these particular datasets: LINCS Level 4 is z-scored within plate, which
-removes the cell-line baseline such matching keys on, and neither PRISM nor GDSC
-ships expression. Fingerprinting also cannot distinguish culture divergence from
-misidentification, and related lines are genuinely similar, so reciprocal-best-hit
-failure is an upper bound on the rate of true identity problems. The median rank
-of 82 out of 971 shows identity is informative but not unique.
+*Identity verification, and a correction.* We first read reciprocal-best-hit
+failure as evidence of culture divergence. Baseline expression, now obtained from
+the legacy CCLE distribution, does not support that: for the 423 lines whose
+identifier match was outranked, the outranking line sits at a median expression
+rank of **306 of 798** (chance 399) and shares the primary tissue only **7%** of
+the time. Genuine divergence would place the better match among close relatives;
+a near-random partner instead indicates the best-hit is largely fingerprint
+noise. The held-out gain from 59% to 87% stands, but its mechanism does not — it
+selects lines whose cross-laboratory signal is strong and self-consistent, which
+is a useful filter, not a demonstrated detector of divergent cultures. The 5–12%
+figure characterises the metric's resolution, not the rate of identity problems.
+CCLE expression is also a single snapshot from one institution, so it cannot
+compare two laboratories' cultures against each other.
 
 *Transcriptional arm.* Its within-laboratory ceiling is only r ≈ 0.06, so the 52%
 reproducible fraction is a ratio of two small numbers and is correspondingly

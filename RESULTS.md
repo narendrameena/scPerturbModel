@@ -881,6 +881,31 @@ synonymous block carries *less* measurement error than the nonsynonymous somatic
 block. The comparison is therefore conservative — the true mechanistic excess
 could be somewhat larger than 0.3%, though not by enough to change the reading.
 
+### Expression, not genotype, is the predictor — §17 as first written was incomplete
+
+The blocks above omitted the one the field considers strongest. Adding CCLE
+baseline expression (top 2,000 variable genes) and baseline protein (RPPA, 214
+antibodies) under the identical cross-validated ridge, over 120 compounds:
+
+| predictor block | median CV *R*² | compounds positive | p |
+|---|---|---|---|
+| **baseline expression** | **+0.0927** | **92.5%** | 2.7×10⁻²⁰ |
+| **baseline protein (RPPA)** | **+0.0731** | 88.3% | 1.3×10⁻¹⁹ |
+| lineage | +0.0201 | 74.2% | 8.2×10⁻¹⁵ |
+| nonsynonymous variants | +0.0002 | 50.8% | 0.74 |
+| expression + lineage | +0.0929 | 92.5% | 2.8×10⁻²⁰ |
+
+Baseline expression predicts the interaction **4.6× better than lineage**
+(difference +0.068, p = 4.7×10⁻²⁰), protein nearly as well, and **lineage adds
+nothing once expression is included** — it was a coarse proxy for expression
+state all along. Genotype remains at zero.
+
+The corrected statement is therefore not "nothing predicts the interaction" but
+**"molecular state predicts it and genotype does not"**. The effect is modest in
+absolute terms (≈9% of variance) but consistent, appearing in 92.5% of compounds,
+and it resolves the tension with Schlüter & Schönhuth (2025), who report
+expression and copy number out-predicting mutations in GDSC.
+
 **Context.** In UK Biobank, genome-wide common variation explains 9–17% of drug
 response (Sadowski et al. 2024, *Cell Genomics*: statin–LDL 9%, statin–A1c 10%,
 statin–glucose 11%, metformin–BMI 17%). Our cell-line system yields far less.
@@ -932,9 +957,27 @@ carry real information — it is simply not unique.
 agreement from 56% to 87% of the within-lab ceiling.** This is *not* circular:
 identity is validated on one random half of the shared compounds and the
 agreement is measured on the disjoint other half (all-lines control on the same
-held-out compounds: 59%). So most of the apparent cross-laboratory
-irreproducibility is **cell-line divergence, not assay or protocol difference** —
-which is Ben-David's conclusion, now quantified at scale.
+held-out compounds: 59%).
+
+> **Interpretation corrected (2026-08-31).** We first read reciprocal-best-hit
+> failures as evidence of cell-line divergence between laboratories, following
+> Ben-David. **CCLE baseline expression does not support that reading.** For the
+> 423 lines whose identifier match was outranked, the outranking line is a
+> near-random expression neighbour — median expression rank **306 of 798**
+> against a chance expectation of 399 — and only **7%** share the primary tissue.
+> Genuine divergence would put the better match among the line's close relatives;
+> a near-random partner instead indicates the best-hit is largely **fingerprint
+> noise**. The identifier match remains far above tissue-matched random (0.235 vs
+> 0.048), so identity carries real signal — it is simply not resolved sharply
+> enough for "is it its own best match" to diagnose divergence.
+>
+> Unchanged: the held-out gain from 59% to 87% is real and predictive. Changed:
+> its **mechanism**. Validation selects lines whose cross-laboratory signal is
+> strong and self-consistent — a sound practical filter — but we cannot claim it
+> specifically detects divergent cultures. The 5–12% reciprocal-best-hit rate is
+> a property of the metric's resolution, not an estimate of how many cell lines
+> are wrong. This section's title should be read as "cell-line identity is where
+> the recoverable loss sits", not as a demonstration that cultures have diverged.
 
 ### What each matching strategy actually buys
 
@@ -1032,11 +1075,12 @@ now redirects to `studycatalog.cancer.gov`), so it could not be obtained.
 
 ### Remaining limitations
 
-*Identity verification.* Response fingerprinting is not the ideal check.
-Baseline-expression or genotype matching would be more direct but is impossible
-across these datasets: LINCS Level 4 is z-scored within plate, removing the
-cell-line baseline such matching keys on, and neither PRISM nor GDSC ships
-expression. Fingerprinting also cannot separate culture divergence from
+*Identity verification.* Baseline expression is now available (legacy CCLE
+distribution) and has been used — the interpretation note above is what it
+changed. It remains a **single snapshot from one institution**, so it is an
+independent molecular reference but cannot compare two laboratories' cultures
+against each other; a per-laboratory molecular profile would be needed and does
+not exist for these atlases. Fingerprinting also cannot separate culture divergence from
 misidentification, and genuinely related lines are similar, so the 5–12%
 reciprocal-best-hit rate is an **upper bound on the rate of true identity
 problems** — the median rank of 82 of 971 shows identity is informative but not
