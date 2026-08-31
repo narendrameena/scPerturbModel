@@ -1,0 +1,2 @@
+dataset,n_contexts,n_perturbations,n_replicates,additive,interaction,interaction_share,n_cross_replicate_pairs
+sciPlex3,3,189,2,0.479782372713089,0.20788334682689438,0.30230290811349264,8798

@@ -65,7 +65,7 @@ differentially expressed genes.
     per-condition analysis here (thousands of conditions) is well powered and
     replicates; every line-level predictor we tried failed — plausibly one
     power ceiling hit four times rather than four separate biological
-    negatives (§9).
+    negatives (§10).
 
 ---
 
@@ -382,7 +382,43 @@ also motivates using learned line embeddings over tissue-of-origin labels.
 
 ---
 
-## 9. The binding constraint is context count, not cell count
+## 9. The decomposition replicates in two independent atlases
+`results/figures/12_external/`
+
+Every result above comes from Tahoe-100M, so the decomposition was re-run
+unchanged on two external atlases, mapping their columns onto the same three
+roles (context / perturbation / independent replicate). The replicate axis is
+what makes each estimate trustworthy: reproducible interaction is the covariance
+of residuals between *independent replicates* of the same context × perturbation.
+
+| | **Tahoe-100M** | **OP3** | **sciPlex3** |
+|---|---|---|---|
+| contexts | 47 cancer lines | **6 immune cell types** | 3 cancer lines |
+| perturbations | 379 | 147 | 189 |
+| replicate axis | plates | **donors** | experimental replicates |
+| platform / lab | Parse GigaLab, Tahoe | 10x, NeurIPS 2023 | sci-Plex, Trapnell lab |
+| additive share | 59% | 67% | 70% |
+| **interaction share** | **41%** | **33%** | **30%** |
+| residual across *replicates* | +0.062 | +0.135 | +0.048 |
+| residual across *perturbations* | +0.019 | +0.007 | +0.026 |
+| residual across *contexts* | −0.002 | −0.100 | −0.040 |
+
+The central structural claim holds in all three: the residual is **reproducible
+across independent replicates** of the same context × perturbation, yet
+**barely transfers across perturbations** within a context. Context-dependence
+is a context × perturbation interaction rather than a context property — now
+shown in primary human immune cells as well as cancer cell lines, across three
+platforms, three labs, and three different kinds of replicate (plate, donor,
+experimental repeat).
+
+Two caveats worth stating. The across-context row is partly forced negative by
+the leave-one-out prior (expected ≈ −1/(k−1), i.e. −0.20 at k = 6 and −0.022 at
+k = 47), so the informative contrast is replicates versus perturbations, not
+that row. And the additive share rises as contexts fall (59% → 67% → 70% at 47,
+6 and 3 contexts): with few contexts the prior is noisier and its mean square is
+inflated, the same effect quantified directly in §2.
+
+## 10. The binding constraint is context count, not cell count
 
 Four independent attempts to predict a line's context-deviance from line-level
 features have failed:
