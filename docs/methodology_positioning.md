@@ -107,6 +107,25 @@ noisier predicts that the additive share should rise as contexts fall, and the
 three datasets — 47, 6 and 3 contexts — land in exactly that order
 (59% → 67% → 70%).
 
+### 1.9 Diagnosing a failed replication rather than reporting it
+The *per-compound* mechanism ranking does **not** replicate in OP3, and we
+report why in the same units as the analysis: a compound there has a median of
+**18** cross-replicate pairs to estimate its own interaction (6 cell types × 3
+donors) against **142** in Tahoe, and correspondingly only **23%** of OP3
+compounds yield a positive interaction estimate versus **96%**. The rest come
+out negative and clamp to zero — the expected behaviour of an unbiased but noisy
+covariance estimator when the true value is small.
+
+*Why it matters.* "Does not replicate" and "cannot be estimated here" have
+opposite implications, and a null is uninterpretable without the power
+accounting that distinguishes them. The same comparison also explains why the
+*aggregate* decomposition does replicate in OP3 — it pools 10,317 pairs — which
+turns a bare negative into a general principle: pooled estimates are robust,
+stratified ones are limited by replication depth **inside each stratum**. That
+principle is what identifies the property of Tahoe-100M that actually matters
+for per-drug claims, which is not its cell count but its ~142 independent
+replicate pairs per compound.
+
 ---
 
 ## 2. What better biology this actually buys
@@ -120,7 +139,9 @@ Ranked by how defensible each claim is.
    This is prospectively useful — it says how broad a screening panel a compound
    needs, from its mechanism. The top class is mechanistically expected
    (nuclear receptors read out each cell's enhancer landscape), which makes it a
-   positive control and a result simultaneously.
+   positive control and a result simultaneously. **Tahoe-only**: we attempted
+   replication in OP3 and it is not estimable there (§1.9), so this claim rests
+   on one atlas and should be stated that way.
 2. **The architecture of drug response**: ~59% of reproducible response is the
    drug's average effect, ~41% is line×drug interaction; the interaction
    reproduces across doses (+0.062) but not across drugs (+0.019) or lines
@@ -179,8 +200,12 @@ Ranked by how defensible each claim is.
   of it remains Tahoe-only: the drug-mechanism CDI ranking, the six named
   programs, the few-shot protocol, the baseline-scaling curve, the TCGA
   anchoring and the identity audit. Those are the results a reviewer would most
-  reasonably ask to see repeated, and OP3's 147 compounds with MOA annotation
-  would support at least the mechanism ranking.
+  reasonably ask to see repeated. We attempted the most important of them — the
+  mechanism ranking — in OP3 and it is **not estimable** there for want of
+  per-compound replication (§1.9); that suggestion, made in an earlier version
+  of this document, was wrong. Replicating the mechanism ranking needs another
+  atlas with many compounds *and* deep per-compound replication, which as far as
+  we know does not currently exist outside Tahoe-100M.
 
 ---
 
