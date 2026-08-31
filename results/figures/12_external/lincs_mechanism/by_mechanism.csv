@@ -1,0 +1,25 @@
+moa-fine,median,size
+RAF inhibitor,0.5881659657070738,6
+MEK inhibitor,0.5606629969430237,6
+PLK inhibitor,0.4564856918474847,5
+VEGFR inhibitor,0.39396814661921925,3
+DNA methyltransferase inhibitor,0.3932807090036925,3
+AKT inhibitor,0.38735966809460415,4
+HSP inhibitor,0.3764681735369082,3
+Aurora kinase inhibitor,0.3714500313473845,5
+CHK inhibitor,0.37087132396503614,4
+IKK inhibitor,0.36624519575128717,3
+p38 MAPK inhibitor,0.35454408863382014,5
+bromodomain inhibitor,0.35411855013502597,5
+PARP inhibitor,0.35267971894162964,4
+rho associated kinase inhibitor,0.3514367774322193,3
+EGFR inhibitor,0.30999503275482376,12
+ALK tyrosine kinase receptor inhibitor,0.29975172303074954,3
+mTOR inhibitor,0.2986524539653639,8
+HDAC inhibitor,0.2933591693193312,7
+mTOR inhibitor|PI3K inhibitor,0.2746369771213155,4
+JAK inhibitor,0.2664925574223546,3
+PI3K inhibitor,0.25544481819305676,14
+CDK inhibitor,0.2376835738628043,9
+glycogen synthase kinase inhibitor,0.2336707937332569,3
+focal adhesion kinase inhibitor,0.12614336394766176,3

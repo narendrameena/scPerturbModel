@@ -274,6 +274,28 @@ a compound before choosing its target. And CDI correlates modestly with effect
 size (Spearman ρ = +0.38), so potent drugs are somewhat more context-dependent,
 though that does not account for the mechanism ranking.
 
+**The principle replicates in LINCS L1000; the specific ranking does not.**
+Applying the same analysis to LINCS Phase II (30 cell lines, 273 compounds in
+≥10 lines, 894 plates, 1.45 million cross-replicate pairs, 978 directly measured
+genes) reproduces the *existence* of the effect — mechanism significantly
+structures context-dependence there too (Kruskal–Wallis H = 48.2,
+P = 1.6 × 10⁻³ across 24 classes, 216 annotated compounds). But the **order does
+not transfer**. Across the six mechanism classes present in both panels the rank
+correlation is **ρ = −0.26 (P = 0.62)**, and the largest single disagreement is
+stark: RAF inhibitors are the *most* context-dependent class in LINCS (0.588)
+and among the *least* in Tahoe-100M (0.119).
+
+Three differences could produce this and we cannot presently separate them: the
+cell panels (LINCS' compounds in ≥10 lines are dominated by a small core panel
+of oncology models, Tahoe's by 47 diverse lines), the measurement (978 landmark
+genes versus the transcriptome), and dose and timing. Note also that LINCS'
+well-replicated compounds are almost entirely kinase inhibitors, so the
+nuclear-receptor result that leads our Tahoe ranking is **not testable** there.
+
+We therefore report the mechanism *effect* as replicated and the mechanism
+*ranking* as Tahoe-specific pending a panel that shares more classes. The
+ranking should not be used prospectively across platforms on this evidence.
+
 **Practical consequence.** How many cell models a compound must be screened in
 is predictable from its mechanism: nuclear-receptor, proteasome and MEK
 pharmacology needs broad panels, whereas RAF, metabolic and most TK inhibitors
