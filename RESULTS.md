@@ -877,6 +877,69 @@ genotype–phenotype mismatch Ben-David quantifies destroys it before we measure
 
 Figure bundle: `results/figures/15_architecture/genetic_architecture/`.
 
+## 18. Only ~56% of a cell line's drug-specific response survives moving to another lab
+
+Ben-David et al. (2018, *Nature*) showed that "the same" cell line differs
+between laboratories — a median 19% of non-silent mutations appear in only one of
+CCLE/GDSC, and 48 of 55 compounds active against one MCF7 strain were completely
+inactive against another. They demonstrated it in a single cell line, at one
+dose, with viability. The scaled question has not been answered, and it sets a
+hard ceiling on every context-transfer model trained on one atlas: **of the line ×
+compound interaction we attribute to cell-line identity, how much reproduces
+elsewhere?**
+
+The design separates laboratory divergence from assay noise, because reporting a
+cross-lab correlation alone confuses the two:
+
+| comparison | what varies | compounds | median Spearman r |
+|---|---|---|---|
+| PRISM replicate plates | nothing (same experiment) | 1,435 | **0.473** |
+| GDSC1 vs GDSC2 | experiment, assay version (both Sanger) | 123 | **0.438** |
+| **PRISM vs GDSC** | **laboratory + assay** | 187 | **0.255** |
+
+96–100% of compounds give a positive correlation in every comparison, so the
+signal is real throughout; what changes is how much of it transfers.
+
+**Reproducible fraction = 0.255 / 0.455 = 56%** (geometric mean of the two
+within-lab ceilings). Just over half of the line-specific drug response that an
+assay can reproduce with *itself* survives the move to another institution and
+platform.
+
+Two things about that number matter as much as its size.
+
+**The ceiling is itself low.** Even within one laboratory, repeat measurement of
+the same line's compound-specific deviation agrees at only r ≈ 0.45. The
+line-specific component is intrinsically noisy, and half the "irreproducibility"
+attributed to labs is present before you leave the building.
+
+**Transfer scales steeply with signal strength** (ρ = +0.62, p = 1.4×10⁻²¹,
+n = 187):
+
+| interaction strength quartile | cross-lab r | as fraction of ceiling |
+|---|---|---|
+| Q1 (weakest) | 0.109 | 24% |
+| Q2 | 0.203 | 45% |
+| Q3 | 0.287 | 63% |
+| Q4 (strongest) | 0.387 | **85%** |
+
+So the headline 56% is a floor for the compounds actually worth modelling.
+Compounds with a strong line-specific component transfer at 85% of the internal
+ceiling; compounds with a weak one essentially do not transfer at all, and
+modelling them across atlases is chasing noise.
+
+**Consequences.** This is a direct, quantitative limit on cross-atlas
+generalisation, and it reframes two of our own results. The cross-dataset
+non-replication of the mechanism ranking (§12, §16) no longer needs a biological
+explanation — a 56% reproducible fraction, concentrated in strong-interaction
+compounds, is sufficient on its own. And the genotype negatives (§10–11, §17) have
+a second cause alongside power: we join CCLE genotype to PRISM and GDSC response,
+and neither the genotype nor the phenotype is measured on the same cells.
+
+One limitation is explicit: PRISM vs GDSC changes laboratory *and* assay
+simultaneously, so 56% bounds the two together and cannot separate them.
+
+Figure bundle: `results/figures/16_crosslab/cross_lab_reproducibility/`.
+
 ## Reproducing
 
 ```bash
