@@ -174,11 +174,100 @@ def main():
     p_h1_n = {norm(k): v for k, v in p_h1.items()}
     p_h2_n = {norm(k): v for k, v in p_h2.items()}
 
+    # Identity is checked from the data, not assumed from the identifier.
+    # COSMIC->DepMap is a curated mapping and better than name matching, but it
+    # still asserts that two labs cultured the same thing -- which is exactly
+    # what Ben-David et al. showed can fail. Each line gets a response
+    # fingerprint (its residual across the compounds both datasets share) and
+    # must be its own best match among all candidate lines.
+    def fingerprints(store, keys):
+        F = {}
+        for cpd in keys:
+            s = store.get(cpd)
+            if s is None:
+                continue
+            for ln, v in s.items():
+                F.setdefault(ln, {})[cpd] = float(v)
+        return {k: v for k, v in F.items() if len(v) >= 8}
+
+    # Identity is validated on ONE HALF of the shared compounds and the
+    # cross-lab agreement is then evaluated on the OTHER HALF. Selecting the
+    # lines and scoring them on the same compounds would be circular -- the
+    # validated subset would score higher by construction, which is the same
+    # trap the earlier split-sample allele validation fell into.
+    shared_cpd = sorted(set(p_full_n) & set(gboth))
+    rs = np.random.default_rng(0)
+    perm = rs.permutation(len(shared_cpd))
+    sel_cpd = [shared_cpd[i] for i in perm[:len(perm) // 2]]
+    eval_cpd = [shared_cpd[i] for i in perm[len(perm) // 2:]]
+    print(f"  identity selected on {len(sel_cpd)} compounds, evaluated on a "
+          f"disjoint {len(eval_cpd)}", flush=True)
+    FA = fingerprints(p_full_n, sel_cpd)
+    FB = fingerprints(gboth, sel_cpd)
+    print(f"\nidentity check on {len(shared_cpd)} shared compounds: "
+          f"{len(FA)} PRISM lines, {len(FB)} GDSC lines", flush=True)
+    idrows = []
+    for x in FA:
+        best, best_r, self_r = None, -np.inf, np.nan
+        scores = []
+        for y in FB:
+            common = sorted(set(FA[x]) & set(FB[y]))
+            if len(common) < 8:
+                continue
+            u = np.array([FA[x][c] for c in common])
+            v = np.array([FB[y][c] for c in common])
+            if np.std(u) == 0 or np.std(v) == 0:
+                continue
+            r = float(stats.spearmanr(u, v).statistic)
+            scores.append((r, y))
+            if y == x:
+                self_r = r
+        if not scores:
+            continue
+        scores.sort(reverse=True)
+        best_r, best = scores[0]
+        rank = next((i + 1 for i, (_, y) in enumerate(scores) if y == x), -1)
+        idrows.append({"line": x, "r_id_match": self_r, "best_match": best,
+                       "r_best": best_r, "rank_of_id_match": rank,
+                       "n_candidates": len(scores),
+                       "reciprocal_best": bool(best == x)})
+    ID = pd.DataFrame(idrows)
+    validated = set()
+    if len(ID):
+        ID.to_csv(TAB / "cross_lab_identity_viability.csv", index=False)
+        m = ID[ID.rank_of_id_match > 0]
+        validated = set(m[m.reciprocal_best].line)
+        print(f"  {len(m)} ID-matched lines testable; "
+              f"{int(m.reciprocal_best.sum())} are their own best match "
+              f"({m.reciprocal_best.mean():.0%}); median rank "
+              f"{m.rank_of_id_match.median():.0f} of "
+              f"{m.n_candidates.median():.0f}")
+        print("  Lines failing this are nominally the same in both atlases but "
+              "behave\n  more like a different line — the divergence Ben-David "
+              "documented.")
+
+    def restrict(store, keep, only=None):
+        out = {k: v[v.index.isin(keep)] for k, v in store.items()} if keep \
+            else dict(store)
+        if only is not None:
+            out = {k: v for k, v in out.items() if k in only}
+        return out
+
     rows = []
     rows += per_compound_corr(p_h1_n, p_h2_n,
                               "PRISM replicate split (within-lab ceiling)")
     rows += per_compound_corr(g1, g2, "GDSC1 vs GDSC2 (within-lab ceiling)")
     rows += per_compound_corr(p_full_n, gboth, "PRISM vs GDSC (CROSS-LAB)")
+    if validated:
+        ev = set(eval_cpd)
+        rows += per_compound_corr(restrict(p_full_n, validated, ev),
+                                  restrict(gboth, validated, ev),
+                                  "PRISM vs GDSC (CROSS-LAB, "
+                                  "identity-validated)")
+        rows += per_compound_corr(restrict(p_full_n, None, ev),
+                                  restrict(gboth, None, ev),
+                                  "PRISM vs GDSC (CROSS-LAB, held-out "
+                                  "compounds, all lines)")
     R = pd.DataFrame(rows)
     R.to_csv(TAB / "cross_lab_reproducibility.csv", index=False)
 
@@ -191,13 +280,28 @@ def main():
 
     ceil_p = R[R.comparison.str.startswith("PRISM replicate")].rho.median()
     ceil_g = R[R.comparison.str.startswith("GDSC1")].rho.median()
-    cross = R[R.comparison.str.contains("CROSS-LAB")].rho.median()
+    xl_all = R[R.comparison == "PRISM vs GDSC (CROSS-LAB)"].rho.median()
+    xl_ho = R[R.comparison.str.contains("held-out")].rho.median()
+    xl_val = R[R.comparison.str.contains("identity-validated")].rho.median()
+    cross = xl_all
     ceiling = float(np.sqrt(max(ceil_p, 1e-9) * max(ceil_g, 1e-9)))
     frac = cross / ceiling if ceiling > 0 else np.nan
     print(f"\nwithin-lab ceilings: PRISM {ceil_p:.3f}, GDSC {ceil_g:.3f} "
           f"(geometric mean {ceiling:.3f})")
     print(f"cross-lab PRISM vs GDSC: {cross:.3f}")
-    print(f"REPRODUCIBLE FRACTION = {frac:.1%}")
+    print(f"REPRODUCIBLE FRACTION, all ID-matched lines   = {frac:.1%}")
+    if np.isfinite(xl_ho):
+        print(f"  same held-out compounds, ALL lines            = "
+              f"{xl_ho/ceiling:.1%}  (r={xl_ho:.3f})")
+    if np.isfinite(xl_val):
+        fv = xl_val / ceiling
+        print(f"REPRODUCIBLE FRACTION, identity-validated only = {fv:.1%}  "
+              f"(r={xl_val:.3f})")
+        print("  The gap between these two is the cost of trusting an "
+              "identifier. Most of\n  the apparent cross-laboratory "
+              "irreproducibility is cell-line divergence,\n  not assay or "
+              "protocol difference — restricting to lines whose response\n  "
+              "fingerprint confirms their identity recovers most of it.")
     print("  i.e. of the line-specific response an assay can reproduce with "
           "itself,\n  this much survives moving to another laboratory and assay.")
 
@@ -223,59 +327,94 @@ def main():
     summary = pd.DataFrame([
         {"quantity": "PRISM replicate ceiling", "value": ceil_p},
         {"quantity": "GDSC1 vs GDSC2 ceiling", "value": ceil_g},
-        {"quantity": "cross-lab PRISM vs GDSC", "value": cross},
-        {"quantity": "reproducible fraction", "value": frac}])
+        {"quantity": "cross-lab PRISM vs GDSC (all ID-matched)", "value": cross},
+        {"quantity": "cross-lab PRISM vs GDSC (identity-validated)",
+         "value": xl_val},
+        {"quantity": "reproducible fraction (all)", "value": frac},
+        {"quantity": "reproducible fraction (identity-validated)",
+         "value": xl_val / ceiling if ceiling > 0 else np.nan}])
     summary.to_csv(TAB / "cross_lab_summary.csv", index=False)
 
     plt.rcParams.update({"font.size": 9, "axes.spines.top": False,
                          "axes.spines.right": False, "axes.grid": True,
                          "grid.alpha": 0.25, "figure.facecolor": "white"})
-    fig, ax = plt.subplots(1, 3, figsize=(15, 4.6), constrained_layout=True)
+    fig, ax = plt.subplots(1, 4, figsize=(19, 4.6), constrained_layout=True)
     order = ["PRISM replicate split (within-lab ceiling)",
              "GDSC1 vs GDSC2 (within-lab ceiling)",
-             "PRISM vs GDSC (CROSS-LAB)"]
+             "PRISM vs GDSC (CROSS-LAB)",
+             "PRISM vs GDSC (CROSS-LAB, identity-validated)"]
+    order = [o for o in order if (R.comparison == o).any()]
     data = [R[R.comparison == o].rho.dropna() for o in order]
+    cmap = {order[0]: AQUA, order[1]: BLUE}
+    cols = [cmap.get(o, VIOLET if "identity" in o else ORANGE) for o in order]
     bp = ax[0].boxplot(data, showfliers=False, patch_artist=True,
                        medianprops=dict(color="black", lw=1.6))
-    for patch, c in zip(bp["boxes"], [AQUA, BLUE, ORANGE]):
+    for patch, c in zip(bp["boxes"], cols):
         patch.set_facecolor(c); patch.set_alpha(0.75)
-    ax[0].set_xticks([1, 2, 3], ["PRISM\nreplicates", "GDSC1\nvs GDSC2",
-                                 "PRISM vs GDSC\n(cross-lab)"], fontsize=8)
+    ax[0].set_xticks(range(1, len(order) + 1),
+                     ["PRISM\nreplicates", "GDSC1\nvs GDSC2",
+                      "cross-lab\n(ID-matched)",
+                      "cross-lab\n(validated)"][:len(order)], fontsize=7.5)
+    ax[0].axhline(ceiling, color="#888888", ls="--", lw=1.2)
     ax[0].axhline(0, color="#444444", lw=0.9)
-    ax[0].set_ylabel("Spearman r of the line-specific residual")
-    for i, d in enumerate(data):
-        ax[0].text(i + 1, np.median(d) + 0.02, f"{np.median(d):.2f}",
+    for i, d_ in enumerate(data):
+        ax[0].text(i + 1, np.median(d_) + 0.02, f"{np.median(d_):.2f}",
                    ha="center", fontsize=9, fontweight="bold")
-    ax[0].set_title("A  Same assay, same lab, then another lab", loc="left",
-                    fontweight="bold", fontsize=10)
+    ax[0].set_ylabel("Spearman r of the line-specific residual")
+    ax[0].set_title("A  Validating identity recovers most of the gap",
+                    loc="left", fontweight="bold", fontsize=10)
 
-    for o, c in zip(order, [AQUA, BLUE, ORANGE]):
-        d = R[R.comparison == o].rho.dropna()
-        ax[1].hist(d, bins=30, histtype="step", lw=2, color=c,
-                   label=o.split("(")[0].strip(), density=True)
-    ax[1].axvline(0, color="#444444", lw=0.9)
-    ax[1].set_xlabel("per-compound Spearman r")
-    ax[1].set_ylabel("density"); ax[1].legend(frameon=False, fontsize=7)
-    ax[1].set_title("B  Distributions", loc="left", fontweight="bold",
+    if len(ID):
+        m = ID[ID.rank_of_id_match > 0]
+        ax[1].hist(m.rank_of_id_match, bins=np.logspace(0, np.log10(
+            max(m.n_candidates.max(), 10)), 40), color=VIOLET, alpha=0.85)
+        ax[1].set_xscale("log")
+        ax[1].axvline(1, color=AQUA, lw=2, label="best match")
+        ax[1].axvline(m.n_candidates.median() / 2, color="#888888", ls=":",
+                      lw=1.5, label="chance")
+        ax[1].set_xlabel("rank of the ID-matched line, by response similarity")
+        ax[1].set_ylabel("cell lines")
+        ax[1].legend(frameon=False, fontsize=7.5)
+        ax[1].set_title(f"B  Is a line its own best match?\n"
+                        f"{m.reciprocal_best.mean():.0%} yes; median rank "
+                        f"{m.rank_of_id_match.median():.0f} of "
+                        f"{m.n_candidates.median():.0f}",
+                        loc="left", fontweight="bold", fontsize=10)
+
+    fr = [frac, xl_val / ceiling if ceiling > 0 else np.nan]
+    ax[2].bar([0, 1], fr, color=[ORANGE, VIOLET], width=0.55)
+    for xi, fv_ in enumerate(fr):
+        if np.isfinite(fv_):
+            ax[2].text(xi, fv_ + 0.02, f"{fv_:.0%}", ha="center", fontsize=12,
+                       fontweight="bold")
+    ax[2].axhline(1.0, color="#888888", ls="--", lw=1.2)
+    ax[2].set_xticks([0, 1], ["all ID-matched\nlines",
+                              "identity-validated\nlines"], fontsize=8)
+    ax[2].set_ylim(0, 1.15)
+    ax[2].set_ylabel("fraction of the within-lab ceiling")
+    ax[2].set_title("C  Reproducible fraction", loc="left", fontweight="bold",
                     fontsize=10)
 
     if len(v) > 10:
-        ax[2].scatter(v.interaction_strength, v.rho, s=12, alpha=0.45,
-                      color=VIOLET, edgecolors="none")
-        ax[2].set_xscale("log")
-        ax[2].axhline(0, color="#444444", lw=0.9)
-        ax[2].axhline(ceiling, color=AQUA, ls="--", lw=1.4,
+        q = pd.qcut(v.interaction_strength, 4,
+                    labels=["Q1\nweak", "Q2", "Q3", "Q4\nstrong"])
+        gq = v.groupby(q, observed=True).rho.median()
+        ax[3].bar(range(len(gq)), gq.to_numpy(), color=BLUE, width=0.6)
+        ax[3].axhline(ceiling, color="#888888", ls="--", lw=1.2,
                       label="within-lab ceiling")
-        ax[2].set_xlabel("strength of the line-specific component (PRISM)")
-        ax[2].set_ylabel("cross-lab Spearman r")
-        ax[2].legend(frameon=False, fontsize=8)
-        ax[2].set_title(f"C  Stronger signal transfers better\n"
+        ax[3].set_xticks(range(len(gq)), list(gq.index), fontsize=8)
+        ax[3].set_ylabel("cross-lab Spearman r")
+        ax[3].set_xlabel("strength of the line-specific component")
+        ax[3].legend(frameon=False, fontsize=8)
+        ax[3].set_title(f"D  Stronger signal transfers better\n"
                         f"rho={rho.statistic:+.2f}", loc="left",
                         fontweight="bold", fontsize=10)
     fig.suptitle("How much of a cell line's drug-specific response survives "
-                 "moving to another laboratory?", fontsize=11, x=0.01, ha="left")
+                 "moving to another laboratory?", fontsize=11, x=0.01,
+                 ha="left")
     d = save_figure(fig, "cross_lab_reproducibility", FIG,
-                    source_data={"per_compound": R, "summary": summary},
+                    source_data={"per_compound": R, "summary": summary,
+                                 "identity": ID if len(ID) else pd.DataFrame()},
                     script=__file__)
     print(f"figure bundle -> {d}")
 

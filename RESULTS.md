@@ -877,68 +877,133 @@ genotype–phenotype mismatch Ben-David quantifies destroys it before we measure
 
 Figure bundle: `results/figures/15_architecture/genetic_architecture/`.
 
-## 18. Only ~56% of a cell line's drug-specific response survives moving to another lab
+## 18. Cross-laboratory reproducibility, and why cell-line identity is the limiting step
 
-Ben-David et al. (2018, *Nature*) showed that "the same" cell line differs
-between laboratories — a median 19% of non-silent mutations appear in only one of
+Ben-David et al. (2018, *Nature*) showed that "the same" cell line differs between
+laboratories — a median 19% of non-silent mutations appear in only one of
 CCLE/GDSC, and 48 of 55 compounds active against one MCF7 strain were completely
 inactive against another. They demonstrated it in a single cell line, at one
-dose, with viability. The scaled question has not been answered, and it sets a
-hard ceiling on every context-transfer model trained on one atlas: **of the line ×
-compound interaction we attribute to cell-line identity, how much reproduces
-elsewhere?**
+dose, with viability. Scaled up, it sets a hard ceiling on every context-transfer
+model trained on one atlas: **of the line × compound interaction we attribute to
+cell-line identity, how much reproduces elsewhere?**
 
-The design separates laboratory divergence from assay noise, because reporting a
-cross-lab correlation alone confuses the two:
+The design separates laboratory divergence from assay noise, because a bare
+cross-lab correlation conflates them:
 
-| comparison | what varies | compounds | median Spearman r |
-|---|---|---|---|
-| PRISM replicate plates | nothing (same experiment) | 1,435 | **0.473** |
-| GDSC1 vs GDSC2 | experiment, assay version (both Sanger) | 123 | **0.438** |
-| **PRISM vs GDSC** | **laboratory + assay** | 187 | **0.255** |
+| comparison | what varies | compounds | median Spearman r | % of ceiling |
+|---|---|---|---|---|
+| PRISM replicate plates | nothing | 1,435 | 0.473 | — |
+| GDSC1 vs GDSC2 | experiment, assay version (both Sanger) | 123 | 0.438 | — |
+| **PRISM vs GDSC** | **laboratory + assay** | 187 | **0.255** | **56%** |
+| PRISM vs GDSC, **identity-validated** | as above, lines checked from data | 68 | **0.397** | **87%** |
 
-96–100% of compounds give a positive correlation in every comparison, so the
-signal is real throughout; what changes is how much of it transfers.
+**The ceiling is itself low**: even repeating the measurement within one
+laboratory, the line's compound-specific deviation agrees at only r ≈ 0.45. Half
+the "irreproducibility" usually blamed on other labs is present before you leave
+the building.
 
-**Reproducible fraction = 0.255 / 0.455 = 56%** (geometric mean of the two
-within-lab ceilings). Just over half of the line-specific drug response that an
-assay can reproduce with *itself* survives the move to another institution and
-platform.
+### Identity, not protocol, is what breaks
 
-Two things about that number matter as much as its size.
+Every cross-atlas comparison begins by asserting that a line in one atlas is the
+same as a line in another, from an identifier that is then never checked. We
+checked it: each line gets a **response fingerprint** — its residual across the
+compounds both atlases share — and must be its own best match among all
+candidates.
 
-**The ceiling is itself low.** Even within one laboratory, repeat measurement of
-the same line's compound-specific deviation agrees at only r ≈ 0.45. The
-line-specific component is intrinsically noisy, and half the "irreproducibility"
-attributed to labs is present before you leave the building.
+It usually is not. Of 488 testable COSMIC→DepMap-matched lines, **only 5–12% are
+their own best match**, with the identifier-matched partner ranking a median 82nd
+of 971 candidates. That rank is far better than chance (~486), so identity does
+carry real information — it is simply not unique.
 
-**Transfer scales steeply with signal strength** (ρ = +0.62, p = 1.4×10⁻²¹,
-n = 187):
+**Restricting to lines whose identity the data confirms raises cross-lab
+agreement from 56% to 87% of the within-lab ceiling.** This is *not* circular:
+identity is validated on one random half of the shared compounds and the
+agreement is measured on the disjoint other half (all-lines control on the same
+held-out compounds: 59%). So most of the apparent cross-laboratory
+irreproducibility is **cell-line divergence, not assay or protocol difference** —
+which is Ben-David's conclusion, now quantified at scale.
 
-| interaction strength quartile | cross-lab r | as fraction of ceiling |
+### What each matching strategy actually buys
+
+Running the same comparison under a ladder of matching rules (`matching_strategy.py`):
+
+| strategy | median fingerprint r | n |
 |---|---|---|
-| Q1 (weakest) | 0.109 | 24% |
-| Q2 | 0.203 | 45% |
-| Q3 | 0.287 | 63% |
-| Q4 (strongest) | 0.387 | **85%** |
+| random pairing | −0.002 | 9,753 |
+| same tissue, random line | 0.048 | 9,740 |
+| **identifier (standard practice)** | **0.235** | 489 |
+| identifier + fingerprint-validated | 0.403 | 61 |
+| best available hit (upper bound) | 0.419 | 489 |
 
-So the headline 56% is a floor for the compounds actually worth modelling.
-Compounds with a strong line-specific component transfer at 85% of the internal
-ceiling; compounds with a weak one essentially do not transfer at all, and
-modelling them across atlases is chasing noise.
+The last two rungs are selected on the outcome and are shown to bound the room
+available, not as independent estimates — the honest, non-circular version of the
+same gain is the held-out-compound result above (59% → 87%).
 
-**Consequences.** This is a direct, quantitative limit on cross-atlas
-generalisation, and it reframes two of our own results. The cross-dataset
-non-replication of the mechanism ranking (§12, §16) no longer needs a biological
-explanation — a 56% reproducible fraction, concentrated in strong-interaction
-compounds, is sufficient on its own. And the genotype negatives (§10–11, §17) have
-a second cause alongside power: we join CCLE genotype to PRISM and GDSC response,
-and neither the genotype nor the phenotype is measured on the same cells.
+Identifier matching beats same-tissue pairing decisively (p = 1.5×10⁻¹²⁴), so
+cell-line identity is carrying genuine information well beyond lineage. But the
+best available partner reaches 0.419 — **nearly twice what the identifier finds**
+— so a large amount of cross-atlas similarity is being left on the table by
+trusting the label.
 
-One limitation is explicit: PRISM vs GDSC changes laboratory *and* assay
-simultaneously, so 56% bounds the two together and cannot separate them.
+### Transfer scales steeply with signal strength
 
-Figure bundle: `results/figures/16_crosslab/cross_lab_reproducibility/`.
+ρ = +0.54, p = 1.8×10⁻²⁹, n = 364:
+
+| interaction strength quartile | cross-lab r | fraction of ceiling |
+|---|---|---|
+| Q1 (weakest) | 0.165 | 36% |
+| Q2 | 0.230 | 51% |
+| Q3 | 0.378 | 83% |
+| Q4 (strongest) | 0.455 | **100%** |
+
+The strongest quartile transfers at the within-lab ceiling — perfectly. Weak
+compounds do not transfer at all, and modelling them across atlases is chasing
+noise.
+
+### It is a property of laboratories, not of the killing assay
+
+The same analysis on transcription (`cross_lab_transcription.py`), with LINCS
+phase 1 vs phase 2 as the within-lab control:
+
+| comparison | median residual-profile r | pairs |
+|---|---|---|
+| LINCS p1 vs p2 (within-lab, Broad) | 0.061 | 5,803 |
+| Tahoe vs LINCS (cross-lab) | 0.032 | 489 |
+| **reproducible fraction** | **52%** | |
+
+52% for transcription against 56% for viability, from different institutions and
+wholly different assays. The number is a property of laboratories rather than of
+a particular readout. The identity check behaves the same way: within the Broad
+(LINCS p1 vs p2) **16 of 16** name-matched lines are their own best match; across
+labs (Tahoe vs LINCS) only **3 of 6**.
+
+A caveat specific to this arm: the transcriptional within-lab ceiling is itself
+only r ≈ 0.06, so the line-specific transcriptional residual is barely
+reproducible even within one laboratory, and the 52% is a ratio of two small
+numbers.
+
+### Consequences
+
+This reframes two of our own results. The cross-dataset non-replication of the
+mechanism ranking (§12, §16) needs no biological explanation — a ~56%
+reproducible fraction concentrated in strong-interaction compounds suffices. And
+the genotype negatives (§10–11, §17) gain a second cause alongside power: we join
+CCLE genotype to PRISM and GDSC response, and for 88% of lines the two atlases
+are not measuring behaviourally identical cultures.
+
+**Practical recommendation.** Any cross-atlas analysis should validate cell-line
+identity from the data rather than trusting the identifier, and should weight or
+filter compounds by the strength of their line-specific component. Doing both
+recovers agreement from 56% to 87% of what the assay can achieve with itself.
+
+Limitations stated plainly: PRISM vs GDSC changes laboratory *and* assay at once,
+so neither is isolated; and baseline-expression matching — the natural
+alternative identity check — is impossible here because LINCS Level 4 is z-scored
+within plate, which removes cell-line baseline, and neither PRISM nor GDSC ships
+expression at all.
+
+Figure bundles: `results/figures/16_crosslab/cross_lab_reproducibility/`,
+`.../matching_strategy/`, `.../cross_lab_transcription/`.
 
 ## Reproducing
 

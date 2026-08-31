@@ -84,7 +84,9 @@ def load_lincs(gctx, inst_info, gene_info, tag):
         by_line = {}
         for cid, gl in gg.groupby("cell_id", observed=True):
             ii = [pos[x] for x in gl.index]
-            by_line[cid] = X[ii].mean(0)
+            # LINCS appends assay suffixes (A549.311, HELA.311); strip them and
+            # normalise, or the key never meets Tahoe's cell_name
+            by_line[norm(str(cid).split(".")[0])] = X[ii].mean(0)
         if len(by_line) < 2:
             continue
         names = list(by_line)
@@ -105,6 +107,12 @@ def load_tahoe(pb_dir):
     cl = pd.read_parquet(ROOT / "data/metadata/metadata/cell_line_metadata.parquet")
     cvcl2name = dict(zip(cl.Cell_ID_Cellosaur.astype(str),
                          cl.cell_name.astype(str)))
+    # gene names live beside the counts, in the same column order as DELTA
+    gnames = pd.read_csv(ROOT / pb_dir / "genes.csv")
+    col = [c for c in ("gene_symbol", "symbol", "gene", "gene_name")
+           if c in gnames.columns]
+    genes = np.array(gnames[col[0]].astype(str)) if col else \
+        np.array(gnames.iloc[:, 0].astype(str))
     K = pd.DataFrame({"i": np.arange(len(G)), "line": G.cell_line_id,
                       "drug": G.drug})
     K["cname"] = K.line.astype(str).map(cvcl2name).fillna(K.line.astype(str))
@@ -121,10 +129,93 @@ def load_tahoe(pb_dir):
         tot = A.sum(0)
         for j, c in enumerate(names):
             out[(c, k)] = A[j] - (tot - A[j]) / (len(names) - 1)
-    return out, G
+    return out, genes
 
 
-def compare(a, ga, b, gb, label):
+def identity_check(a, ga, b, gb, label, min_cpd=8):
+    """Match cell lines by DATA, not by name.
+
+    Names are a weak basis for saying two datasets measured the same line:
+    they disagree in formatting (MCF-7 / MCF7 / MCF7.311), and Ben-David et al.
+    showed the same nominal line genuinely diverges between laboratories, so a
+    name match is a hypothesis rather than a fact.
+
+    Baseline-expression matching would be the natural check but is impossible
+    here: LINCS Level 4 is z-scored within plate, which removes exactly the
+    cell-line baseline identity we would want to match on. What survives that
+    normalisation is the RESPONSE, so we match on the response fingerprint --
+    each line's residual profile concatenated across the compounds both datasets
+    share. If two datasets really measured the same line, that line should be
+    its own best match across all candidates.
+
+    Returns the similarity matrix and a per-pair table with the rank a
+    name-matched partner achieves, so name matches can be kept, rejected, or
+    replaced by the reciprocal best hit.
+    """
+    ia = {g: i for i, g in enumerate(ga)}
+    shared_g = [g for g in gb if g in ia]
+    if len(shared_g) < MIN_GENES:
+        return None, []
+    ai = np.array([ia[g] for g in shared_g])
+    ib = {g: i for i, g in enumerate(gb)}
+    bi = np.array([ib[g] for g in shared_g])
+    la = sorted({k[0] for k in a}); lb = sorted({k[0] for k in b})
+    cpd_a = {k[1] for k in a}; cpd_b = {k[1] for k in b}
+    shared_c = sorted(cpd_a & cpd_b)
+    if len(shared_c) < min_cpd:
+        print(f"  {label}: only {len(shared_c)} shared compounds — "
+              f"identity check skipped")
+        return None, []
+
+    def fingerprint(store, lines, idx):
+        F = {}
+        for ln in lines:
+            vecs, used = [], []
+            for c in shared_c:
+                v = store.get((ln, c))
+                if v is not None:
+                    vecs.append(v[idx]); used.append(c)
+            if len(used) >= min_cpd:
+                F[ln] = (dict(zip(used, vecs)))
+        return F
+
+    FA, FB = fingerprint(a, la, ai), fingerprint(b, lb, bi)
+    rows = []
+    M = pd.DataFrame(np.nan, index=sorted(FA), columns=sorted(FB))
+    for x in FA:
+        for y in FB:
+            common = set(FA[x]) & set(FB[y])
+            if len(common) < min_cpd:
+                continue
+            u = np.concatenate([FA[x][c] for c in sorted(common)])
+            v = np.concatenate([FB[y][c] for c in sorted(common)])
+            if np.std(u) > 0 and np.std(v) > 0:
+                M.loc[x, y] = float(stats.pearsonr(u, v).statistic)
+    for x in M.index:
+        r = M.loc[x].dropna()
+        if not len(r):
+            continue
+        order = r.sort_values(ascending=False)
+        best = order.index[0]
+        rank = int(list(order.index).index(x) + 1) if x in order.index else -1
+        rows.append({"comparison": label, "line": x, "name_match_present":
+                     x in order.index,
+                     "r_name_match": float(order.get(x, np.nan)),
+                     "best_match": best, "r_best": float(order.iloc[0]),
+                     "rank_of_name_match": rank, "n_candidates": len(order),
+                     "reciprocal_best": bool(best == x)})
+    D = pd.DataFrame(rows)
+    if len(D):
+        nm = D[D.name_match_present]
+        print(f"  {label} IDENTITY: {len(nm)} name-matched lines; "
+              f"{int(nm.reciprocal_best.sum())} are their own best match "
+              f"({nm.reciprocal_best.mean():.0%}); median rank of the name "
+              f"match {nm.rank_of_name_match.median():.0f} of "
+              f"{nm.n_candidates.median():.0f}")
+    return M, rows
+
+
+def compare(a, ga, b, gb, label, allowed=None):
     """Correlate residual profiles on the shared genes, per (line, compound)."""
     ia = {g: i for i, g in enumerate(ga)}
     shared = [g for g in gb if g in ia]
@@ -135,6 +226,8 @@ def compare(a, ga, b, gb, label):
     ib = {g: i for i, g in enumerate(gb)}
     bi = np.array([ib[g] for g in shared])
     keys = set(a) & set(b)
+    if allowed is not None:
+        keys = {k for k in keys if k[0] in allowed}
     rows = []
     for (line, cpd) in keys:
         x = a[(line, cpd)][ai]
@@ -170,18 +263,29 @@ def main():
     p2, g2 = load_lincs(LIN / "level4.gctx", LIN / "inst_info.txt.gz",
                         LIN / "GSE70138_Broad_LINCS_gene_info.txt.gz", "phase2")
 
+    ident = []
+    M_wl, r_wl = identity_check(p1, g1, p2, g2,
+                                "LINCS p1 vs p2 (within-lab, Broad)")
+    ident += r_wl
+    ok_wl = {r["line"] for r in r_wl if r["reciprocal_best"]} or None
     rows = compare(p1, g1, p2, g2, "LINCS p1 vs p2 (within-lab, Broad)")
+    rows += compare(p1, g1, p2, g2,
+                    "LINCS p1 vs p2 (within-lab, identity-validated)",
+                    allowed=ok_wl)
 
     print("loading Tahoe ...", flush=True)
     try:
-        th, G = load_tahoe(args.pb_dir)
-        gt = np.array(G.columns) if hasattr(G, "columns") else None
-        import anndata  # gene names come from the pseudobulk var index
-        gt = np.array(pd.read_parquet(
-            ROOT / "data/metadata/metadata/gene_metadata.parquet")
-            .gene_symbol.astype(str)) if gt is None else gt
-        rows += compare(th, gt, p1, g1, "Tahoe vs LINCS p1 (CROSS-LAB)")
-        rows += compare(th, gt, p2, g2, "Tahoe vs LINCS p2 (CROSS-LAB)")
+        th, gt = load_tahoe(args.pb_dir)
+        for store, gg, tag in ((p1, g1, "p1"), (p2, g2, "p2")):
+            Mx, rx = identity_check(th, gt, store, gg,
+                                    f"Tahoe vs LINCS {tag} (CROSS-LAB)")
+            ident += rx
+            okx = {r["line"] for r in rx if r["reciprocal_best"]} or None
+            rows += compare(th, gt, store, gg,
+                            f"Tahoe vs LINCS {tag} (CROSS-LAB)")
+            rows += compare(th, gt, store, gg,
+                            f"Tahoe vs LINCS {tag} (CROSS-LAB, "
+                            f"identity-validated)", allowed=okx)
     except Exception as e:
         print(f"  Tahoe arm unavailable: {e}")
 
@@ -189,6 +293,23 @@ def main():
     if not len(R):
         print("no comparisons produced"); return
     R.to_csv(TAB / "cross_lab_transcription.csv", index=False)
+    if ident:
+        I = pd.DataFrame(ident)
+        I.to_csv(TAB / "cross_lab_identity.csv", index=False)
+        print("\n=== cell-line identity by response fingerprint ===")
+        for cmpn, g in I.groupby("comparison"):
+            nm = g[g.name_match_present]
+            if not len(nm):
+                print(f"  {cmpn}: no name-matched lines in common")
+                continue
+            print(f"  {cmpn}: {int(nm.reciprocal_best.sum())}/{len(nm)} "
+                  f"name matches are reciprocal best hits; median r "
+                  f"name-match {nm.r_name_match.median():.3f} vs best "
+                  f"{nm.r_best.median():.3f}")
+        print("  A name match that is NOT its own best hit means the two "
+              "datasets'\n  nominally identical lines behave less like each "
+              "other than like some\n  other line — which is what Ben-David "
+              "predicts and what name-based\n  matching silently assumes away.")
     S = R.groupby("comparison").r.agg(["median", "mean", "size",
                                        lambda s: float((s > 0).mean())])
     S.columns = ["median_r", "mean_r", "n_pairs", "frac_positive"]
