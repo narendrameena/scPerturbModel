@@ -35,12 +35,13 @@ differentially expressed genes.
    (r 0.45 vs 0.06); pooling them overstates reproducibility (§4).
 
 **Architecture of drug response.**
-3. Of the *reproducible* transcriptional response, a majority is the drug's
-   average effect and a minority is line×drug interaction. **The exact split is
-   currently under revision** — see the OPEN ISSUE section: the interaction is
-   solidly real (p < 10⁻¹⁸ against a matched null) but its share was estimated
-   without subtracting a negative offset present in every residual pair, so the
-   reported shares are upper bounds (§4).
+3. Of the *reproducible* transcriptional response, roughly **43% is the drug's
+   average effect and 57% is context×drug interaction** — measured in LINCS
+   phase 1, which has 6.1M genuine same-dose replicate pairs. **Tahoe cannot
+   measure this**: only 4.7% of its (line, drug, dose) combinations are on more
+   than one plate, so its "replicates" are almost all different doses, and its
+   21.6% is an upper bound from a pairing that conflates interaction with
+   dose-response (§4, §14).
 4. That interaction is a **line×drug interaction, not a line property**: it
    reproduces across doses (r = 0.062) but barely transfers across drugs
    (0.019) or lines (−0.002). Hence no line-level descriptor can predict it (§4).
@@ -78,12 +79,11 @@ differentially expressed genes.
     ceiling, not a biological absence (§11).
 
 **Scope limits discovered by replication.**
-12. **The mechanism ranking is at best a transcriptional statement.**
-    Transcription-to-transcription it only *trends* (Tahoe vs LINCS phase 1,
-    rho = +0.56 but p = 0.09 over 10 classes — not significant). To viability it
-    is a **well-powered null** (LINCS-1 vs PRISM, rho = −0.09 over 67 classes).
-    So transcriptional rewiring and differential killing are decoupled, and the
-    positive half of the claim still rests on too few mechanism classes (§12).
+12. **The mechanism ranking does not reproduce outside Tahoe.** It is solid
+    *within* Tahoe (Kruskal–Wallis p = 8.7×10⁻⁴ across 24 mechanisms) but gives
+    rho = +0.09 (n.s.) against LINCS phase 1 and −0.09 against PRISM viability
+    over 67 classes — a well-powered null. An earlier +0.56 was an artefact of a
+    biased estimator and is withdrawn (§12, §16).
 13. **Context-dependence is dose-dependent.** It rises ~4x with dose and peaks
     just below lethality, then collapses when every line is dying (PRISM,
     rho = +0.33, p = 4x10⁻⁹²; peak 0.384 at ~2.5 uM vs 0.218 at 10 uM).
@@ -688,58 +688,103 @@ Figure bundles: `results/figures/13_prism/dose_vs_context/`,
 
 ---
 
-## OPEN ISSUE (2026-08-31): the interaction *share* is probably overstated
+## 14. RESOLVED: Tahoe cannot estimate the interaction share, and LINCS can
 
-Found while building `scripts/methodology_evidence.py`, which runs each rejected
-methodological alternative against the chosen one. It is unresolved, and it
-affects a headline number, so it is recorded here before anything is rewritten
-around it.
+The OPEN ISSUE raised on 2026-08-31 is resolved, and the answer is worse than a
+correction: the Tahoe interaction share was not merely mis-scaled, it rests on a
+pairing that is not a replicate comparison at all.
 
-**What was found.** The interaction is estimated as the covariance of per-line
-residuals between independent replicates. Residuals are taken against a
-leave-one-context-out shared response. That construction leaves a *negative
-offset in every pair*, because the mean subtracted from condition A still
-contains condition B and vice versa — so E[r_A · r_B] is pushed below zero even
-with no interaction. Measured on the Tahoe pseudobulk:
+**Tahoe-100M has almost no true replicates.** Only **2,549 of its 53,881
+(line, drug, dose) combinations — 4.7% — appear on more than one plate**. The
+96.4% of (line, drug) pairs that do span plates get there because the atlas puts
+different *doses* on different plates. So a "cross-plate replicate pair" in this
+atlas is nearly always a **cross-dose** pair, which is not a replicate: §13 shows
+a line's response genuinely changes with dose.
 
-| pair type | mean covariance | median |
+Splitting the two pairings, against a matched cross-context null:
+
+| pairing | pairs | interaction share | p vs null |
+|---|---|---|---|
+| **true replicate** (same line, drug, **and dose**) | 6,482 | **0.0%** | 0.97 |
+| cross-dose (the pairing used in §4) | 58,630 | 21.6% | 7×10⁻²⁵ |
+| pooled | 65,112 | 19.8% | 2×10⁻²⁰ |
+
+Restricting both pairings to the *same* (line, drug) combinations, so they differ
+only in same-dose versus different-dose, the gap holds: −0.00307 versus +0.00620,
+p = 3×10⁻¹²⁰. True replicates agree *less* than different doses do, which no
+genuine reproducible interaction can produce.
+
+**Neither number is the truth, and that is the finding.** The true-replicate
+estimate covers only **25 of 379 drugs**, and those happen to be weak-effect ones
+(mean squared response 0.218 versus 0.459 for the atlas), so it is underpowered
+rather than decisive. The cross-dose estimate covers everything but conflates
+interaction with dose-response. The real value is bracketed and **Tahoe-100M
+cannot resolve it**. The §4 figure should be read as an upper bound obtained from
+a pairing the atlas's design forced on us.
+
+**LINCS is the dataset that can answer this.** Phase 1 supplies 6.1M genuine
+same-dose cross-plate replicate pairs. Against the matched null it gives
+**43% shared / 57% interaction**, with the null offset small enough to barely
+matter (phase 2: raw covariance +0.359 against an offset of −0.030, moving the
+share 45%→47%). The offset that wrecked the Tahoe estimate is negligible where
+the signal is real.
+
+This reframes the project's own headline. The interaction is real — it is
+unambiguous in LINCS — but **the single-cell atlas built to study it is the one
+dataset here that cannot measure it**, because it traded replication for
+coverage. That is the same design critique as §10–11 (context count) arriving
+through a second, independent route: cells were spent where replicates and
+contexts were needed.
+
+## 15. No credible novel allele-level discovery
+
+§11 recovers the known biomarkers; the question worth asking is whether anything
+is left after they are removed. Screening 111,589 allele × compound tests and
+setting aside hits matching known pharmacogenomics (BRAF→RAF/MEK/EGFR,
+TP53→MDM2, PIK3CA/PTEN→PI3K/AKT, KRAS→MEK, and 25 further gene→mechanism rules)
+leaves 45 unknown hits, of which **4 are also allele-specific** (their gene-level
+test fails) and pass lineage and MSI-burden controls.
+
+**They do not survive scrutiny, and the honest report is negative.**
+
+| candidate | why it fails |
+|---|---|
+| MUC16 p.T12415A × BMS-690514, × lapatinib | MUC16 is the **2nd most-mutated gene of 18,739** in this table (2,241 mutations, 1,879 distinct protein changes). A missense recurring in 40 lines of such a gene is the signature of a common polymorphism or alignment artefact, not a somatic driver. |
+| HMCN1 p.K2374fs × poziotinib | HMCN1 ranks **21st of 18,739**. Same long-gene background problem. |
+| ZMYM5 p.K463fs × mozavaptan | n = 11 carriers, and mozavaptan is a vasopressin receptor antagonist with no plausible mechanism for differential cancer-line viability. |
+
+The split-sample validation these passed at 94–99% is **circular and should not
+be quoted**: candidates were selected using all cell lines, so re-splitting those
+same lines measures effect size, not out-of-sample generalisation. Genuine
+validation needs data not used in selection — the PRISM primary screen, GDSC or
+CTRP — which is the correct next step if this line is pursued.
+
+**Consequence for positioning.** The allele-resolution result that *is* solid is
+methodological, not a discovery: BRAF V600E is significant for 11 compounds whose
+gene-level BRAF test fails, in both directions (sensitising to RAF/MEK
+inhibitors, resistance-conferring to EGFR inhibitors), because only 50 of 104
+BRAF-mutant lines carry V600E and the rest dilute it. That is a real argument
+that gene-level indicators lose associations — but it is a statement about
+method, and it re-derives known biology. **The Nature Genetics route through
+allele-level discovery does not open on this data.**
+
+## 16. Mechanism ranking: significant within Tahoe, not reproducible across datasets
+
+With every dataset on the same matched-null estimator, the mechanism claim of §5
+narrows sharply.
+
+| comparison | shared classes | rho |
 |---|---|---|
-| same line, different plates (signal + offset) | −0.00100 | +0.00006 |
-| different lines (offset only — matched null) | −0.00423 | −0.00163 |
+| within Tahoe (Kruskal–Wallis across mechanisms) | 24 | H = 50.2, **p = 8.7×10⁻⁴** |
+| Tahoe vs LINCS phase 1 | 10 | **+0.09** (p = 0.80) |
+| Tahoe vs PRISM viability | 11 | −0.18 (n.s.) |
+| LINCS phase 1 vs PRISM viability | 67 | −0.09 (n.s.) |
 
-**The good news.** Same-line pairs are decisively above the matched cross-line
-null (Mann–Whitney p = 3.9×10⁻¹⁹ on dev47, p = 2.2×10⁻¹⁸ on the full atlas).
-**The interaction is real and reproducible** — that qualitative claim, which most
-of this document rests on, is unaffected.
-
-**The problem.** Its *magnitude* is the difference between those two rows, not
-the raw covariance. That difference is ≈ +0.0032 against a shared component of
-≈ 0.059, i.e. an interaction share on the order of **5%, not the 28% reported in
-§4**. Clamping the per-drug covariance at zero then compounds it: it converts
-the negative offset into exact zeros rather than negative values, which is also
-the likely origin of the 35 LINCS mechanism classes sitting at exactly 0.000
-(§12).
-
-**What is and is not in doubt.**
-- Not in doubt: that a reproducible line×drug interaction exists (§4); the
-  mechanism *ranking*, which is a within-dataset ordering and largely
-  insensitive to a common offset (§5, §12 — the ordering was unchanged when the
-  per-perturbation estimator was corrected); the power/context-count result
-  (§10–11), which never used this estimator; the dose result (§13), which is a
-  within-compound trend.
-- In doubt: every absolute variance *share* — the 72/28 in §4, the 78/22 in §11,
-  the 47/53 in §12.
-
-**Next step.** Re-derive all shares with the matched cross-context null
-subtracted, and drop the zero clamp in favour of reporting signed values with
-confidence intervals. Until then the shares above should be read as upper
-bounds.
-
-A related bug was fixed on the way: the per-perturbation index used an in-sample
-mean, and the first attempted fix (leave-one-*condition*-out) made the bias
-worse rather than better, since it leaves the sibling replicate in the mean.
-Both are now leave-one-*context*-out. The Tahoe mechanism ranking was unchanged
-by this (Kruskal–Wallis p = 2.3×10⁻³ before and after).
+Mechanism structures context-dependence *within* Tahoe, robustly. It does not
+transfer to another transcriptional platform, and it does not transfer to
+viability. The earlier ρ = +0.56 reported against LINCS was produced by the
+biased per-perturbation estimator and disappears once both sides use the same
+corrected one — it should not be cited.
 
 ## Reproducing
 

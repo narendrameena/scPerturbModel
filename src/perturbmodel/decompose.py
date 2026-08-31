@@ -230,9 +230,47 @@ def decompose(adata, context: str, perturbation: str, control,
                     cov += float(np.mean(R[v[a]] * R[v[b]])); n += 1
         return cov, n
 
+    def null_cov():
+        """Matched null: pairs from DIFFERENT contexts, same perturbation.
+
+        Residuals are taken against a mean estimated from a finite number of
+        other contexts, so the mean subtracted from one residual still contains
+        the other. That leaves a negative offset of order -2 sigma^2/(n_ctx-1)
+        in EVERY pair, signal or not — with 47 contexts it is not negligible,
+        and it is what made the raw covariance come out negative and the
+        clamped per-perturbation index collapse to exact zeros.
+
+        A cross-context pair carries that offset but no interaction, because
+        the interaction is by definition specific to a context. Subtracting it
+        removes the offset without assuming its size.
+        """
+        cov, n = 0.0, 0
+        for _, g in K.groupby("pert", observed=True):
+            v = g.index.to_numpy()
+            if len(v) < 2:
+                continue
+            cx, bt = K.ctx[v].to_numpy(), K.batch[v].to_numpy()
+            take = min(len(v) * 4, 4000)
+            for _ in range(take):
+                a, b = rng.integers(0, len(v), 2)
+                if cx[a] == cx[b] or bt[a] == bt[b]:
+                    continue
+                cov += float(np.mean(R[v[a]] * R[v[b]])); n += 1
+        return (cov / n) if n else 0.0, n
+
     cov, npair = pair_cov(same_batch=False)
-    interaction = max(cov / npair, 0.0) if npair else float("nan")
+    offset, n_null = null_cov()
+    raw = (cov / npair) if npair else float("nan")
+    interaction = max(raw - offset, 0.0) if npair else float("nan")
     additive = float(np.mean(P ** 2))
+    if npair and n_null:
+        warnings.append(
+            f"interaction is reported against a matched cross-context null: "
+            f"raw same-context covariance {raw:+.5f}, cross-context offset "
+            f"{offset:+.5f} (n={n_null}), difference {raw - offset:+.5f}. "
+            f"Reporting the raw value would have given "
+            f"{max(raw, 0.0) / (additive + max(raw, 0.0)):.0%} interaction "
+            f"share instead of {interaction / (additive + interaction):.0%}.")
     if npair < MIN_PAIRS_GLOBAL:
         warnings.append(
             f"only {npair} cross-replicate pairs: the interaction estimate is "
@@ -319,10 +357,26 @@ def decompose(adata, context: str, perturbation: str, control,
                     if v[a] not in resid or v[b] not in resid:
                         continue          # dose had a single context; skipped
                     c2 += float(np.mean(resid[v[a]] * resid[v[b]])); n2 += 1
-        ctx_var = max(c2 / n2, 0.0) if n2 else np.nan
+        # matched cross-context null for THIS perturbation, same construction
+        # as the pooled estimate: removes the -2 sigma^2/(n_ctx-1) offset that
+        # otherwise drives weak perturbations to exactly zero after clamping
+        keys = np.array([k for k in gd.index.to_numpy() if k in resid])
+        c3, n3 = 0.0, 0
+        if len(keys) >= 2:
+            kc, kb = K.ctx[keys].to_numpy(), K.batch[keys].to_numpy()
+            for _ in range(min(len(keys) * 6, 3000)):
+                a, b = rng.integers(0, len(keys), 2)
+                if kc[a] == kc[b] or kb[a] == kb[b]:
+                    continue
+                c3 += float(np.mean(resid[keys[a]] * resid[keys[b]])); n3 += 1
+        off = (c3 / n3) if n3 else 0.0
+        ctx_var = max(c2 / n2 - off, 0.0) if n2 else np.nan
         den = cons + (ctx_var if np.isfinite(ctx_var) else 0)
         precs.append({"perturbation": pert, "n_contexts": gd.ctx.nunique(),
-                      "n_pairs": n2, "shared": cons, "context_specific": ctx_var,
+                      "n_pairs": n2, "n_null_pairs": n3,
+                      "raw_cov": (c2 / n2) if n2 else np.nan,
+                      "null_offset": off,
+                      "shared": cons, "context_specific": ctx_var,
                       "index": ctx_var / den if den > 0 else np.nan,
                       "estimable": n2 >= MIN_PAIRS_PER_PERT})
     per = pd.DataFrame(precs).sort_values("index", ascending=False)

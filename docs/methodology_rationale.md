@@ -222,3 +222,58 @@ detectable at this context count", never "does not exist".
 unambiguously real (BRAF→vemurafenib) are recovered 4% of the time at 47
 contexts. Any of the four failed predictors in §10 could be in the same
 position.
+
+---
+
+## 14. Matched cross-context null instead of assuming the offset is small
+
+**Chosen.** interaction = (mean covariance of same-context replicate pairs) −
+(mean covariance of cross-context pairs, matched on perturbation and batch).
+
+**Alternative rejected.** *Taking the raw covariance and clamping at zero* — what
+the code did originally. Residuals are formed against a mean estimated from a
+finite number of other contexts, so the mean subtracted from one residual still
+contains the other; every pair therefore carries a negative offset of order
+−2σ²/(n_ctx−1). Measured: Tahoe's cross-line offset is −0.0022 against a shared
+component of 0.059, large enough to drive the raw per-drug covariance negative
+for 21 of 24 drugs, which clamping then converted into exact zeros.
+
+**Why it matters more in some datasets than others.** LINCS phase 2: raw
+covariance +0.359, offset −0.030 — the correction moves the share 45%→47%, i.e.
+nothing. Tahoe: the offset is comparable to the signal. The correction is
+therefore not cosmetic where it matters and not disruptive where it does not,
+which is the behaviour a bias correction should have.
+
+## 15. Requiring same-dose replicates, and reporting when they do not exist
+
+**Chosen.** Only pairs sharing (context, perturbation, **dose**) on different
+plates count as replicates.
+
+**Alternative rejected.** *Treating different doses of the same (line, drug) as
+replicates* — the original pairing. Measured on identical (line, drug) sets, the
+two disagree at p = 3×10⁻¹²⁰ and in the wrong direction: true replicates covary
+at −0.00307, cross-dose pairs at +0.00620. Replicates agreeing *less* than
+different doses cannot be reproducible interaction.
+
+**Consequence, reported rather than hidden.** This leaves Tahoe with 6,482
+usable pairs from 25 of 379 drugs, which is not enough. The honest output is a
+bracket (0% to 21.6%) plus the statement that the atlas cannot resolve it, not a
+point estimate from whichever pairing gives a publishable number.
+
+## 16. Screening known pharmacogenomics out before claiming novelty
+
+**Chosen.** An explicit gene→mechanism table of established relationships
+(BRAF→RAF/MEK/EGFR, TP53→MDM2, PIK3CA/PTEN→PI3K/AKT, …), applied before any
+"novel" claim.
+
+**Alternative rejected.** *Reporting the top of the FDR-sorted list.* It is
+dominated by BRAF V600E, which is a positive control.
+
+**And a control that was applied and then distrusted.** Surviving candidates
+passed split-sample replication at 94–99%, lineage stratification and MSI-burden
+partial correlation — and are still reported as **negative**, because (a) three
+sit in MUC16 and HMCN1, ranked 2nd and 21st of 18,739 genes by mutation count,
+where recurrent variants are long-gene artefacts, and (b) the split-sample test
+is circular, since candidates were selected using all the lines it then splits.
+A validation that cannot fail is not a validation — the same lesson as the
+quintile matching in §12. Real validation needs PRISM primary, GDSC or CTRP.

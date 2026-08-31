@@ -64,38 +64,72 @@ def main():
 
     meta = pd.DataFrame({"i": np.arange(len(G)), "line": G.cell_line_id,
                          "drug": G.drug, "conc": G.conc, "plate": G.plate})
+    rng = np.random.default_rng(0)
     recs = []
     for drug, gd in meta.groupby("drug", observed=True):
         if gd.line.nunique() < MIN_LINES:
             continue
-        # drug's own conserved effect: mean response per dose across lines
+        # drug's own conserved effect: leave-one-LINE-out mean per dose. An
+        # in-sample mean was used here originally and is wrong: it makes the
+        # residuals of a dose group sum to zero, biasing every residual pair
+        # negative.
         conserved = 0.0
         resid = np.zeros((len(gd), D.shape[1]), dtype=np.float32)
         pos = {v: k for k, v in enumerate(gd.i.to_numpy())}
+        have = set()
         for cc, gc in gd.groupby("conc", observed=True):
-            idx = gc.i.to_numpy()
-            mu = D[idx].mean(0)
-            conserved += float(np.mean(mu ** 2)) * len(idx)
-            for j in idx:
-                resid[pos[j]] = D[j] - mu
-        conserved /= len(gd)
+            idx = gc.i.to_numpy(); ln_ = gc.line.to_numpy()
+            if len(np.unique(ln_)) < 2:
+                continue
+            tot = D[idx].sum(0)
+            csum = {c: D[idx[ln_ == c]].sum(0) for c in np.unique(ln_)}
+            ccnt = {c: int((ln_ == c).sum()) for c in np.unique(ln_)}
+            for j, c in zip(idx, ln_):
+                n_out = len(idx) - ccnt[c]
+                if n_out < 1:
+                    continue
+                loo = (tot - csum[c]) / n_out
+                conserved += float(np.mean(loo ** 2))
+                resid[pos[j]] = D[j] - loo
+                have.add(j)
+        if not have:
+            continue
+        conserved /= len(have)
 
-        # reproducible line-specific variance: cross-plate, cross-dose pairs
+        # reproducible line-specific variance: cross-plate pairs of the SAME
+        # line, minus a matched cross-LINE null. Both carry the residual-
+        # construction offset; only the first carries interaction, so the
+        # difference is the interaction. Without this subtraction the estimate
+        # is the offset plus the signal and comes out negative for most drugs.
         cov, npair = 0.0, 0
         for (ln,), gl in gd.groupby(["line"], observed=True):
-            v = gl.i.to_numpy(); pl = gl.plate.to_numpy()
+            v = [x for x in gl.i.to_numpy() if x in have]
+            pl = {x: p_ for x, p_ in zip(gl.i.to_numpy(), gl.plate.to_numpy())}
             for a in range(len(v)):
                 for b in range(a + 1, len(v)):
-                    if pl[a] == pl[b]:
+                    if pl[v[a]] == pl[v[b]]:
                         continue
                     cov += float(np.mean(resid[pos[v[a]]] * resid[pos[v[b]]]))
                     npair += 1
         if npair < 10:
             continue
-        context = cov / npair
+        keys = np.array(sorted(have))
+        kl = gd.set_index("i").line.loc[keys].to_numpy()
+        kp = gd.set_index("i").plate.loc[keys].to_numpy()
+        c3, n3 = 0.0, 0
+        for _ in range(min(len(keys) * 6, 3000)):
+            a, b = rng.integers(0, len(keys), 2)
+            if kl[a] == kl[b] or kp[a] == kp[b]:
+                continue
+            c3 += float(np.mean(resid[pos[keys[a]]] * resid[pos[keys[b]]]))
+            n3 += 1
+        off = (c3 / n3) if n3 else 0.0
+        context = cov / npair - off
         denom = conserved + max(context, 0.0)
         recs.append({"drug": drug, "n_lines": gd.line.nunique(),
                      "n_conditions": len(gd), "n_pairs": npair,
+                     "n_null_pairs": n3, "raw_cov": cov / npair,
+                     "null_offset": off,
                      "conserved": conserved, "context": context,
                      "cdi": float(max(context, 0.0) / denom) if denom > 0 else np.nan,
                      "total_effect": conserved + max(context, 0.0)})
