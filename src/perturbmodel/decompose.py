@@ -272,17 +272,42 @@ def decompose(adata, context: str, perturbation: str, control,
         crecs.append({"comparison": label, "median_r": float(np.nanmedian(r)),
                       "null_r": float(np.nanmedian(rn)), "n": int(len(r))})
 
-    # per-perturbation index, with power flags
+    # per-perturbation index, with power flags.
+    # The shared response must be the leave-one-CONTEXT-out mean, matching the
+    # pooled estimate above. Two weaker choices both bias the residual
+    # covariance downward, because the covariance is taken between two
+    # replicates OF THE SAME CONTEXT:
+    #   in-sample mean          -> residuals of n conditions sum to zero, so
+    #                              E[r_a . r_b] = -sigma^2/n with no interaction
+    #   leave-one-CONDITION-out -> worse, not better: the mean subtracted from
+    #                              replicate a still contains replicate b (and
+    #                              vice versa), giving roughly -2 sigma^2/(n-1)
+    # Dropping the whole context removes both replicates from the mean, so the
+    # two residuals share no data and the bias vanishes. This matters because
+    # the index is clamped at zero: a downward bias silently turns weak
+    # perturbations into exact zeros rather than small positive values, and it
+    # scales as 1/n, so it penalises sparsely measured perturbations most.
     precs = []
     for pert, gd in K.groupby("pert", observed=True):
         cons, resid = 0.0, {}
         for _, gc in gd.groupby("dose", observed=True):
             ii = gc.index.to_numpy()
-            mu = D[ii].mean(0)
-            cons += float(np.mean(mu ** 2)) * len(ii)
-            for i in ii:
-                resid[i] = D[i] - mu
-        cons /= max(len(gd), 1)
+            ctx_i = K.ctx[ii].to_numpy()
+            if len(np.unique(ctx_i)) < 2:
+                continue
+            tot = D[ii].sum(0)
+            csum, ccnt = {}, {}
+            for c in np.unique(ctx_i):
+                m = ctx_i == c
+                csum[c] = D[ii[m]].sum(0); ccnt[c] = int(m.sum())
+            for i, c in zip(ii, ctx_i):
+                n_out = len(ii) - ccnt[c]
+                if n_out < 1:
+                    continue
+                loo = (tot - csum[c]) / n_out
+                cons += float(np.mean(loo ** 2))
+                resid[i] = D[i] - loo
+        cons /= max(len(resid), 1)
         c2, n2 = 0.0, 0
         for _, gc in gd.groupby("ctx", observed=True):
             v = gc.index.to_numpy()
@@ -291,6 +316,8 @@ def decompose(adata, context: str, perturbation: str, control,
                 for b in range(a + 1, len(v)):
                     if rp[a] == rp[b] or bt[a] == bt[b]:
                         continue
+                    if v[a] not in resid or v[b] not in resid:
+                        continue          # dose had a single context; skipped
                     c2 += float(np.mean(resid[v[a]] * resid[v[b]])); n2 += 1
         ctx_var = max(c2 / n2, 0.0) if n2 else np.nan
         den = cons + (ctx_var if np.isfinite(ctx_var) else 0)

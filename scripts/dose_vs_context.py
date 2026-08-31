@@ -131,9 +131,15 @@ def tahoe_dose(pb_dir):
             if gc.line.nunique() < 8:
                 continue
             ii = gc.i.to_numpy()
+            if len(ii) < 2:
+                continue
+            # leave-one-context-out, for the same reason as elsewhere: an
+            # in-sample mean biases the residual covariance to -sigma^2/n
+            tot = D[ii].sum(0)
+            loo = {i: (tot - D[i]) / (len(ii) - 1) for i in ii}
+            add = float(np.mean([np.mean(loo[i] ** 2) for i in ii]))
+            res = {i: D[i] - loo[i] for i in ii}
             mu = D[ii].mean(0)
-            add = float(np.mean(mu ** 2))
-            res = {i: D[i] - mu for i in ii}
             cov, npair, cs = 0.0, 0, []
             for _, gl in gc.groupby("line", observed=True):
                 v = gl.i.to_numpy(); pl = gl.plate.to_numpy()

@@ -85,14 +85,30 @@ def main():
         if gd.line.nunique() < 10:
             continue
         # --- ours: variance decomposition ---
+        # leave-one-context-out shared response: an in-sample mean forces the
+        # residuals of n conditions to sum to zero, biasing their covariance to
+        # -sigma^2/n even with no interaction present
+        # leave-one-CONTEXT-out: the covariance below is between two plates
+        # of the SAME line, so the subtracted mean must exclude that line
+        # entirely. Leaving out only the single condition leaves its sibling
+        # replicate in the mean and biases the covariance to about
+        # -2 sigma^2/(n-1); the in-sample mean biases it to -sigma^2/n.
         conserved, resid = 0.0, {}
         for _, gc in gd.groupby("conc", observed=True):
-            ii = gc.i.to_numpy()
-            mu = D[ii].mean(0)
-            conserved += float(np.mean(mu ** 2)) * len(ii)
-            for i in ii:
-                resid[i] = D[i] - mu
-        conserved /= len(gd)
+            ii = gc.i.to_numpy(); ln = gc.line.to_numpy()
+            if len(np.unique(ln)) < 2:
+                continue
+            tot = D[ii].sum(0)
+            csum = {c: D[ii[ln == c]].sum(0) for c in np.unique(ln)}
+            ccnt = {c: int((ln == c).sum()) for c in np.unique(ln)}
+            for i, c in zip(ii, ln):
+                n_out = len(ii) - ccnt[c]
+                if n_out < 1:
+                    continue
+                loo = (tot - csum[c]) / n_out
+                conserved += float(np.mean(loo ** 2))
+                resid[i] = D[i] - loo
+        conserved /= max(len(resid), 1)
         cov, npair = 0.0, 0
         for _, gc in gd.groupby("line", observed=True):
             v = gc.i.to_numpy(); pl = gc.plate.to_numpy()

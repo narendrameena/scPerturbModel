@@ -217,14 +217,124 @@ def main():
                                 "effect", "q", "gene_q"]].to_string(index=False))
 
     # does resolving to the allele buy power in general?
-    m = J.dropna(subset=["z", "gene_z"])
-    w = stats.wilcoxon(np.abs(m.z), np.abs(m.gene_z))
-    print(f"\n|z| allele {np.median(np.abs(m.z)):.3f} vs gene "
-          f"{np.median(np.abs(m.gene_z)):.3f}, paired p={w.pvalue:.2e} "
-          f"(n={len(m)})")
-    print("  a higher allele |z| despite far fewer mutant lines means the gene "
-          "indicator\n  is diluting real allele-specific effects, not that the "
-          "allele test is noisier.")
+    JZ = J.dropna(subset=["z", "gene_z"])
+    w = stats.wilcoxon(np.abs(JZ.z), np.abs(JZ.gene_z))
+    print(f"\n|z| allele {np.median(np.abs(JZ.z)):.3f} vs gene "
+          f"{np.median(np.abs(JZ.gene_z)):.3f}, paired p={w.pvalue:.2e} "
+          f"(n={len(JZ)})")
+    print("  Across ALL tests the gene indicator wins slightly, which is what "
+          "should\n  happen: it has more carriers, and most alleles carry no "
+          "specific effect, so\n  the extra n dominates. Allele resolution pays "
+          "off only where the effect\n  really is allele-specific -- which is "
+          "what the count above measures, and\n  it is a claim about which "
+          "associations exist, not about average power.")
+
+    # a set of frameshifts in homopolymer runs (RPL22 K16fs, ACVR2A K437fs) is
+    # the signature of microsatellite instability, so several 'independent'
+    # alleles hitting one compound may be one MSI association counted many
+    # times. Collapse alleles whose carrier sets substantially overlap.
+    print("\nco-occurrence check (are multiple alleles tagging one background?)")
+    coll = []
+    for cpd, gg in vh.groupby("compound", observed=True):
+        vs = gg.variant.tolist()
+        if len(vs) < 2:
+            coll.append({"compound": cpd, "n_alleles": len(vs),
+                         "n_independent": len(vs), "max_jaccard": 0.0})
+            continue
+        sets = [set(vsets[v]) for v in vs]
+        used, groups = set(), 0
+        mx = 0.0
+        for i in range(len(vs)):
+            if i in used:
+                continue
+            groups += 1; used.add(i)
+            for j in range(i + 1, len(vs)):
+                if j in used:
+                    continue
+                jac = len(sets[i] & sets[j]) / max(len(sets[i] | sets[j]), 1)
+                mx = max(mx, jac)
+                if jac > 0.5:
+                    used.add(j)
+        coll.append({"compound": cpd, "n_alleles": len(vs),
+                     "n_independent": groups, "max_jaccard": round(mx, 3),
+                     "alleles": "; ".join(vs[:6])})
+    C = pd.DataFrame(coll).sort_values("n_alleles", ascending=False)
+    C.to_csv(TAB / "prism_variant_cooccurrence.csv", index=False)
+    print(C.head(8).to_string(index=False))
+    tot_a, tot_i = int(C.n_alleles.sum()), int(C.n_independent.sum())
+    print(f"  {tot_a} allele hits collapse to {tot_i} independent "
+          f"associations after merging alleles with >50% carrier overlap")
+    # the decisive control: MSI-high lines carry MANY frameshifts, so pairwise
+    # overlap between any two specific alleles can stay low while all of them
+    # tag the same background. Condition on total frameshift burden instead.
+    burden = (mut[mut.Variant_Classification.astype(str)
+                  .str.contains("Frame_Shift", na=False)]
+              .groupby("depmap").size())
+    print("\nMSI control: does the association survive conditioning on total "
+          "frameshift burden?")
+    # Quintile matching was tried first and rejected: carriers span several
+    # burden quintiles, so restricting controls to "the carriers' quintiles"
+    # excluded almost nothing and every hit trivially survived. A rank-based
+    # PARTIAL correlation removes the burden effect from both variables
+    # instead, which is the test that can actually fail.
+    ctrl = []
+    for r_ in vh.itertuples():
+        s = resid[r_.compound]
+        b = burden.reindex(s.index).fillna(0).to_numpy()
+        y = s.to_numpy()
+        carrier = np.isin(s.index.to_numpy(), vsets[r_.variant]).astype(float)
+        rb = stats.spearmanr(b, y)
+        ry, rc, rbk = (stats.rankdata(y), stats.rankdata(carrier),
+                       stats.rankdata(b))
+        Z = np.column_stack([np.ones_like(rbk), rbk])
+        ey = ry - Z @ np.linalg.lstsq(Z, ry, rcond=None)[0]
+        ec = rc - Z @ np.linalg.lstsq(Z, rc, rcond=None)[0]
+        pr = stats.pearsonr(ec, ey)
+        # how much of this compound's interaction does the allele account for?
+        ve = float(stats.pointbiserialr(carrier, y).statistic ** 2)
+        ctrl.append({"compound": r_.compound, "variant": r_.variant,
+                     "is_fs": "fs" in r_.variant, "p_raw": r_.p,
+                     "effect": r_.effect, "var_explained": ve,
+                     "burden_rho": rb.statistic, "burden_p": rb.pvalue,
+                     "partial_rho": float(pr.statistic),
+                     "p_partial": float(pr.pvalue)})
+    CT = pd.DataFrame(ctrl)
+    CT.to_csv(TAB / "prism_variant_msi_control.csv", index=False)
+    for lab, sub in (("frameshift alleles", CT[CT.is_fs]),
+                     ("non-frameshift alleles", CT[~CT.is_fs])):
+        if not len(sub):
+            continue
+        surv = int((sub.p_partial < 0.05).sum())
+        print(f"  {lab:24s} n={len(sub):3d}  median burden rho="
+              f"{sub.burden_rho.median():+.3f}  "
+              f"{surv}/{len(sub)} survive partial correlation on burden")
+    print("  If the frameshift hits collapse while the missense hits (BRAF "
+          "V600E,\n  PIK3CA E545K/H1047R) survive, the frameshift set was one "
+          "MSI association\n  read out through many correlated marker alleles.")
+
+    fs = vh[vh.variant.str.contains("fs", na=False)]
+    print(f"  {len(fs)} of {len(vh)} hits are frameshifts; "
+          f"{fs.compound.nunique()} compounds carry them. Frameshifts in "
+          f"homopolymer runs\n  co-occur in MSI-high lines, so these should be "
+          f"read as an MSI association,\n  not as independent gene-level "
+          f"findings.")
+
+    # direction and magnitude: a negative residual means the carrier lines lose
+    # MORE viability than the compound's average, i.e. the allele makes the drug
+    # more effective. This is the quantity a biomarker claim rests on.
+    sens = CT[CT.effect < 0]; res_ = CT[CT.effect > 0]
+    print(f"\ndirection of the {len(CT)} allele associations:")
+    print(f"  {len(sens)} sensitising (carriers respond MORE than average), "
+          f"{len(res_)} resistance-conferring")
+    print(f"  variance of the line x compound interaction explained by a single "
+          f"allele:\n    median {CT.var_explained.median():.3f}, "
+          f"max {CT.var_explained.max():.3f} "
+          f"({CT.loc[CT.var_explained.idxmax(), 'variant']} x "
+          f"{CT.loc[CT.var_explained.idxmax(), 'compound']})")
+    print("  So single alleles explain a few percent of the interaction each — "
+          "real and\n  directional, but far from accounting for it. "
+          "Context-dependence is not\n  reducible to a handful of driver "
+          "alleles at this resolution.")
 
     # within-gene disagreement: alleles of one gene pulling opposite ways
     dis = []
@@ -245,10 +355,10 @@ def main():
                          "axes.spines.right": False, "axes.grid": True,
                          "grid.alpha": 0.25, "figure.facecolor": "white"})
     fig, ax = plt.subplots(1, 3, figsize=(15, 4.6), constrained_layout=True)
-    lim = max(np.abs(m.z).quantile(0.999), np.abs(m.gene_z).quantile(0.999))
-    ax[0].scatter(np.abs(m.gene_z), np.abs(m.z), s=5, alpha=0.2, color="#9e9e9e",
+    lim = max(np.abs(JZ.z).quantile(0.999), np.abs(JZ.gene_z).quantile(0.999))
+    ax[0].scatter(np.abs(JZ.gene_z), np.abs(JZ.z), s=5, alpha=0.2, color="#9e9e9e",
                   edgecolors="none", rasterized=True)
-    sh = m[(m.q < 0.05) & (m.gene_q >= 0.05)]
+    sh = JZ[(JZ.q < 0.05) & (JZ.gene_q >= 0.05)]
     ax[0].scatter(np.abs(sh.gene_z), np.abs(sh.z), s=18, color=ORANGE,
                   edgecolors="none", label=f"allele only (n={len(sh)})")
     ax[0].plot([0, lim], [0, lim], ls="--", color="#555555", lw=1)

@@ -35,8 +35,12 @@ differentially expressed genes.
    (r 0.45 vs 0.06); pooling them overstates reproducibility (§4).
 
 **Architecture of drug response.**
-3. Of the *reproducible* transcriptional response, **~59% is the drug's average
-   effect and ~41% is line×drug interaction** (full atlas, 379 drugs) (§4).
+3. Of the *reproducible* transcriptional response, a majority is the drug's
+   average effect and a minority is line×drug interaction. **The exact split is
+   currently under revision** — see the OPEN ISSUE section: the interaction is
+   solidly real (p < 10⁻¹⁸ against a matched null) but its share was estimated
+   without subtracting a negative offset present in every residual pair, so the
+   reported shares are upper bounds (§4).
 4. That interaction is a **line×drug interaction, not a line property**: it
    reproduces across doses (r = 0.062) but barely transfers across drugs
    (0.019) or lines (−0.002). Hence no line-level descriptor can predict it (§4).
@@ -681,6 +685,61 @@ specify dose near the peak, not at the maximum.
 
 Figure bundles: `results/figures/13_prism/dose_vs_context/`,
 `results/figures/13_prism/lincs_dose_vs_context/`.
+
+---
+
+## OPEN ISSUE (2026-08-31): the interaction *share* is probably overstated
+
+Found while building `scripts/methodology_evidence.py`, which runs each rejected
+methodological alternative against the chosen one. It is unresolved, and it
+affects a headline number, so it is recorded here before anything is rewritten
+around it.
+
+**What was found.** The interaction is estimated as the covariance of per-line
+residuals between independent replicates. Residuals are taken against a
+leave-one-context-out shared response. That construction leaves a *negative
+offset in every pair*, because the mean subtracted from condition A still
+contains condition B and vice versa — so E[r_A · r_B] is pushed below zero even
+with no interaction. Measured on the Tahoe pseudobulk:
+
+| pair type | mean covariance | median |
+|---|---|---|
+| same line, different plates (signal + offset) | −0.00100 | +0.00006 |
+| different lines (offset only — matched null) | −0.00423 | −0.00163 |
+
+**The good news.** Same-line pairs are decisively above the matched cross-line
+null (Mann–Whitney p = 3.9×10⁻¹⁹ on dev47, p = 2.2×10⁻¹⁸ on the full atlas).
+**The interaction is real and reproducible** — that qualitative claim, which most
+of this document rests on, is unaffected.
+
+**The problem.** Its *magnitude* is the difference between those two rows, not
+the raw covariance. That difference is ≈ +0.0032 against a shared component of
+≈ 0.059, i.e. an interaction share on the order of **5%, not the 28% reported in
+§4**. Clamping the per-drug covariance at zero then compounds it: it converts
+the negative offset into exact zeros rather than negative values, which is also
+the likely origin of the 35 LINCS mechanism classes sitting at exactly 0.000
+(§12).
+
+**What is and is not in doubt.**
+- Not in doubt: that a reproducible line×drug interaction exists (§4); the
+  mechanism *ranking*, which is a within-dataset ordering and largely
+  insensitive to a common offset (§5, §12 — the ordering was unchanged when the
+  per-perturbation estimator was corrected); the power/context-count result
+  (§10–11), which never used this estimator; the dose result (§13), which is a
+  within-compound trend.
+- In doubt: every absolute variance *share* — the 72/28 in §4, the 78/22 in §11,
+  the 47/53 in §12.
+
+**Next step.** Re-derive all shares with the matched cross-context null
+subtracted, and drop the zero clamp in favour of reporting signed values with
+confidence intervals. Until then the shares above should be read as upper
+bounds.
+
+A related bug was fixed on the way: the per-perturbation index used an in-sample
+mean, and the first attempted fix (leave-one-*condition*-out) made the bias
+worse rather than better, since it leaves the sibling replicate in the mean.
+Both are now leave-one-*context*-out. The Tahoe mechanism ranking was unchanged
+by this (Kruskal–Wallis p = 2.3×10⁻³ before and after).
 
 ## Reproducing
 
