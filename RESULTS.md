@@ -736,37 +736,71 @@ coverage. That is the same design critique as §10–11 (context count) arriving
 through a second, independent route: cells were spent where replicates and
 contexts were needed.
 
-## 15. No credible novel allele-level discovery
+## 15. No novel allele survives independent validation in GDSC
 
-§11 recovers the known biomarkers; the question worth asking is whether anything
-is left after they are removed. Screening 111,589 allele × compound tests and
-setting aside hits matching known pharmacogenomics (BRAF→RAF/MEK/EGFR,
-TP53→MDM2, PIK3CA/PTEN→PI3K/AKT, KRAS→MEK, and 25 further gene→mechanism rules)
-leaves 45 unknown hits, of which **4 are also allele-specific** (their gene-level
-test fails) and pass lineage and MSI-burden controls.
+§11 recovers the known biomarkers; the question worth asking is what is left once
+they are removed. Screening 111,589 allele × compound tests and setting aside
+hits matching known pharmacogenomics (BRAF→RAF/MEK/EGFR, TP53→MDM2,
+PIK3CA/PTEN→PI3K/AKT, KRAS→MEK and 25 further gene→mechanism rules) left 45
+unknown hits, of which 4 were also allele-specific and passed lineage and MSI
+controls. They were then tested in **GDSC** — a different laboratory, a different
+assay (fitted IC50 rather than pooled barcode viability), 972 of 978 cell lines
+mapped through Cellosaurus.
 
-**They do not survive scrutiny, and the honest report is negative.**
+**The validation pipeline is demonstrably able to detect real effects.** Known
+biomarkers were run first as positive controls and **11 of 11 replicated with the
+correct sign**:
 
-| candidate | why it fails |
+| control | drugs | result |
+|---|---|---|
+| BRAF p.V600E | dabrafenib, trametinib, selumetinib, PLX-4720, SB590885 | all 5, Δz −1.47 to −2.57, p 3×10⁻³¹ to 1×10⁻¹⁹ |
+| PIK3CA p.E545K | alpelisib, pictilisib, taselisib | all 3, p 6×10⁻⁶ to 2×10⁻⁴ |
+| PIK3CA p.H1047R | alpelisib, pictilisib, taselisib | all 3, p 1×10⁻⁶ to 4×10⁻² |
+
+**None of the candidates survives.**
+
+| candidate | outcome in GDSC |
 |---|---|
-| MUC16 p.T12415A × BMS-690514, × lapatinib | MUC16 is the **2nd most-mutated gene of 18,739** in this table (2,241 mutations, 1,879 distinct protein changes). A missense recurring in 40 lines of such a gene is the signature of a common polymorphism or alignment artefact, not a somatic driver. |
-| HMCN1 p.K2374fs × poziotinib | HMCN1 ranks **21st of 18,739**. Same long-gene background problem. |
-| ZMYM5 p.K463fs × mozavaptan | n = 11 carriers, and mozavaptan is a vasopressin receptor antagonist with no plausible mechanism for differential cancer-line viability. |
+| MUC16 p.T12415A × lapatinib | **does not replicate** (Δz −0.155, p = 0.15, n = 31) |
+| HMCN1 p.K2374fs × EGFR class | 6 of 16 EGFR inhibitors raw, **0 of 16 after lineage adjustment** |
+| MUC16 p.T12415A × EGFR class | 6 raw, 4 after lineage adjustment (chance ≈ 0.4) — but see below |
+| ZMYM5 p.K463fs × mozavaptan | untestable; no vasopressin-receptor drug in GDSC |
 
-The split-sample validation these passed at 94–99% is **circular and should not
-be quoted**: candidates were selected using all cell lines, so re-splitting those
-same lines measures effect size, not out-of-sample generalisation. Genuine
-validation needs data not used in selection — the PRISM primary screen, GDSC or
-CTRP — which is the correct next step if this line is pursued.
+**The one partial survivor is a germline polymorphism, not a somatic variant.**
+CCLE calls variants without matched normals, so common SNPs pass into the
+somatic table. Three signatures identify MUC16 p.T12415A as one:
 
-**Consequence for positioning.** The allele-resolution result that *is* solid is
-methodological, not a discovery: BRAF V600E is significant for 11 compounds whose
-gene-level BRAF test fails, in both directions (sensitising to RAF/MEK
-inhibitors, resistance-conferring to EGFR inhibitors), because only 50 of 104
-BRAF-mutant lines carry V600E and the rest dilute it. That is a real argument
-that gene-level indicators lose associations — but it is a statement about
-method, and it re-derives known biology. **The Nature Genetics route through
-allele-level discovery does not open on this data.**
+1. All 40 carriers share a **single genomic position** (g.chr19:9021080T>C).
+2. Carriers show **no excess mutational burden** (median 352 vs 358 atlas-wide),
+   so it is not selected and not a burden proxy.
+3. It heads a list of recurrent MUC16 variants whose other members are
+   **synonymous** — p.T13039T, p.V13913V, p.R13041R. Synonymous changes recurring
+   across unrelated lines are germline by definition, and no somatic hotspot
+   keeps that company.
+
+The same test flags HMCN1 p.K2374fs and ZMYM5 p.K463fs as germline too. An
+association between a germline SNP and drug response is population structure —
+ancestry correlates with cell-line provenance, which the coarse TCGA lineage
+label only partly absorbs — not a somatic biomarker.
+
+**Verdict: no credible novel allele-level discovery.** The validation is
+informative rather than merely null, because the same pipeline recovers every
+known biomarker at overwhelming significance in the same data.
+
+The allele-resolution result that *is* solid is methodological: BRAF V600E is
+significant for 11 compounds whose gene-level BRAF test fails, in both directions
+(sensitising to RAF/MEK inhibitors, resistance-conferring to EGFR inhibitors),
+because only 50 of 104 BRAF-mutant lines carry V600E and the rest dilute it.
+That is a real argument that gene-level indicators lose associations, but it is a
+statement about method that re-derives known biology. **The Nature Genetics route
+through allele-level discovery is closed on this data.**
+
+Two lessons are recorded rather than buried. The earlier split-sample validation
+(94–99%) was **circular** — candidates were selected using every line, so
+re-splitting those lines measures effect size, not generalisation. And the first
+class-level test matched drug targets by substring, where `"her"` matches
+`"other"`, inflating the EGFR class to 170 drugs including 5-fluorouracil;
+word-boundary matching on `PUTATIVE_TARGET` gives the correct 16.
 
 ## 16. Mechanism ranking: significant within Tahoe, not reproducible across datasets
 
@@ -803,6 +837,7 @@ python scripts/prism_vs_tahoe.py                     # cross-platform ranking
 python scripts/three_platform_synthesis.py           # Tahoe / LINCS / PRISM
 sbatch jobs/dose_ctx.sbatch                          # dose x context (PRISM, Tahoe)
 sbatch jobs/lincs_dose.sbatch                        # dose x context (LINCS)
+python scripts/validate_alleles_gdsc.py            # GDSC validation of alleles
 ```
 
 See `docs/related_work_perturbation_models.md` for how these results sit
