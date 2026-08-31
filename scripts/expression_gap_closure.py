@@ -6,7 +6,7 @@ than analysis problems. DepMap's portal is behind bot verification, but the
 legacy CCLE distribution (data.broadinstitute.org/ccle) and figshare are both
 live, which makes both answerable.
 
-**Gap 1 — expression was never tested as a predictor.** §17 partitioned the
+**Gap 1 — expression and copy number were never tested as predictors.** §17 partitioned the
 line x compound interaction across lineage, mutational burden, and synonymous
 and nonsynonymous variants, and found only lineage predicts. But the field's
 consistent claim (and Schlüter & Schönhuth 2025 explicitly) is that expression
@@ -72,6 +72,26 @@ def load_expression():
     return X[keep].astype(np.float32)
 
 
+def load_cnv():
+    """Gene-level copy number, DepMap-ID indexed, reduced like expression.
+
+    Kept to the same number of features as the expression block so the two are
+    comparable; a block with more predictors can look better purely on capacity
+    even under cross-validation.
+    """
+    f = CC / "ccle_gene_cn.csv"
+    if not f.exists():
+        return None
+    X = pd.read_csv(f, index_col=0)
+    X = X[~X.index.duplicated()]
+    X = X.dropna(axis=1, thresh=int(0.9 * len(X)))
+    v = X.var(axis=0, numeric_only=True).sort_values(ascending=False)
+    keep = v.index[:N_HVG]
+    print(f"  copy number: {X.shape[0]} lines x {X.shape[1]} genes "
+          f"-> top {len(keep)} variable", flush=True)
+    return X[keep].astype(np.float32).fillna(0.0)
+
+
 def load_rppa():
     f = CC / "CCLE_RPPA_20181003.csv"
     if not f.exists():
@@ -97,6 +117,7 @@ def main():
 
     print("loading CCLE ...", flush=True)
     EXPR = load_expression()
+    CNV = load_cnv()
     RPPA = load_rppa()
 
     print("building PRISM residuals ...", flush=True)
@@ -145,12 +166,27 @@ def main():
         XN = XN[:, XN.std(0) > 0]
         XE = EXPR.loc[keep].to_numpy(dtype=np.float64)
         XE = XE[:, XE.std(0) > 0]
+        keep_c = [d for d in keep if CNV is not None and d in CNV.index]
         folds = np.random.default_rng(k).permutation(np.arange(n) % 5)
         r = {"compound": cpd, "n_lines": n,
              "r2_lineage": cv_r2(XL, yv, folds),
              "r2_nonsyn": cv_r2(XN, yv, folds),
              "r2_expression": cv_r2(XE, yv, folds),
              "r2_expr_lineage": cv_r2(np.hstack([XL, XE]), yv, folds)}
+        if CNV is not None and len(keep_c) >= 80:
+            yc = y.loc[keep_c].to_numpy().astype(np.float64)
+            yc = yc - yc.mean()
+            XC = CNV.loc[keep_c].to_numpy(dtype=np.float64)
+            XC = XC[:, XC.std(0) > 0]
+            fc = np.random.default_rng(k).permutation(
+                np.arange(len(keep_c)) % 5)
+            r["r2_cnv"] = cv_r2(XC, yc, fc)
+            # expression and CNV on the SAME lines, so the two are comparable
+            XE2 = EXPR.loc[keep_c].to_numpy(dtype=np.float64)
+            XE2 = XE2[:, XE2.std(0) > 0]
+            r["r2_expr_on_cnv_lines"] = cv_r2(XE2, yc, fc)
+            r["r2_cnv_expr"] = cv_r2(np.hstack([XC, XE2]), yc, fc)
+            r["n_lines_cnv"] = len(keep_c)
         if len(keep_r) >= 80:
             yr = y.loc[keep_r].to_numpy().astype(np.float64)
             yr = yr - yr.mean()
@@ -171,9 +207,11 @@ def main():
 
     print(f"\n=== cross-validated R^2 across {len(A)} compounds ===")
     blocks = [("lineage", "r2_lineage"), ("nonsynonymous variants", "r2_nonsyn"),
+              ("COPY NUMBER", "r2_cnv"),
               ("baseline EXPRESSION", "r2_expression"),
               ("baseline PROTEIN (RPPA)", "r2_protein"),
-              ("expression + lineage", "r2_expr_lineage")]
+              ("expression + lineage", "r2_expr_lineage"),
+              ("copy number + expression", "r2_cnv_expr")]
     for lab, col in blocks:
         if col not in A.columns:
             continue
@@ -183,6 +221,24 @@ def main():
         w = stats.wilcoxon(v)[1] if v.abs().sum() > 0 else np.nan
         print(f"  {lab:26s} median {v.median():+.4f}  "
               f"{(v > 0).mean():5.1%} positive  p={w:.2e}  (n={len(v)})")
+    if "r2_cnv" in A.columns and "r2_expr_on_cnv_lines" in A.columns:
+        m = A.dropna(subset=["r2_cnv", "r2_expr_on_cnv_lines", "r2_nonsyn"])
+        if len(m) > 10:
+            print(f"\n  on the {len(m)} compounds where all three are "
+                  f"measurable on identical lines:")
+            print(f"    copy number     {m.r2_cnv.median():+.4f}")
+            print(f"    expression      {m.r2_expr_on_cnv_lines.median():+.4f}")
+            print(f"    nonsynonymous   {m.r2_nonsyn.median():+.4f}")
+            d1 = (m.r2_cnv - m.r2_nonsyn).dropna()
+            d2 = (m.r2_cnv - m.r2_expr_on_cnv_lines).dropna()
+            print(f"    CNV - mutations:  {d1.median():+.4f}, "
+                  f"p={stats.wilcoxon(d1)[1]:.2e}")
+            print(f"    CNV - expression: {d2.median():+.4f}, "
+                  f"p={stats.wilcoxon(d2)[1]:.2e}")
+            print("    Schlüter & Schönhuth report copy number out-predicting "
+                  "mutations;\n    this tests it on the interaction residual "
+                  "rather than on raw IC50.")
+
     if "r2_expression" in A and "r2_lineage" in A:
         d = (A.r2_expression - A.r2_lineage).dropna()
         print(f"\n  expression - lineage: median {d.median():+.4f}, "
@@ -245,7 +301,7 @@ def main():
     data = [A[c].dropna() for _, c in have]
     bp = ax[0].boxplot(data, showfliers=False, patch_artist=True,
                        medianprops=dict(color="black", lw=1.5))
-    cols = [AQUA, ORANGE, VIOLET, BLUE, GREY][:len(have)]
+    cols = [AQUA, ORANGE, "#c25fb0", VIOLET, BLUE, GREY, "#7a7a7a"][:len(have)]
     for p_, c in zip(bp["boxes"], cols):
         p_.set_facecolor(c); p_.set_alpha(0.8)
     ax[0].axhline(0, color="#444", lw=1.0)

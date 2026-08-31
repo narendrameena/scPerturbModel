@@ -171,6 +171,7 @@ sample, across 150 compounds with 5-fold cross-validated ridge:
 | **baseline expression** (2,000 genes) | **+0.0927** | **92.5%** |
 | **baseline protein** (RPPA, 214 antibodies) | **+0.0731** | 88.3% |
 | lineage | +0.0201 | 74.2% |
+| copy number (2,000 genes) | +0.0051 | 57.5% |
 | nonsynonymous variants | +0.0002 | 50.8% |
 | mutational burden | −0.0023 | 32.0% |
 | synonymous variants | −0.0064 | 22.0% |
@@ -178,8 +179,11 @@ sample, across 150 compounds with 5-fold cross-validated ridge:
 **Genome-wide mutation status carries no generalisable information; baseline
 molecular state does.** Expression beats lineage by 4.6× (p = 4.7×10⁻²⁰) and
 lineage adds nothing on top of expression, so lineage was acting as a coarse
-proxy for expression state. The absolute effect remains modest (≈9% of variance)
-but is highly consistent across compounds. Using synonymous variants as a
+proxy for expression state. Copy number beats mutations (+0.0064, p = 5.7×10⁻⁴),
+as Schlüter & Schönhuth report, but trails expression by 0.088 (p = 3.3×10⁻²¹)
+and adds nothing to it — the joint block scores below expression alone. The
+absolute effect remains modest (≈9% of variance) but is highly consistent across
+compounds. Using synonymous variants as a
 control — silent changes cannot alter a protein but carry identical ancestry,
 lineage and germline-contamination structure, and we match both blocks to the
 same 3,435 genes — isolates a genuinely mechanistic excess of **+0.0036**

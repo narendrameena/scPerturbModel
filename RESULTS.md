@@ -892,8 +892,19 @@ antibodies) under the identical cross-validated ridge, over 120 compounds:
 | **baseline expression** | **+0.0927** | **92.5%** | 2.7×10⁻²⁰ |
 | **baseline protein (RPPA)** | **+0.0731** | 88.3% | 1.3×10⁻¹⁹ |
 | lineage | +0.0201 | 74.2% | 8.2×10⁻¹⁵ |
+| copy number | +0.0051 | 57.5% | 6.9×10⁻³ |
 | nonsynonymous variants | +0.0002 | 50.8% | 0.74 |
 | expression + lineage | +0.0929 | 92.5% | 2.8×10⁻²⁰ |
+| copy number + expression | +0.0768 | 87.5% | 1.2×10⁻¹⁷ |
+
+**Copy number confirms Schlüter & Schönhuth (2025) in relative terms and refutes
+them in absolute ones.** On the 120 compounds where all blocks are measurable on
+identical lines, copy number does beat mutations (+0.0064, p = 5.7×10⁻⁴) — their
+claim holds — but it trails expression by a wide margin (−0.0880, p = 3.3×10⁻²¹).
+Copy number also *adds nothing over expression*: the joint block (+0.0768) scores
+**below** expression alone (+0.0927), the 2,000 extra largely uninformative
+predictors diluting the fit even under cross-validation. The ordering is
+expression > protein > lineage > copy number > mutations.
 
 Baseline expression predicts the interaction **4.6× better than lineage**
 (difference +0.068, p = 4.7×10⁻²⁰), protein nearly as well, and **lineage adds
@@ -903,8 +914,7 @@ state all along. Genotype remains at zero.
 The corrected statement is therefore not "nothing predicts the interaction" but
 **"molecular state predicts it and genotype does not"**. The effect is modest in
 absolute terms (≈9% of variance) but consistent, appearing in 92.5% of compounds,
-and it resolves the tension with Schlüter & Schönhuth (2025), who report
-expression and copy number out-predicting mutations in GDSC.
+The comparison with Schlüter & Schönhuth (2025) is set out above.
 
 **Context.** In UK Biobank, genome-wide common variation explains 9–17% of drug
 response (Sadowski et al. 2024, *Cell Genomics*: statin–LDL 9%, statin–A1c 10%,

@@ -257,6 +257,7 @@ def figure3():
         blocks = [("baseline\nexpression", "r2_expression", VIOLET),
                   ("baseline\nprotein", "r2_protein", BLUE),
                   ("lineage", "r2_lineage", AQUA),
+                  ("copy\nnumber", "r2_cnv", "#c25fb0"),
                   ("nonsynonymous\nvariants", "r2_nonsyn", ORANGE)]
         blocks = [b for b in blocks if b[1] in EA.columns
                   and EA[b[1]].notna().any()]
@@ -275,6 +276,10 @@ def figure3():
         ax[0].text(0.97, 0.95, f"n = {len(EA)} compounds\nidentical lines "
                    f"per block", transform=ax[0].transAxes, ha="right",
                    va="top", fontsize=6.4, color="#666")
+        ax[0].text(0.03, 0.72, "copy number beats mutations\n(p = 6×10⁻⁴) but "
+                   "trails expression\nby 0.088 (p = 3×10⁻²¹)",
+                   transform=ax[0].transAxes, ha="left", va="top",
+                   fontsize=6.1, color="#444")
     panel(ax[0], "a", "Molecular state predicts; genotype does not")
 
     # b: the synonymous control. Plotting the two blocks side by side hides the
