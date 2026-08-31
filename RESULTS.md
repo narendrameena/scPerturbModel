@@ -60,6 +60,13 @@ differentially expressed genes.
    at FDR<0.05) but their **survival associations do not survive** adjustment for
    stage, grade and infiltration (§7).
 
+**The binding constraint.**
+10. Tahoe-100M has 100 M cells but only **~47 usable contexts**. Every
+    per-condition analysis here (thousands of conditions) is well powered and
+    replicates; every line-level predictor we tried failed — plausibly one
+    power ceiling hit four times rather than four separate biological
+    negatives (§9).
+
 ---
 
 ## 1. The atlas reproduces, and so do its published analyses
@@ -374,6 +381,49 @@ confident wrong tissue — culture dedifferentiation, not mislabelling. This
 also motivates using learned line embeddings over tissue-of-origin labels.
 
 ---
+
+## 9. The binding constraint is context count, not cell count
+
+Four independent attempts to predict a line's context-deviance from line-level
+features have failed:
+
+| line-level predictor | result |
+|---|---|
+| driver mutations × mechanism (825 tests, full atlas) | 0 at FDR<0.10 |
+| baseline (DMSO) transcriptome, 47-fold LOO | 0.692 vs additive 0.692 |
+| drug-target mutation frequency and abundance (264 drugs) | ρ = +0.10, p = 0.10 |
+| DNA methylation level and heterogeneity, 20 features, 43 lines | 0 at FDR<0.10 |
+
+The DNA-methylation panel is worth spelling out because it was the strongest
+available test of the regulatory hypothesis: CCLE bisulfite profiles of 928
+lines (45 of our 50), including epigenetic *heterogeneity* metrics — proportion
+of discordant reads, methylation entropy, haplotype load, local pairwise
+discordance — not merely methylation level. Best feature: promoter PDR,
+ρ = −0.25, p = 0.10; all twenty trending weakly negative; unchanged after
+adjusting for sequencing depth, which is itself uncorrelated with the index
+(ρ = −0.23, p = 0.14). ATAC-seq would be the definitive test but ENCODE covers
+only 3 of our lines and DepMap is not scriptable.
+
+**These four negatives should probably be read as one.** With 43–50 lines, a
+line-level correlation needs |ρ| > 0.30 to clear nominal significance, so any
+effect of realistic size is invisible. The atlas contains 100 million cells but
+only about **47 usable contexts**, and for line-level questions that is what
+determines power — it is effectively an *n = 47 study* however many cells it
+holds.
+
+This explains the pattern of everything above. Analyses resting on thousands of
+*conditions* — the variance decomposition (§4), the drug-mechanism ranking
+(§5, 367 drugs), the few-shot protocol (§6), the baseline-scaling result (§2) —
+are well powered and replicate across subsets. Analyses resting on ~47 *lines*
+all fail. That is a statement about experimental design, not about biology: we
+cannot conclude that genotype or chromatin state is irrelevant to
+context-dependence, only that it is not detectable at this context count.
+
+The implication for the field is direct. Effort is currently going into cell
+count and model capacity, but for the context-transfer problem that these
+atlases are explicitly built to solve, **the binding constraint is the number
+of distinct cellular contexts profiled**. A follow-up atlas with 500 lines and
+one-tenth the cells per condition would answer the questions this one cannot.
 
 ## Reproducing
 
