@@ -56,24 +56,29 @@ def norm(s):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--gctx", default=str(LIN / "level4.gctx"))
+    ap.add_argument("--gz", default=str(LIN / "level4.gctx.gz"))
+    ap.add_argument("--inst-info", default=str(LIN / "inst_info.txt.gz"))
+    ap.add_argument("--gene-info",
+                    default=str(LIN / "GSE70138_Broad_LINCS_gene_info.txt.gz"))
+    ap.add_argument("--tag", default="lincs")
     ap.add_argument("--min-lines", type=int, default=MIN_CELL_LINES)
     args = ap.parse_args()
     FIG.mkdir(parents=True, exist_ok=True)
 
-    gz = LIN / "level4.gctx.gz"
+    gz = Path(args.gz)
     gctx = Path(args.gctx)
     if not gctx.exists() and gz.exists():
         print("decompressing Level 4 ...", flush=True)
         with gzip.open(gz, "rb") as f, open(gctx, "wb") as o:
             shutil.copyfileobj(f, o, length=1 << 24)
 
-    gi = pd.read_csv(LIN / "GSE70138_Broad_LINCS_gene_info.txt.gz", sep="\t")
+    gi = pd.read_csv(args.gene_info, sep="\t")
     lm_col = "pr_is_lm" if "pr_is_lm" in gi.columns else None
     landmark = (gi[gi[lm_col] == 1] if lm_col else gi).pr_gene_id.astype(str).tolist()
     sym = dict(zip(gi.pr_gene_id.astype(str), gi.pr_gene_symbol.astype(str)))
     print(f"{len(landmark)} landmark genes", flush=True)
 
-    inst = pd.read_csv(LIN / "inst_info.txt.gz", sep="\t", low_memory=False)
+    inst = pd.read_csv(args.inst_info, sep="\t", low_memory=False)
     inst["plate"] = inst.det_plate.astype(str).str.rsplit("_", n=1).str[0]
     cp = inst[inst.pert_type == "trt_cp"]
     keep_cpd = (cp.groupby("pert_id").cell_id.nunique()
@@ -120,7 +125,7 @@ def main():
         dm = pd.read_parquet(ROOT / "data/metadata/metadata/drug_metadata.parquet")
         dm["key"] = dm.drug.map(norm)
         per = per.merge(dm[["key", "moa-fine"]], on="key", how="left")
-    per.to_csv(TAB / "lincs_mechanism_ranking.csv", index=False)
+    per.to_csv(TAB / f"lincs_mechanism_ranking_{args.tag}.csv", index=False)
 
     ok = per[per.estimable]
     print(f"\n{len(ok)}/{len(per)} compounds estimable "
@@ -151,7 +156,7 @@ def main():
         print(f"\nmechanism-ranking agreement LINCS vs Tahoe: "
               f"Spearman rho={rho.statistic:+.3f} (p={rho.pvalue:.3f}, "
               f"n={len(both)} mechanisms)")
-        both.to_csv(TAB / "lincs_vs_tahoe_cdi.csv")
+        both.to_csv(TAB / f"lincs_vs_tahoe_cdi_{args.tag}.csv")
         print(both.round(3).sort_values("lincs", ascending=False).to_string())
 
     plt.rcParams.update({"font.size": 9, "axes.spines.top": False,
@@ -192,7 +197,7 @@ def main():
 
     fig.suptitle("Does the mechanism ranking replicate in an independent "
                  "platform?", fontsize=11, x=0.01, ha="left")
-    d = save_figure(fig, "lincs_mechanism", FIG,
+    d = save_figure(fig, f"lincs_mechanism_{args.tag}", FIG,
                     source_data={"per_compound": per,
                                  "by_mechanism": grp.reset_index(),
                                  "cross_dataset": both.reset_index()},
