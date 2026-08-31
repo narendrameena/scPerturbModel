@@ -14,6 +14,7 @@ via scvi-tools (itself PyTorch) as the paper-matching baseline.
 | Paper notes / summary | `docs/paper_notes/tahoe-100M.md` |
 | Dataset (100M cells) | Hugging Face: `tahoebio/Tahoe-100M` |
 | Modeling roadmap | `docs/project_roadmap.md` |
+| **Manuscript draft** | **`MANUSCRIPT.md`** |
 | **Findings so far** | **`RESULTS.md`** |
 | Related work survey | `docs/related_work_perturbation_models.md` |
 | Methodological positioning | `docs/methodology_positioning.md` |
