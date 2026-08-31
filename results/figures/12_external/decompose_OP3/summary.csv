@@ -1,2 +1,0 @@
-dataset,n_contexts,n_perturbations,n_replicates,additive,interaction,interaction_share,n_cross_replicate_pairs
-OP3,6,147,3,0.16417145729064941,0.08127389095449221,0.33112825944991586,10317

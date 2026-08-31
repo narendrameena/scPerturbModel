@@ -79,7 +79,14 @@ def main():
     print(f"{len(landmark)} landmark genes", flush=True)
 
     inst = pd.read_csv(args.inst_info, sep="\t", low_memory=False)
-    inst["plate"] = inst.det_plate.astype(str).str.rsplit("_", n=1).str[0]
+    # the replicate axis is the plate INCLUDING its X1/X2/X3 token. Phase II
+    # names it det_plate with a trailing bead-set suffix to strip
+    # (LJP005_A375_24H_X1_B19 -> ..._X1); Phase I names it rna_plate and is
+    # already at that level (ASG001_MCF7_24H_X1).
+    if "det_plate" in inst.columns:
+        inst["plate"] = inst.det_plate.astype(str).str.rsplit("_", n=1).str[0]
+    else:
+        inst["plate"] = inst.rna_plate.astype(str)
     cp = inst[inst.pert_type == "trt_cp"]
     keep_cpd = (cp.groupby("pert_id").cell_id.nunique()
                 .loc[lambda s: s >= args.min_lines].index)

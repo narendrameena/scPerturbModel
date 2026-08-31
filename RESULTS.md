@@ -60,12 +60,31 @@ differentially expressed genes.
    at FDR<0.05) but their **survival associations do not survive** adjustment for
    stage, grade and infiltration (§7).
 
-**The binding constraint.**
+**The binding constraint — now measured, not inferred.**
 10. Tahoe-100M has 100 M cells but only **~47 usable contexts**. Every
     per-condition analysis here (thousands of conditions) is well powered and
     replicates; every line-level predictor we tried failed — plausibly one
     power ceiling hit four times rather than four separate biological
     negatives (§10).
+11. **PRISM proves it.** At 738 cell lines the genotype x compound scan recovers
+    the clinical biomarker set de novo (TP53/MDM2i, BRAF/vemurafenib,
+    PIK3CA/alpelisib, KRAS/MEKi; 80 hits at FDR<0.05). Subsampling those same
+    associations to **47 lines recovers 4% of them**; 80% power needs **~400
+    contexts**, 95% needs ~600. The Tahoe genotype negatives are a power
+    ceiling, not a biological absence (§11).
+
+**Scope limits discovered by replication.**
+12. **The mechanism ranking is at best a transcriptional statement.**
+    Transcription-to-transcription it only *trends* (Tahoe vs LINCS phase 1,
+    rho = +0.56 but p = 0.09 over 10 classes — not significant). To viability it
+    is a **well-powered null** (LINCS-1 vs PRISM, rho = −0.09 over 67 classes).
+    So transcriptional rewiring and differential killing are decoupled, and the
+    positive half of the claim still rests on too few mechanism classes (§12).
+13. **Context-dependence is dose-dependent.** It rises ~4x with dose and peaks
+    just below lethality, then collapses when every line is dying (PRISM,
+    rho = +0.33, p = 4x10⁻⁹²; peak 0.384 at ~2.5 uM vs 0.218 at 10 uM).
+    The rising limb replicates in LINCS transcription (rho = +0.20, p = 1x10⁻⁵).
+    A CDI is only comparable at matched dose (§13).
 
 ---
 
@@ -503,6 +522,166 @@ atlases are explicitly built to solve, **the binding constraint is the number
 of distinct cellular contexts profiled**. A follow-up atlas with 500 lines and
 one-tenth the cells per condition would answer the questions this one cannot.
 
+**§11 tests that recommendation rather than leaving it as a hunch.** Repeating
+the genotype scan in PRISM at 738 cell lines recovers the effects that fail
+here, and subsampling it back down shows they become invisible at 47 — putting
+the required context count at ~400 for 80% power.
+
+## 11. PRISM settles the power question: genotype linkage is real, and needs ~400 lines
+
+§10 argued that four failed line-level predictors were probably one power
+ceiling hit four times, but that argument could not be closed from Tahoe alone —
+"undetectable at n=47" and "absent" look identical at n=47. Settling it requires
+the same test at a context count where a true effect *must* show.
+
+**PRISM Repurposing** (Corsello et al. 2020) supplies it: pooled viability for
+**738 cell lines x ~1,500 compounds x 8 doses** on replicate detection plates,
+with DepMap mutation calls for 1,257 of those lines. The phenotype is a scalar
+rather than a transcriptome, but the decomposition is unchanged — the
+leave-one-line-out shared response, and an interaction estimated as the
+covariance of per-line residuals between **independent replicate plates** at
+matched compound and dose.
+
+**The architecture holds.** 1,444 compounds decomposed over >=100 lines:
+**78% of reproducible variance is the compound's shared effect, 22% is
+line x compound interaction** (median CDI 0.199, IQR 0.115-0.287) — the same
+shape as Tahoe's 72/28 for transcription, in a different lab, assay and
+phenotype.
+
+**Genotype linkage appears, and it is textbook.** Scanning 300 compounds against
+5,048 genes mutated in >=40 lines (1,504,298 tests) returns **80 associations at
+FDR<0.05** across 24 compounds — and the top of the list is the clinical
+biomarker set, recovered de novo:
+
+| compound | gene | n mutant / n lines | effect | q |
+|---|---|---|---|---|
+| idasanutlin (MDM2i) | TP53 | 497 / 734 | +0.75 (mutant resistant) | 6e-36 |
+| CGM097 (MDM2i) | TP53 | 353 / 479 | +0.59 (mutant resistant) | 4e-24 |
+| alpelisib (PI3Kai) | PIK3CA | 102 / 732 | −0.20 (mutant sensitive) | 9e-09 |
+| vemurafenib (RAFi) | BRAF | 104 / 714 | −0.15 (mutant sensitive) | 4e-08 |
+| dabrafenib (RAFi) | BRAF | 104 / 734 | −0.22 (mutant sensitive) | 4e-07 |
+| ipatasertib (AKTi) | PTEN | 66 / 479 | −0.26 (mutant sensitive) | 5e-06 |
+| copanlisib (PI3Ki) | PIK3CA | 102 / 711 | −0.37 (mutant sensitive) | 2e-05 |
+| pimasertib (MEKi) | KRAS | 135 / 714 | −0.31 (mutant sensitive) | 2e-04 |
+
+Every sign is the pharmacologically correct one: MDM2 inhibitors need wild-type
+p53, and BRAF/PIK3CA/PTEN/KRAS lesions sensitise to the matched pathway
+inhibitor. These are not discoveries — they are a **positive control that the
+estimator and the genotype join are sound**.
+
+**The informative quantity is where they disappear.** Subsampling PRISM to fewer
+cell lines and re-testing the 12 confirmed associations at the same per-test
+threshold gives the recovery curve:
+
+| cell lines | 20 | 30 | **47** | 75 | 100 | 150 | 250 | 400 | 600 |
+|---|---|---|---|---|---|---|---|---|---|
+| associations recovered | 0% | 1% | **4%** | 9% | 15% | 24% | 45% | **72%** | **96%** |
+
+**At Tahoe's 47 contexts, effects this large are recovered 4% of the time.**
+That is a direct, quantitative vindication of §10: the genotype negatives in
+this atlas are a power ceiling, not a biological absence. It also converts §10's
+closing recommendation from a hunch into a number — **~400 contexts for 80%
+power, ~600 for 95%** — for effects at the top of the real effect-size
+distribution. Weaker, more typical effects need more.
+
+The caveat is honest and worth stating: PRISM's phenotype is viability, and a
+compound whose *killing* is genotype-linked need not have genotype-linked
+*transcription*. The power curve transfers between readouts only to the extent
+that effect sizes do. What it establishes firmly is that n=47 cannot see effects
+this size in any readout.
+
+Figure bundle: `results/figures/13_prism/prism_context_genetics/`.
+Tables: `prism_decomposition.csv`, `prism_genotype_scan.csv`,
+`prism_genotype_power.csv`.
+
+## 12. Which drugs transfer depends on what you measure
+
+The mechanism ranking (§5) was tested against LINCS phase 2 and looked shaky,
+but that comparison shared only **six** mechanism classes with Tahoe — too few
+to tell "different biology" from "too few points". Two better arms now exist.
+
+**LINCS phase 1 (GSE92742) is consistent with it, but does not confirm it.** Phase 1 is an order of magnitude
+larger than phase 2: 373,198 instances, **2,834 compounds, 70 lines, 1,960
+replicate plates**, all estimable, 6.1M cross-replicate pairs. The architecture
+replicates (47% shared / 53% interaction on 978 landmark genes), and the
+mechanism ranking trends with Tahoe over ten shared classes:
+**rho = +0.56, p = 0.093 — a positive trend that does not reach significance**,
+and ten classes is still thin. MEK inhibitors (0.464) and glucocorticoid receptor
+agonists (0.452, n=31) sit at the context-specific end in both.
+
+**PRISM does not.** Against the same ranking, viability gives
+**rho = −0.18 to −0.23 (n.s.)** versus Tahoe, and — with 67 shared classes, so
+this is *not* an underpowered comparison — **rho = −0.09 (n.s.)** versus LINCS
+phase 1. A consensus transcriptional rank built from Tahoe and LINCS correlates
+with viability at rho = −0.19 (p = 0.13, n = 69).
+
+| comparison | readouts | shared classes | rho |
+|---|---|---|---|
+| Tahoe vs LINCS-1 | transcription vs transcription | 10 | **+0.56** (p=0.09) |
+| Tahoe vs PRISM | transcription vs viability | 11 | −0.18 (n.s.) |
+| LINCS-1 vs PRISM | transcription vs viability | 67 | −0.09 (n.s.) |
+
+The reading is that **mechanism sets transcriptional context-dependence, and
+that ordering does not carry to viability**. Transcriptional rewiring and
+differential killing are decoupled: a drug whose expression response is highly
+line-specific is not thereby a drug whose killing is line-specific. This scopes
+§5 — the claim is about transcriptional response, and should be stated that way
+— and it is a substantive result in its own right, since the two readouts are
+routinely used interchangeably as "drug response".
+
+One confound is controlled: CDI is a ratio, so an inert compound has a
+near-zero numerator *and* denominator and lands at 0 by default rather than
+because it transfers. LINCS phase 1 is full of these (35 classes — antihistamines,
+adrenergics — sit at exactly 0.000). Restricting to compounds with a detectable
+shared effect changes none of the three correlations above.
+
+Figure bundle: `results/figures/13_prism/three_platform_synthesis/`.
+
+## 13. Context-dependence is dose-dependent, and peaks just below lethality
+
+Every result so far pooled doses, treating transferability as one number per
+compound. It is not — it is a curve, and the curve has a shape.
+
+**PRISM (viability, 1,443 compounds, 8 doses, ~740 lines).** Within compound,
+CDI rises with dose: median Spearman **rho = +0.33, 74% of compounds positive,
+p = 4x10⁻⁹²**. The medians by dose position:
+
+| dose position (median uM) | 1 (0.0006) | 2 (0.002) | 3 (0.010) | 4 (0.039) | 5 (0.16) | 6 (0.63) | 7 (2.5) | 8 (10) |
+|---|---|---|---|---|---|---|---|---|
+| CDI | 0.098 | 0.106 | 0.145 | 0.168 | 0.163 | 0.289 | **0.384** | 0.218 |
+| mean effect (log2) | +0.31 | +0.30 | +0.26 | +0.23 | +0.28 | +0.13 | −0.25 | **−1.67** |
+
+Context-dependence climbs roughly fourfold to a **peak at ~2.5 uM, then
+collapses at the top dose** (0.391 vs 0.218 paired within compound,
+p = 1x10⁻⁵⁹, n = 1,398). The collapse is a ceiling effect, and the mean-effect
+row shows it directly: at 10 uM the average line has lost 1.67 log2 of viability
+— everything is dying, so there is little left to differ about and the shared
+component dominates.
+
+**LINCS phase 1 (transcription, 298 compounds, 0.08–10 uM) shows the same rising
+limb**: CDI **rho = +0.20, 60% positive, p = 1x10⁻⁵**, rising 0.455 → 0.505
+across dose quartiles. Decomposed, the interaction grows faster than the shared
+response (0.213 → 0.370, +74%, versus 0.269 → 0.366, +36%) — which is *why* the
+ratio rises. LINCS shows no collapse, consistent with the collapse being a
+consequence of mass killing rather than of dose as such.
+
+**Tahoe cannot resolve this** and should not be quoted on it. Its three
+concentrations (0.05 / 0.5 / 5 uM) produce almost identical shared-response
+magnitude (0.047 / 0.048 / 0.054), so there is no gradient to read; splitting by
+concentration also leaves too few cross-plate replicate pairs per (drug, dose)
+to estimate the interaction at all.
+
+Two consequences. **Scientifically**, the interaction is largest where lines
+differ most in *where they sit on the dose-response curve* and vanishes once
+dose saturates that difference — which is a mechanistic statement about what
+the interaction is. **Practically**, a context-dependence index is only
+comparable at matched dose; CDI values quoted across studies at different doses
+are not the same quantity, and probe-panel and benchmark designs (§6) should
+specify dose near the peak, not at the maximum.
+
+Figure bundles: `results/figures/13_prism/dose_vs_context/`,
+`results/figures/13_prism/lincs_dose_vs_context/`.
+
 ## Reproducing
 
 ```bash
@@ -514,6 +693,12 @@ sbatch jobs/phase3_cvae_train.sbatch                 # model 2
 sbatch jobs/dev47_hardsplits.sbatch                  # generalization
 sbatch jobs/few_shot_finetune_dev8.sbatch            # few-shot transfer
 sbatch jobs/cell_type_audit.sbatch                   # identity audit
+sbatch jobs/lincs_phase1.sbatch                      # LINCS phase 1 (GSE92742)
+sbatch jobs/prism.sbatch                             # PRISM decomposition + genotype
+python scripts/prism_vs_tahoe.py                     # cross-platform ranking
+python scripts/three_platform_synthesis.py           # Tahoe / LINCS / PRISM
+sbatch jobs/dose_ctx.sbatch                          # dose x context (PRISM, Tahoe)
+sbatch jobs/lincs_dose.sbatch                        # dose x context (LINCS)
 ```
 
 See `docs/related_work_perturbation_models.md` for how these results sit
