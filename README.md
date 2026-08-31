@@ -18,6 +18,7 @@ via scvi-tools (itself PyTorch) as the paper-matching baseline.
 | **Findings so far** | **`RESULTS.md`** |
 | Related work survey | `docs/related_work_perturbation_models.md` |
 | Methodological positioning | `docs/methodology_positioning.md` |
+| Novelty audit | `docs/novelty_audit.md` |
 
 ## Dataset at a glance
 
