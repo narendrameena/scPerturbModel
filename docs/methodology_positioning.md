@@ -90,6 +90,23 @@ responsive-gene universe (not the genome) as enrichment background.
 have reported. The genome-background version of the enrichment, for instance,
 recovers the responsive-gene signature and calls it a property of the component.
 
+### 1.8 Portability enforced by an abstract replicate axis
+The decomposition is written against three roles — *context*, *perturbation*,
+*independent replicate* — rather than against Tahoe's schema, so it runs
+unchanged on other atlases by naming which column plays which role. Applied to
+OP3 (6 immune cell types, donors as replicates) and sciPlex3 (3 cancer lines,
+experimental replicates), the structure reproduces: interaction share 41% / 33%
+/ 30%, residual across replicates +0.062 / +0.135 / +0.048, residual across
+perturbations +0.019 / +0.007 / +0.026.
+
+*Why it matters.* The replicate axis is the load-bearing requirement, and making
+it explicit is what allows the same estimator to be applied to plates, donors
+and experimental repeats without reinterpretation. It also produced a free
+internal check: our §2 claim that a prior estimated from fewer contexts is
+noisier predicts that the additive share should rise as contexts fall, and the
+three datasets — 47, 6 and 3 contexts — land in exactly that order
+(59% → 67% → 70%).
+
 ---
 
 ## 2. What better biology this actually buys
@@ -109,6 +126,10 @@ Ranked by how defensible each claim is.
    reproduces across doses (+0.062) but not across drugs (+0.019) or lines
    (−0.002). It is therefore an *interaction*, not a line property — which
    explains, in one statement, why line-level descriptors cannot work.
+   **Replicated in two independent atlases** — OP3 (primary human immune cells,
+   donors as replicates) and sciPlex3 (Trapnell lab, sci-Plex) — across three
+   platforms, three labs and three kinds of replicate. This is now the most
+   robust claim we have.
 3. **A working protocol for a new cell model**: ~20 *arbitrary* compounds plus
    fine-tuning recovers 98% of the achievable gain; probe-panel design does not
    help (random ties or beats chemically-diverse, MOA-diverse, most-discriminative
@@ -153,8 +174,13 @@ Ranked by how defensible each claim is.
   independently caught Clobetasol propionate ("unclear" → corticosteroid) and
   Capmatinib (MET inhibitor labelled EGFR/ERBB). Our mechanism-level result
   inherits that noise, which biases toward the null but weakens precision.
-- **Single-dataset.** Every core result is Tahoe-100M. sciPlex3 and OP3 exist and
-  we have not replicated in them; the decomposition is portable and should be.
+- **Partly single-dataset.** The *decomposition* now replicates in OP3 and
+  sciPlex3, so the architectural claim is multi-atlas. But everything downstream
+  of it remains Tahoe-only: the drug-mechanism CDI ranking, the six named
+  programs, the few-shot protocol, the baseline-scaling curve, the TCGA
+  anchoring and the identity audit. Those are the results a reviewer would most
+  reasonably ask to see repeated, and OP3's 147 compounds with MOA annotation
+  would support at least the mechanism ranking.
 
 ---
 
