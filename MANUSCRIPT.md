@@ -278,7 +278,7 @@ can achieve.
 
 **The baseline they must beat depends on how many contexts it averages.** The
 perturbation-mean prediction improves monotonically with the number of contexts
-it is estimated from: r = 0.550 at 2 contexts, 0.592 at 3, 0.625 at 6, 0.655 at
+it is estimated from: r = 0.550 at 2 contexts, 0.592 at 3, 0.625 at 6, 0.654 at
 18 and 0.666 at 45. A model that is *equally good everywhere* would therefore
 appear **21% stronger** against a 2-context baseline than against an 18-context
 one.
@@ -388,7 +388,11 @@ a factorial design; a cross-laboratory comparison with the assay held exactly
 fixed would settle it, and CTRP would have provided one but its NCI data portal
 has been retired.
 
-*Identity verification, and a correction.* We first read reciprocal-best-hit
+*Identity verification, and a correction.* Every cell line in the
+cross-laboratory comparison passes STR profiling — PRISM excludes failures from
+its released screen, so all 738 screened lines are authenticated — which rules
+out outright misidentification and leaves metric noise and culture drift within
+correctly labelled lines as the explanations. We first read reciprocal-best-hit
 failure as evidence of culture divergence. Baseline expression, now obtained from
 the legacy CCLE distribution, does not support that: for the 423 lines whose
 identifier match was outranked, the outranking line sits at a median expression

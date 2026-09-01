@@ -1366,7 +1366,7 @@ directly consequential for how model gains are read.
 | 5 | 0.618 | 7.7% |
 | 6 | 0.625 | 6.4% |
 | 10 | 0.643 | 3.6% |
-| 18 | 0.655 | **1.7%** |
+| 18 | 0.654 | **1.7%** |
 | 45 | 0.666 | 0% |
 
 A model that is **exactly as good in every dataset** would appear ~21% stronger
@@ -1396,6 +1396,55 @@ moves apparent performance by up to a fifth.
 
 See `docs/paper_state_2026.md` for the full reading, including where State's
 setting corroborates our few-shot result (§6) rather than competing with it.
+
+## 25. Two audits: are the numbers current, and did we fall for the same trap twice?
+
+### Every headline number regenerates from current code
+
+After this many corrections — the estimator, the matched null, the
+leave-one-context-out prior, the plate-14 exclusion, the withdrawn mechanism
+claim, the reservoir-sampled bootstrap — the live risk is prose quoting a number
+computed under a superseded code path. Prose does not recompute itself.
+`scripts/audit_numbers.py` recomputes 28 headline quantities from the tables the
+analyses wrote and checks each appears in RESULTS.md or MANUSCRIPT.md.
+
+**28 of 28 now verify.** The first run flagged one: the baseline at 18 contexts
+was written as 0.655 where the table gives 0.654 — a rounding slip, not a stale
+result, and now corrected. The audit is cheap and should be run before any
+submission and after any estimator change.
+
+### The replicate-discarding trap: checked in LINCS and PRISM too
+
+Having been caught once by Tahoe's plate 14 (§14), the obvious question is
+whether the other datasets carry an analogous convention that silently removes
+replicate structure.
+
+**LINCS: the trap exists and we had already avoided it.** Level 5 signatures
+aggregate replicates away — only ~5% of Level 5 conditions retain more than one
+signature — which is why this project uses Level 4, where each well is a separate
+profile and plates provide the replicate axis. Neither phase's `inst_info`
+carries a QC flag that would drop replicates; the gold/quality flags live in
+`sig_info`, which applies to Level 5 and is not used here.
+
+**PRISM: no trap, and an unexpected finding.** PRISM ships
+`passed_str_profiling` for every cell line, and 248 of 1,120 (22%) fail it.
+Short-tandem-repeat profiling is the field's standard molecular test of cell-line
+identity, and we had stated in §23 that no orthogonal identity check was
+available across these datasets. That was wrong — but the check turns out to be
+unusable for a different reason: **all 738 lines with response data pass STR
+profiling.** PRISM excludes failures from the released screen entirely, so there
+is no contrast to test.
+
+That absence is itself informative, and it is not circular. Every cell line in
+the cross-laboratory comparison has been **STR-authenticated by the Broad**, so
+outright misidentification is ruled out as the explanation for the
+reciprocal-best-hit failures of §18. Combined with the expression evidence in
+§23 — the outranking line is a near-random expression neighbour — the remaining
+explanations are metric noise and genuine culture drift *within* correctly
+labelled lines, not mislabelling. This independently supports the correction
+already made rather than reopening it.
+
+Tables: `number_audit.csv`, `str_identity_check.csv`.
 
 ## Reproducing
 
