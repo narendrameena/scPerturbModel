@@ -728,7 +728,7 @@ estimate silently lost the atlas's only source of same-dose replicates.
 | filter | (line, drug, dose) triples | replicated | % |
 |---|---|---|---|
 | all cells | 56,879 | 7,714 | **13.56%** |
-| atlas's own `pass_filter == full` | 56,877 | 7,691 | **13.46%** |
+| atlas's own `pass_filter == full` | 56,877 | 7,691 | **13.52%** |
 | ≥10 cells per plate | 56,395 | 7,366 | **13.06%** |
 | *excluding plate 14* | 56,877 | 3,045 | *5.35%* |
 

@@ -64,8 +64,12 @@ def main():
     t = table("tahoe_replicate_structure.csv")
     if t is not None:
         v = float(t[t["filter"] == "pass_filter == full"].frac_replicated.iloc[0])
+        # two decimals, so the check cannot be satisfied by a rounded form of
+        # the same number appearing elsewhere in the prose -- which is how a
+        # blanket string replacement once corrupted 13.52% to 13.46% while this
+        # audit still passed
         check(rows, "Tahoe replication (atlas QC filter)", round(v, 4),
-              f"{v*100:.1f}%", docs)
+              f"{v*100:.2f}%", docs)
     t = table("tahoe_true_replicates.csv")
     if t is not None:
         tr = t[t.pairing.str.startswith("true replicate")]

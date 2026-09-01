@@ -134,7 +134,7 @@ compounds, included by the authors to demonstrate platform reproducibility. All
 
 Counted from the released metadata with no filtering of ours, **7,691 of 56,877
 triples — 13.5% — sit on more than one plate**, a figure stable across the
-atlas's own quality filter (13.46%) and a ≥10-cells-per-plate requirement
+atlas's own quality filter (13.52%) and a ≥10-cells-per-plate requirement
 (13.06%). Separately, 96.8% of (line, compound) *pairs* span plates, but only
 because different **doses** sit on different plates; those are not replicates.
 
