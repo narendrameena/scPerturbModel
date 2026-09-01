@@ -33,7 +33,8 @@ from perturbmodel.utils import save_figure
 ROOT = Path(__file__).resolve().parent.parent
 FIG = ROOT / "results" / "figures" / "02_baselines"
 TAB = ROOT / "results" / "tables"
-KS = [5, 10, 20, 45]
+KS = [2, 3, 4, 5, 6, 10, 18, 20, 45]   # extended to the context counts used by
+      # published benchmarks (State uses query datasets with 3, 3, 4, 6 and 18)
 N_SEEDS = 3
 BLUE, ORANGE = "#2a78d6", "#eb6834"
 

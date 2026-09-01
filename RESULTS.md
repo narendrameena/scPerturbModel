@@ -1348,6 +1348,51 @@ with an interval that reaches 100% (§20) rather than as a resolved split.
 
 Figure bundle: `results/figures/15_architecture/robustness_interpretation/`.
 
+## 24. Benchmark context count moves apparent model gains by ~20 points
+
+§2 showed the additive baseline improves as it averages more contexts. Extending
+that sweep to the context counts published benchmarks actually use makes it
+directly consequential for how model gains are read.
+
+| contexts averaged | baseline r_de100 | handicap vs a 45-context baseline |
+|---|---|---|
+| 2 | 0.550 | **21.1%** |
+| 3 | 0.592 | 12.4% |
+| 4 | 0.606 | 9.8% |
+| 5 | 0.618 | 7.7% |
+| 6 | 0.625 | 6.4% |
+| 10 | 0.643 | 3.6% |
+| 18 | 0.655 | **1.7%** |
+| 45 | 0.666 | 0% |
+
+A model that is **exactly as good in every dataset** would appear ~21% stronger
+against a baseline built from 2 contexts than against one built from 18, purely
+because the baseline is worse. Nothing about the model changes.
+
+**This bears directly on State** (Adduri et al., *Cell* 2026), the current state
+of the art. Its zero-shot arm holds out one context at a time across five query
+datasets with 3, 3, 4, 6 and 18 contexts, so its perturbation-mean baseline is
+estimated from 2, 2, 3, 5 and 17 contexts respectively. The paper reports "more
+than 19% improvement" on the 18-context dataset and "several-fold improvements"
+on the smallest ones — the same ordering the table above produces from baseline
+quality alone.
+
+**This is a partial confound and is stated as such.** The handicap differential
+between a 2-context and an 18-context baseline is about 19 points, which is real
+and runs in the reported direction, but it does not account for several-fold
+gaps. State is doing something the baseline is not. What follows is narrower and
+still useful: **a portion of the spread in reported improvements across
+benchmarks reflects how many contexts each benchmark's baseline was estimated
+from, not how much better the model is there**, and gains are only comparable
+across benchmarks at matched context counts.
+
+The concrete recommendation is cheap: **benchmarks should report the number of
+contexts behind their mean baseline**, alongside the gain. That single number
+moves apparent performance by up to a fifth.
+
+See `docs/paper_state_2026.md` for the full reading, including where State's
+setting corroborates our few-shot result (§6) rather than competing with it.
+
 ## Reproducing
 
 ```bash

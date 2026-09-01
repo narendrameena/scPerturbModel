@@ -277,11 +277,23 @@ predictive models, and three of the measurements bound directly what such models
 can achieve.
 
 **The baseline they must beat depends on how many contexts it averages.** The
-additive main-effects prediction improves by **10.6%** (r 0.649 → 0.718) when
-estimated from 45 cell lines rather than 5, with everything else held fixed —
-the same order as gains recently attributed to architectural advances evaluated
-on six contexts. A benchmark that subsamples contexts for tractability
-systematically overstates the headroom available.
+perturbation-mean prediction improves monotonically with the number of contexts
+it is estimated from: r = 0.550 at 2 contexts, 0.592 at 3, 0.625 at 6, 0.655 at
+18 and 0.666 at 45. A model that is *equally good everywhere* would therefore
+appear **21% stronger** against a 2-context baseline than against an 18-context
+one.
+
+This is directly relevant to how current results are read. State (Adduri et al.,
+*Cell* 2026) evaluates zero-shot transfer across five query datasets holding out
+one context at a time, so its perturbation-mean baseline is built from 2, 2, 3, 5
+and 17 contexts; the paper reports "more than 19% improvement" on the
+18-context dataset and "several-fold improvements" on the smallest — the ordering
+baseline quality alone produces. We are explicit that this is a **partial**
+confound: a ~19-point differential is real and runs in the reported direction,
+but it does not explain several-fold gaps, and State is evidently doing something
+the baseline is not. The narrower and still useful conclusion is that gains are
+comparable across benchmarks only at matched context counts, and that benchmarks
+should report the number of contexts behind their mean baseline.
 
 **Prediction for an unseen context cannot come from a context descriptor.** No
 line-level feature we tested recovers a new line's interaction — driver
@@ -291,7 +303,10 @@ a property of a *pairing*, and the best available descriptor, baseline
 expression, reaches only ≈9% of it. What does work is measurement: profiling
 roughly **20 arbitrary compounds** in the new line and fine-tuning recovers 98%
 of the achievable gain, and designing that probe panel does not beat choosing it
-at random.
+at random. State reaches the same conclusion from the opposite direction — its
+headline context-generalisation setting supplies each model with 30% of the
+perturbations in the test context, making it an *underrepresented* rather than
+unseen context — so the two results corroborate each other.
 
 **The ceiling on cross-atlas training is 56–87% of an assay's own
 reproducibility.** A model trained on one atlas and applied to another is
