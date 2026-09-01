@@ -10,7 +10,7 @@ tool.
 > **Revision note (2026-08-31).** An earlier draft of this manuscript was titled
 > *"Transcriptional drug response transfers between cellular contexts to a degree
 > set by drug mechanism."* That framing has been withdrawn. The mechanism ranking
-> is significant within Tahoe-100M (P = 8.7×10⁻⁴) but does **not** reproduce
+> is significant within Tahoe-100M (P = 6.0×10⁻⁴) but does **not** reproduce
 > against LINCS phase 1 (ρ = +0.09) or PRISM viability (ρ = −0.09 over 67
 > classes, a well-powered null). The earlier supporting value of ρ = +0.56 was
 > produced by a biased per-perturbation estimator and does not survive its
@@ -175,7 +175,7 @@ is therefore only comparable at matched dose.
 ### Transcriptional and viability context-dependence are decoupled
 
 With every dataset on one corrected estimator, mechanism structures
-context-dependence *within* Tahoe (Kruskal–Wallis *P* = 8.7×10⁻⁴ across 24
+context-dependence *within* Tahoe (Kruskal–Wallis *P* = 6.0×10⁻⁴ across 24
 classes) but the ordering does not transfer: ρ = +0.09 (n.s.) against LINCS phase
 1 and **ρ = −0.09 against PRISM viability over 67 shared classes — a well-powered
 null**. A drug whose transcriptional response is highly line-specific is not

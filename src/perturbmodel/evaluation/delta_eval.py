@@ -1,7 +1,8 @@
 """Shared pseudobulk-delta construction, additive priors, and metrics.
 
 Single source of truth for Phase 2/3 model comparisons: identical deltas
-(log1p CPM-1e6, plate-matched, cell-weighted, plate14 excluded), identical
+(log1p CPM-1e6, plate-matched, cell-weighted, ALL plates by default),
+identical
 gene sets, identical metrics. Mirrors scripts/eval_baselines.py conventions.
 """
 from __future__ import annotations
@@ -27,7 +28,7 @@ def load_pseudobulk(pb_dir: str | Path):
 
 def build_deltas(X: np.ndarray, cond: pd.DataFrame,
                  min_cells: int = MIN_CELLS,
-                 exclude_plates: tuple = ("plate14",),
+                 exclude_plates: tuple = (),
                  keep_plate: bool = False):
     """Plate-matched, cell-weighted deltas per (line, drug, conc) triple.
 
@@ -39,6 +40,27 @@ def build_deltas(X: np.ndarray, cond: pd.DataFrame,
     to test whether within-(line, drug) agreement is inflated by shared plate
     effects rather than real biology.
     """
+    # Excluding plates is now opt-in and warns, because the default used to be
+    # ("plate14",) -- inherited from the atlas authors, who withhold plate 14
+    # from TRAINING because it is a designed biological replicate of plate 6.
+    # That is correct for fitting a model and wrong for measuring replicate
+    # agreement: it removes the atlas's only same-dose replicates and drops
+    # replication from 13.5% of conditions to 5.4%, after which the interaction
+    # can only be estimated from cross-dose pairs, which inflates it ~2x.
+    if exclude_plates:
+        import warnings as _w
+        dropped = cond[cond.plate.isin(exclude_plates)]
+        if len(dropped):
+            tri = ["cell_line_id", "drug", "conc"]
+            kept = cond[~cond.plate.isin(exclude_plates)]
+            lost = (len(dropped.groupby(tri).size())
+                    - len(kept.merge(dropped[tri].drop_duplicates(),
+                                     on=tri).groupby(tri).size()))
+            _w.warn(
+                f"excluding plates {exclude_plates} removes "
+                f"{len(dropped)} conditions; if any is a replicate plate this "
+                f"destroys the same-dose replicate structure the interaction "
+                f"estimate depends on (see RESULTS.md §14).", stacklevel=2)
     cond = cond[~cond.plate.isin(exclude_plates)]
     ctrl = cond[(cond.drug == "DMSO_TF") & (cond.n_cells >= min_cells)]
     ctrl_idx = {(r.cell_line_id, r.plate): r.row for r in ctrl.itertuples()}

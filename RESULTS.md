@@ -80,7 +80,7 @@ differentially expressed genes.
 
 **Scope limits discovered by replication.**
 12. **The mechanism ranking does not reproduce outside Tahoe.** It is solid
-    *within* Tahoe (Kruskal–Wallis p = 8.7×10⁻⁴ across 24 mechanisms) but gives
+    *within* Tahoe (Kruskal–Wallis p = 6.0×10⁻⁴ across 24 mechanisms) but gives
     rho = +0.09 (n.s.) against LINCS phase 1 and −0.09 against PRISM viability
     over 67 classes — a well-powered null. An earlier +0.56 was an artefact of a
     biased estimator and is withdrawn (§12, §16).
@@ -258,7 +258,7 @@ of reproducible programs**, not a single "some lines die more" axis.
 ## 5. What *is* predictable: context-dependence is set by the drug's mechanism
 
 > **Scope narrowed by §16.** This ranking is significant *within* Tahoe
-> (Kruskal–Wallis p = 8.7×10⁻⁴) but does not reproduce against LINCS phase 1 or
+> (Kruskal–Wallis p = 6.0×10⁻⁴) but does not reproduce against LINCS phase 1 or
 > PRISM. Read it as a within-atlas result.
 `results/figures/10_drugs/`
 
@@ -682,7 +682,11 @@ response (0.213 → 0.370, +74%, versus 0.269 → 0.366, +36%) — which is *why
 ratio rises. LINCS shows no collapse, consistent with the collapse being a
 consequence of mass killing rather than of dose as such.
 
-**Tahoe cannot resolve this** and should not be quoted on it. Its three
+**Tahoe cannot resolve this** and should not be quoted on it — a point since
+strengthened: with the replicate plate restored (§14) the within-drug alignment
+trend loses significance entirely (p = 0.11, was p = 9×10⁻⁹ when computed on the
+plate-14-excluded build), confirming that the apparent Tahoe dose signal was an
+artefact of the pairing rather than a weak real effect. Its three
 concentrations (0.05 / 0.5 / 5 uM) produce almost identical shared-response
 magnitude (0.047 / 0.048 / 0.054), so there is no gradient to read; splitting by
 concentration also leaves too few cross-plate replicate pairs per (drug, dose)
@@ -835,7 +839,7 @@ narrows sharply.
 
 | comparison | shared classes | rho |
 |---|---|---|
-| within Tahoe (Kruskal–Wallis across mechanisms) | 24 | H = 50.2, **p = 8.7×10⁻⁴** |
+| within Tahoe (Kruskal–Wallis across mechanisms) | 24 | H = 50.2, **p = 6.0×10⁻⁴** |
 | Tahoe vs LINCS phase 1 | 10 | **+0.09** (p = 0.80) |
 | Tahoe vs PRISM viability | 11 | −0.18 (n.s.) |
 | LINCS phase 1 vs PRISM viability | 67 | −0.09 (n.s.) |

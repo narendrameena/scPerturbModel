@@ -521,9 +521,79 @@ def figure5():
                  "expression_identity": EI if EI is not None else pd.DataFrame()}
 
 
+# ---------------------------------------------------------------- figure 6
+def figure6():
+    """Benchmark design: what the measurements imply for how models are read."""
+    A = read("additive_vs_n_lines.csv")
+    FS = read("few_shot_eval_dev47ft.csv")
+    fig, ax = plt.subplots(1, 3, figsize=(14, 4.1), constrained_layout=True)
+
+    # a: baseline quality vs the number of contexts it averages
+    if A is not None and len(A):
+        g = A.groupby("k").r_de100.agg(["mean", "std"])
+        ax[0].errorbar(g.index, g["mean"], yerr=g["std"] / np.sqrt(len(A) /
+                       len(g)), fmt="o-", color=BLUE, lw=2, ms=5, capsize=3)
+        ax[0].set_xscale("log")
+        ax[0].set_xlabel("contexts averaged by the mean baseline")
+        ax[0].set_ylabel("baseline $r_{de100}$")
+        # mark where published benchmarks sit
+        for n, lab in ((2, "State query\ndatasets (2-3)"), (17, "Parse-PBMC\n(17)")):
+            ax[0].axvline(n, color=ORANGE, ls=":", lw=1.3)
+        ax[0].annotate("State query datasets leave\n2-5 contexts in the "
+                       "baseline", (2.1, g["mean"].min()), fontsize=6.2,
+                       color=ORANGE, va="bottom")
+        panel(ax[0], "a", "The baseline improves with context count")
+
+        # b: what that costs, as apparent model gain
+        ref = g.loc[g.index.max(), "mean"]
+        hand = (ref - g["mean"]) / g["mean"] * 100
+        cols_ = [ORANGE if k <= 6 else BLUE for k in g.index]
+        ax[1].bar(np.arange(len(g)), hand.to_numpy(), width=0.62, color=cols_)
+        ax[1].set_xticks(np.arange(len(g)), [str(int(k)) for k in g.index],
+                         fontsize=7.5)
+        for i_, v in enumerate(hand.to_numpy()):
+            if v > 0.5:
+                ax[1].text(i_, v + 0.4, f"{v:.0f}%", ha="center", fontsize=7)
+        ax[1].set_xlabel("contexts averaged by the baseline")
+        ax[1].set_ylabel("apparent gain of an unchanged model (%)")
+        ax[1].text(0.97, 0.95, "a model equally good everywhere\nlooks 21% "
+                   "better at 2 contexts\nthan at 18", transform=ax[1].transAxes,
+                   ha="right", va="top", fontsize=6.4, color="#444")
+        panel(ax[1], "b", "Benchmark context count inflates gains")
+
+    # c: what actually makes a new context predictable
+    if FS is not None and len(FS):
+        base = float(FS[FS.strategy == "additive"].r_de100.mean())
+        g2 = (FS[FS.strategy == "random"].groupby("k").r_de100.mean()
+              .reindex([1.0, 5.0, 20.0]))
+        full = float(FS[FS.k == -1.0].r_de100.mean())
+        ax[2].axhline(base, color=GREY, ls="--", lw=1.4,
+                      label="additive baseline")
+        ax[2].axhline(full, color=AQUA, ls=":", lw=1.6,
+                      label="all compounds (ceiling)")
+        ax[2].plot(g2.index, g2.to_numpy(), "o-", color=VIOLET, lw=2, ms=6,
+                   label="random probe compounds")
+        gain = (g2 - base) / (full - base) * 100
+        for x_, v in zip(g2.index, gain):
+            if np.isfinite(v):
+                ax[2].annotate(f"{v:.0f}% of achievable", (x_, g2[x_]),
+                               fontsize=6.3, xytext=(4, -14),
+                               textcoords="offset points")
+        ax[2].set_xlabel("probe compounds measured in the new context")
+        ax[2].set_ylabel("$r_{de100}$")
+        ax[2].legend(frameon=False, fontsize=7)
+        panel(ax[2], "c", "Measurement, not description, transfers")
+    fig.suptitle("Figure 6 — How benchmark design shapes apparent model "
+                 "performance", fontsize=10.5, x=0.005, ha="left",
+                 fontweight="bold")
+    return fig, {"baseline_scaling": A if A is not None else pd.DataFrame(),
+                 "few_shot": FS if FS is not None else pd.DataFrame()}
+
+
 def main():
     FIG.mkdir(parents=True, exist_ok=True)
-    for i, fn in enumerate((figure1, figure2, figure3, figure4, figure5), 1):
+    for i, fn in enumerate((figure1, figure2, figure3, figure4, figure5,
+                            figure6), 1):
         fig, src = fn()
         d = save_figure(fig, f"fig{i}", FIG, source_data=src, script=__file__)
         plt.close(fig)
