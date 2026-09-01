@@ -351,7 +351,10 @@ def figure4():
     R = read("cross_lab_reproducibility.csv")
     S = read("cross_lab_summary.csv")
     ID = read("cross_lab_identity_viability.csv")
-    fig, ax = plt.subplots(1, 4, figsize=(17.5, 4.0), constrained_layout=True)
+    TX = read("cross_lab_transcription.csv")
+    ncol = 5 if (TX is not None and len(TX)) else 4
+    fig, ax = plt.subplots(1, ncol, figsize=(4.4 * ncol, 4.0),
+                           constrained_layout=True)
     getv = (lambda q: float(S.set_index("quantity").value.get(q, np.nan))) \
         if S is not None else (lambda q: np.nan)
 
@@ -441,6 +444,34 @@ def figure4():
                 ax[3].set_ylabel("cross-lab Spearman r")
                 ax[3].set_xlabel("strength of the line-specific component")
     panel(ax[3], "d", "Strong signal transfers; weak does not")
+
+    # e: the same measurement for a transcriptional readout, which is what
+    # makes the result a property of laboratories rather than of a killing assay
+    if TX is not None and len(TX):
+        wl = TX[TX.comparison.str.contains("within-lab", na=False)
+                & ~TX.comparison.str.contains("validated", na=False)]
+        xl = TX[TX.comparison.str.contains("Tahoe vs LINCS", na=False)
+                & ~TX.comparison.str.contains("validated", na=False)]
+        d_ = [wl.r.dropna(), xl.r.dropna()]
+        bp2 = ax[4].boxplot(d_, showfliers=False, patch_artist=True,
+                            medianprops=dict(color="black", lw=1.5))
+        for pch, c in zip(bp2["boxes"], [AQUA, ORANGE]):
+            pch.set_facecolor(c); pch.set_alpha(0.8)
+        for i_, dd in enumerate(d_):
+            if len(dd):
+                ax[4].text(i_ + 1, np.median(dd) + 0.006,
+                           f"{np.median(dd):.3f}", ha="center", fontsize=8,
+                           fontweight="bold")
+        ax[4].axhline(0, color="#444", lw=0.9)
+        ax[4].set_xticks([1, 2], ["within lab\n(LINCS p1 vs p2)",
+                                  "cross lab\n(Tahoe vs LINCS)"], fontsize=7)
+        ax[4].set_ylabel("residual-profile r")
+        if len(d_[0]) and len(d_[1]):
+            fr = np.median(d_[1]) / np.median(d_[0])
+            ax[4].text(0.5, 0.93, f"{fr:.0%} of ceiling\n(viability: 56%)",
+                       transform=ax[4].transAxes, ha="center", fontsize=7.2,
+                       color="#444")
+        panel(ax[4], "e", "Transcription gives the same answer")
     fig.suptitle("Figure 4 — Cell-line identity, not protocol, limits "
                  "cross-laboratory reproducibility", fontsize=10.5, x=0.005,
                  ha="left", fontweight="bold")

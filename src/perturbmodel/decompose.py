@@ -47,7 +47,7 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 
-__all__ = ["decompose", "Decomposition"]
+__all__ = ["decompose", "Decomposition", "find_replicate_batches"]
 
 MIN_PAIRS_GLOBAL = 30
 MIN_PAIRS_PER_PERT = 25
@@ -63,6 +63,46 @@ def _corr_rows(A: np.ndarray, B: np.ndarray) -> np.ndarray:
     B = B - B.mean(1, keepdims=True)
     d = np.linalg.norm(A, axis=1) * np.linalg.norm(B, axis=1)
     return np.where(d > 0, (A * B).sum(1) / np.where(d > 0, d, 1), np.nan)
+
+
+def find_replicate_batches(obs, context: str, perturbation: str,
+                           batch: str, dose: Optional[str] = None,
+                           min_jaccard: float = 0.5):
+    """Detect batches that are near-duplicates of one another.
+
+    A "replicate plate" is a batch whose set of (context, perturbation, dose)
+    conditions substantially repeats another batch's. Atlases build these
+    deliberately -- Tahoe-100M's plate 14 duplicates plate 6 across 50 lines and
+    95 drugs -- and then commonly withhold them from model training, after which
+    downstream pipelines inherit the exclusion and lose the only same-dose
+    replicates in the dataset. That is not hypothetical: it is the mistake this
+    package itself shipped with.
+
+    Returns a DataFrame of batch pairs with their Jaccard overlap and the number
+    of shared conditions, most overlapping first.
+    """
+    keys = [context, perturbation] + ([dose] if dose else [])
+    sets = {b: set(map(tuple, g[keys].drop_duplicates().to_numpy()))
+            for b, g in obs.groupby(batch, observed=True)}
+    rows = []
+    names = sorted(sets)
+    for i in range(len(names)):
+        for j in range(i + 1, len(names)):
+            a, b = sets[names[i]], sets[names[j]]
+            if not a or not b:
+                continue
+            inter = len(a & b)
+            jac = inter / len(a | b)
+            if jac >= min_jaccard:
+                rows.append({"batch_a": names[i], "batch_b": names[j],
+                             "shared_conditions": inter,
+                             "jaccard": round(jac, 3),
+                             "frac_of_a": round(inter / len(a), 3),
+                             "frac_of_b": round(inter / len(b), 3)})
+    return (pd.DataFrame(rows).sort_values("jaccard", ascending=False)
+            if rows else pd.DataFrame(
+                columns=["batch_a", "batch_b", "shared_conditions", "jaccard",
+                         "frac_of_a", "frac_of_b"]))
 
 
 @dataclass
@@ -275,6 +315,20 @@ def decompose(adata, context: str, perturbation: str, control,
                     continue
                 cov += float(np.mean(R[v[a]] * R[v[b]])); n += 1
         return (cov / n) if n else 0.0, n
+
+    # Flag deliberate replicate batches, since losing them is the single most
+    # consequential processing mistake for this estimate.
+    rep_pairs = find_replicate_batches(obs, "ctx", "pert", bat,
+                                       dcol if dose else None)
+    if len(rep_pairs):
+        top = rep_pairs.iloc[0]
+        warnings.append(
+            f"{len(rep_pairs)} batch pair(s) look like designed replicates, "
+            f"strongest {top.batch_a} / {top.batch_b} (Jaccard "
+            f"{top.jaccard}, {top.shared_conditions} shared conditions). "
+            f"These carry the same-dose replication this estimate depends on; "
+            f"do not exclude them when measuring, even if they are held out of "
+            f"model training.")
 
     cov, npair = pair_cov(same_batch=False)
     offset, n_null = null_cov()

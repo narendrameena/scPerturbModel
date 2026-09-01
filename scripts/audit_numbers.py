@@ -109,6 +109,18 @@ def main():
                 check(rows, claim, round(float(d[key]), 4),
                       fmt.format(d[key]), docs)
 
+    # --- transcription cross-lab arm (added after a stale value slipped in
+    # when the sciPlex3 rows were pooled into the headline by accident) ------
+    tx = table("cross_lab_transcription.csv")
+    if tx is not None and len(tx):
+        wl = tx[tx.comparison.str.contains("within-lab")
+                & ~tx.comparison.str.contains("validated")].r.median()
+        xl = tx[tx.comparison.str.contains("Tahoe vs LINCS")
+                & ~tx.comparison.str.contains("validated")].r.median()
+        if np.isfinite(wl) and wl > 0:
+            check(rows, "transcription reproducible fraction",
+                  round(float(xl / wl), 3), f"{xl/wl*100:.0f}%", docs)
+
     # --- predictor blocks --------------------------------------------------
     e = table("expression_architecture.csv")
     if e is not None:

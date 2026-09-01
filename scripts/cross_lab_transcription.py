@@ -364,8 +364,14 @@ def main():
     print("\n=== residual-profile correlation per (line, compound) ===")
     print(S.round(3).to_string())
 
-    within = R[R.comparison.str.contains("within-lab")].r.median()
-    cross = R[R.comparison.str.contains("CROSS-LAB")].r.median()
+    # The headline fraction must be built the same way as the viability arm:
+    # non-identity-validated rows only, and excluding sciPlex3, whose three
+    # contexts make its leave-one-context-out residual a different quantity
+    # (see RESULTS.md 23). Pooling those rows in silently moved this number.
+    within = R[R.comparison.str.contains("within-lab")
+               & ~R.comparison.str.contains("validated")].r.median()
+    cross = R[R.comparison.str.contains("Tahoe vs LINCS")
+              & ~R.comparison.str.contains("validated")].r.median()
     if np.isfinite(within) and np.isfinite(cross) and within > 0:
         print(f"\nwithin-lab (Broad, p1 vs p2): {within:.3f}")
         print(f"cross-lab (Tahoe vs LINCS):   {cross:.3f}")

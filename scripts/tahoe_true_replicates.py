@@ -168,6 +168,47 @@ def main():
     R.to_csv(TAB / "tahoe_true_replicates.csv", index=False)
 
     # does the cross-dose pair attenuate with dose separation, as predicted?
+    # Split-half validation. The 11.5% rests on a single plate pair, so it needs
+    # a check that it is not driven by a subset of drugs or lines. Splitting the
+    # pairs by drug and by line and re-estimating on each half asks whether the
+    # number is a property of the data or of a few conditions.
+    print("\nsplit-half validation of the true-replicate estimate:")
+    keyinfo = K.set_index("i")
+    for axis in ("drug", "line"):
+        vals = sorted(K[axis].unique())
+        hs_list = [("half A", set(vals[::2])), ("half B", set(vals[1::2]))]
+        got = []
+        for name, hs in hs_list:
+            cov_, n_ = 0.0, 0
+            for (line, drug), g in K.groupby(["line", "drug"], observed=True):
+                if (drug if axis == "drug" else line) not in hs:
+                    continue
+                v = [x for x in g.i.to_numpy() if x in resid]
+                sub = g.set_index("i")
+                for a_ in range(len(v)):
+                    for b_ in range(a_ + 1, len(v)):
+                        if sub.plate[v[a_]] == sub.plate[v[b_]]:
+                            continue
+                        if sub.conc[v[a_]] != sub.conc[v[b_]]:
+                            continue
+                        cov_ += float(np.mean(resid[v[a_]] * resid[v[b_]]))
+                        n_ += 1
+            if n_ >= 200:
+                inter_ = cov_ / n_ - off
+                sh = max(inter_, 0) / (shared + max(inter_, 0))
+                got.append((name, n_, sh))
+        if len(got) == 2:
+            print(f"  by {axis:5s}  {got[0][0]}: {got[0][2]:.1%} "
+                  f"(n={got[0][1]:,})   {got[1][0]}: {got[1][2]:.1%} "
+                  f"(n={got[1][1]:,})   difference "
+                  f"{abs(got[0][2]-got[1][2]):.1%}")
+    print("  Read the two axes differently. Agreement across LINE halves says "
+          "the estimate\n  does not depend on which cell lines are used. "
+          "Disagreement across DRUG halves\n  is expected and is not "
+          "instability: compounds genuinely differ in how "
+          "context-\n  dependent they are (RESULTS.md 5), so the pooled figure "
+          "is a mean over a wide\n  distribution rather than a constant.")
+
     print("\nattenuation check: cross-dose covariance by dose gap")
     gaps = []
     for (line, drug), g in K.groupby(["line", "drug"], observed=True):

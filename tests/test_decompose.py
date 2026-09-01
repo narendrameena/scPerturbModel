@@ -69,3 +69,31 @@ def test_rejects_missing_control():
     with pytest.raises(ValueError):
         decompose(synth(), context="ctx", perturbation="pert",
                   control="NOT_A_CONTROL", replicate="rep", n_genes=200)
+
+
+def test_detects_a_designed_replicate_batch():
+    """A batch that repeats another's conditions should be flagged.
+
+    This is the failure that cost this project its headline number: Tahoe's
+    plate 14 duplicates plate 6, is withheld from training by convention, and
+    was therefore dropped by our own default -- which removed every same-dose
+    replicate and doubled the apparent interaction share.
+    """
+    from perturbmodel.decompose import find_replicate_batches
+    a = synth(n_ctx=4, n_pert=6, n_rep=2)
+    obs = a.obs.copy()
+    # rep r0/r1 measure the same ctx x pert conditions, so they are replicates
+    found = find_replicate_batches(obs, "ctx", "pert", "rep")
+    assert len(found) >= 1
+    assert found.jaccard.iloc[0] > 0.9
+
+
+def test_no_false_replicate_when_batches_are_disjoint():
+    import pandas as pd
+    from perturbmodel.decompose import find_replicate_batches
+    a = synth(n_ctx=4, n_pert=6, n_rep=2)
+    obs = a.obs.copy()
+    # give each replicate its own disjoint perturbation set
+    obs.loc[obs.rep == "r0", "pert"] = obs.loc[obs.rep == "r0", "pert"] + "_A"
+    obs.loc[obs.rep == "r1", "pert"] = obs.loc[obs.rep == "r1", "pert"] + "_B"
+    assert len(find_replicate_batches(obs, "ctx", "pert", "rep")) == 0

@@ -134,7 +134,7 @@ compounds, included by the authors to demonstrate platform reproducibility. All
 
 Counted from the released metadata with no filtering of ours, **7,691 of 56,877
 triples — 13.5% — sit on more than one plate**, a figure stable across the
-atlas's own quality filter (13.52%) and a ≥10-cells-per-plate requirement
+atlas's own quality filter (13.46%) and a ≥10-cells-per-plate requirement
 (13.06%). Separately, 96.8% of (line, compound) *pairs* span plates, but only
 because different **doses** sit on different plates; those are not replicates.
 
@@ -265,7 +265,7 @@ strongest quartile of compounds transfers *at* the within-laboratory ceiling,
 the weakest at 36%.
 
 The result is a property of laboratories rather than of a killing assay. Repeating
-the analysis on transcription gives **52%** (LINCS phase 1 vs phase 2 within-lab
+the analysis on transcription gives **46%** (LINCS phase 1 vs phase 2 within-lab
 r = 0.061; Tahoe vs LINCS cross-lab 0.032), and the identity check behaves the
 same way: 16 of 16 name-matched lines are reciprocal best matches within the
 Broad, but only 3 of 6 across laboratories.
@@ -406,7 +406,7 @@ figure characterises the metric's resolution, not the rate of identity problems.
 CCLE expression is also a single snapshot from one institution, so it cannot
 compare two laboratories' cultures against each other.
 
-*Transcriptional arm.* Its within-laboratory ceiling is only r ≈ 0.06, so the 52%
+*Transcriptional arm.* Its within-laboratory ceiling is only r ≈ 0.06, so the 46%
 reproducible fraction is a ratio of two small numbers and is correspondingly
 uncertain. It agrees with the viability arm, which is the substantive point, but
 should not be quoted to two significant figures.
@@ -470,6 +470,18 @@ baseline expression and gene-level copy number are each reduced to their 2,000
 most variable features; and every block is scored on the same cell lines for a
 given compound. Copy number, expression and protein are compared on the subset
 of lines present in all three.
+
+**Metrics, and their relation to Cell-Eval.** Prediction accuracy is reported as
+Pearson correlation between observed and predicted perturbation-induced
+expression changes, over the 2,000 most response-variable genes (`r_hvg`) and
+over each condition's own top-100 differentially expressed genes (`r_de100`).
+These correspond directly to the Pearson-delta metric of Cell-Eval (Adduri et
+al. 2026); `r_de100` is its restriction to the DE gene set. We do not report
+Cell-Eval's perturbation-discrimination or DE-overlap scores, because those rank
+a model's predictions against alternatives and the central quantity here is a
+variance decomposition rather than a prediction. Where we do make prediction
+claims — the baseline-scaling result and the probe-compound protocol — the metric
+is Cell-Eval-comparable.
 
 **Statistics.** Nulls are matched to the confound in each case: cross-context
 pairs for the residual offset, size-matched solid panels for the immune

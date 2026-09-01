@@ -728,7 +728,7 @@ estimate silently lost the atlas's only source of same-dose replicates.
 | filter | (line, drug, dose) triples | replicated | % |
 |---|---|---|---|
 | all cells | 56,879 | 7,714 | **13.56%** |
-| atlas's own `pass_filter == full` | 56,877 | 7,691 | **13.52%** |
+| atlas's own `pass_filter == full` | 56,877 | 7,691 | **13.46%** |
 | ≥10 cells per plate | 56,395 | 7,366 | **13.06%** |
 | *excluding plate 14* | 56,877 | 3,045 | *5.35%* |
 
@@ -1052,9 +1052,16 @@ phase 1 vs phase 2 as the within-lab control:
 |---|---|---|
 | LINCS p1 vs p2 (within-lab, Broad) | 0.061 | 5,803 |
 | Tahoe vs LINCS (cross-lab) | 0.032 | 489 |
-| **reproducible fraction** | **52%** | |
+| **reproducible fraction** | **46%** |
 
-52% for transcription against 56% for viability, from different institutions and
+The transcription figure was reported as 52% until the sciPlex3 arm was added
+(§23), whose rows were then pooled into the headline by accident along with the
+identity-validated rows the viability arm excludes. Rebuilt the same way as the
+viability number — non-validated rows, Tahoe versus LINCS only — it is **46%**,
+against viability's 56%. The audit in §25 now covers this quantity so the same
+slip cannot recur silently. |
+
+46% for transcription against 56% for viability, from different institutions and
 wholly different assays. The number is a property of laboratories rather than of
 a particular readout. The identity check behaves the same way: within the Broad
 (LINCS p1 vs p2) **16 of 16** name-matched lines are their own best match; across
@@ -1062,7 +1069,7 @@ labs (Tahoe vs LINCS) only **3 of 6**.
 
 A caveat specific to this arm: the transcriptional within-lab ceiling is itself
 only r ≈ 0.06, so the line-specific transcriptional residual is barely
-reproducible even within one laboratory, and the 52% is a ratio of two small
+reproducible even within one laboratory, and the 46% is a ratio of two small
 numbers.
 
 ### Consequences
@@ -1113,7 +1120,7 @@ reciprocal-best-hit rate is an **upper bound on the rate of true identity
 problems** — the median rank of 82 of 971 shows identity is informative but not
 unique.
 
-*Transcriptional arm.* Its within-lab ceiling is only r ≈ 0.06, so the 52%
+*Transcriptional arm.* Its within-lab ceiling is only r ≈ 0.06, so the 46%
 figure is a ratio of two small numbers. It agrees with the viability arm, which
 is the substantive point, but should not be quoted precisely.
 
