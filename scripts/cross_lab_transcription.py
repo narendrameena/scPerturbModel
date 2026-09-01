@@ -215,6 +215,43 @@ def identity_check(a, ga, b, gb, label, min_cpd=8):
     return M, rows
 
 
+def load_sciplex(path):
+    """sciPlex3 (Srivatsan et al., Trapnell lab) as a THIRD laboratory.
+
+    Tahoe and LINCS are two institutions; a third is what turns a comparison
+    into a trend. sciPlex3 shares A549, K562 and MCF7 with LINCS and uses a
+    different technology again (nuclear hashing rather than L1000), so
+    agreement across it is not attributable to a shared platform.
+    """
+    import anndata as ad
+    a = ad.read_h5ad(path)
+    obs = a.obs.copy()
+    obs["k"] = obs.perturbation.astype(str).map(norm)
+    obs["cl"] = obs.cell_line.astype(str).map(norm)
+    obs = obs[(obs.cl != "nan") & (obs.k != "nan") & (obs.k != "")]
+    X = np.asarray(a.X.todense()) if hasattr(a.X, "todense") else np.asarray(a.X)
+    X = X[obs.index.map(lambda i: a.obs.index.get_loc(i)).to_numpy()]
+    tot = X.sum(1, keepdims=True)
+    X = np.log1p(X / np.where(tot > 0, tot, 1) * 1e6).astype(np.float32)
+    genes = np.array([str(g) for g in a.var_names])
+    out = {}
+    for k, gg in obs.groupby("k", observed=True):
+        by_line = {}
+        for cl, gl in gg.groupby("cl", observed=True):
+            ii = [obs.index.get_loc(i) for i in gl.index]
+            by_line[cl] = X[ii].mean(0)
+        if len(by_line) < 2:
+            continue
+        names = list(by_line)
+        A = np.stack([by_line[c] for c in names])
+        tot_ = A.sum(0)
+        for j, c in enumerate(names):
+            out[(c, k)] = A[j] - (tot_ - A[j]) / (len(names) - 1)
+    print(f"  sciPlex3: {len({k[0] for k in out})} lines, "
+          f"{len({k[1] for k in out})} compounds", flush=True)
+    return out, genes
+
+
 def compare(a, ga, b, gb, label, allowed=None):
     """Correlate residual profiles on the shared genes, per (line, compound)."""
     ia = {g: i for i, g in enumerate(ga)}
@@ -288,6 +325,17 @@ def main():
                             f"identity-validated)", allowed=okx)
     except Exception as e:
         print(f"  Tahoe arm unavailable: {e}")
+
+    sp_path = ROOT / "data/external/scperturb/sciplex3_pseudobulk.h5ad"
+    if sp_path.exists():
+        print("loading sciPlex3 (third laboratory) ...", flush=True)
+        try:
+            sp, gsp = load_sciplex(sp_path)
+            for store, gg, tag in ((p1, g1, "p1"), (p2, g2, "p2")):
+                rows += compare(sp, gsp, store, gg,
+                                f"sciPlex3 vs LINCS {tag} (CROSS-LAB)")
+        except Exception as e:
+            print(f"  sciPlex3 arm unavailable: {e}")
 
     R = pd.DataFrame(rows)
     if not len(R):

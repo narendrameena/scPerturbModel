@@ -270,6 +270,42 @@ r = 0.061; Tahoe vs LINCS cross-lab 0.032), and the identity check behaves the
 same way: 16 of 16 name-matched lines are reciprocal best matches within the
 Broad, but only 3 of 6 across laboratories.
 
+### What the measurements imply for models
+
+The results above are measurements, but the audience for them is building
+predictive models, and three of the measurements bound directly what such models
+can achieve.
+
+**The baseline they must beat depends on how many contexts it averages.** The
+additive main-effects prediction improves by **10.6%** (r 0.649 → 0.718) when
+estimated from 45 cell lines rather than 5, with everything else held fixed —
+the same order as gains recently attributed to architectural advances evaluated
+on six contexts. A benchmark that subsamples contexts for tractability
+systematically overstates the headroom available.
+
+**Prediction for an unseen context cannot come from a context descriptor.** No
+line-level feature we tested recovers a new line's interaction — driver
+mutations, tissue, baseline transcriptome, DNA methylation — and §17 explains
+why the search was ill-posed rather than merely underpowered: the interaction is
+a property of a *pairing*, and the best available descriptor, baseline
+expression, reaches only ≈9% of it. What does work is measurement: profiling
+roughly **20 arbitrary compounds** in the new line and fine-tuning recovers 98%
+of the achievable gain, and designing that probe panel does not beat choosing it
+at random.
+
+**The ceiling on cross-atlas training is 56–87% of an assay's own
+reproducibility.** A model trained on one atlas and applied to another is
+predicting a quantity that transfers at just over half the within-laboratory
+ceiling if cell lines are matched by identifier, and close to the ceiling if
+identity is verified from the data first. Weighting compounds by the strength of
+their line-specific component matters as much: the strongest quartile transfers
+at the ceiling, the weakest at a third of it, so pooling atlases without such a
+weighting spends most of its capacity on the compounds that transfer least.
+
+Together these say the binding constraints are experimental rather than
+architectural — context count, replication, and identity verification — which is
+why this paper measures rather than models.
+
 ---
 
 ## Discussion
@@ -313,6 +349,20 @@ simply a noisy line-specific signal — we can bound but not resolve.
 
 *Design.* These are computational analyses of existing data, with no new
 experiments and no prospective validation.
+
+*Only two laboratories.* Every cross-laboratory result rests on the Broad and the
+Sanger. A third was attempted twice and not achieved: NCI-60 is unreachable
+without a browser session and CTRP's portal is retired, while sciPlex3 — a
+genuine third institution sharing three cell lines with LINCS — has too few
+contexts for the estimator, since its leave-one-context-out shared response is a
+mean of two lines against LINCS's mean of sixty-nine. This is the single most
+valuable thing new data could add, and it is why the laboratory-versus-assay
+apportionment is quoted with an interval that reaches 100%.
+
+*What expression predicts is not a programme.* The 9% is carried diffusely — 751
+of 2,000 genes hold half the ridge weight, and no gene set among 5,457 survives
+correction — so the predictor tracks global transcriptional state rather than an
+interpretable mechanism.
 
 *Laboratory versus assay.* PRISM and GDSC differ in institution and in assay, so
 neither is isolated by that comparison alone. We apportion them using GDSC1

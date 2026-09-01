@@ -1279,6 +1279,75 @@ dose the spread survives while its reproducibility does not.
 
 Figure bundle: `results/figures/13_prism/dose_mechanism/`.
 
+## 23. Remaining gaps closed, and one that could not be
+
+### The identity criterion is not a threshold artefact (gap 5)
+
+The 87% figure retains only 25 of 488 lines, so it could have been an artefact of
+the arbitrary "must be its own single best match" cut. Relaxing that cut, with
+identity still selected on one half of the compounds and scored on the disjoint
+other half:
+
+| criterion | lines retained | cross-lab r | % of ceiling |
+|---|---|---|---|
+| rank 1 (best match) | 25 | 0.397 | **87%** |
+| top 2% | 139 | 0.337 | 74% |
+| top 5% | 198 | 0.334 | 73% |
+| top 10% | 262 | 0.312 | 69% |
+| top 25% | 367 | 0.299 | 66% |
+| all identifier-matched | 488 | 0.270 | 59% |
+
+The relationship is **perfectly monotone** (ρ = −1.00 against stringency rank).
+The criterion is therefore measuring something real and the cut is a
+precision-versus-coverage trade-off, not a lucky threshold. It also yields a more
+practical operating point than the one we first reported: **"top 5%" keeps 198
+lines — eight times as many — and still recovers 73% of the ceiling.**
+
+### What baseline expression actually uses (gap 8)
+
+§17 shows expression predicts the interaction where genotype does not, but not
+what carries the signal. Fitting ridge weights per compound and pooling across
+100 compounds:
+
+- **The weight is diffuse.** 751 of 2,000 genes carry half the total weight and
+  1,680 carry 90% — 38% and 84% of the panel.
+- **No gene set survives correction.** Across 5,457 GO, Reactome and Hallmark
+  sets, the strongest enrichment among the 200 top-weighted genes is
+  p = 0.009, q = 1.0. Ion transport and redox terms appear at the top but none
+  is significant.
+
+So the predictor is **tracking global transcriptional state, not a specific
+programme**. That is a negative result about mechanism and a positive one about
+interpretation: it explains why no compact line-level descriptor has ever worked
+(§4, §10), since the predictive information is spread across the transcriptome
+rather than concentrated in features one could name or measure cheaply.
+
+### A third laboratory: attempted and not achieved (gap 6)
+
+All cross-laboratory results rest on two institutions. Two routes to a third
+were tried.
+
+**NCI-60** could not be obtained: CellMiner's archive endpoints return empty or
+403 responses without a browser session, and DTP's bulk-data page no longer
+exposes the GI50 files. CTRP is likewise gone, its NCI portal retired.
+
+**sciPlex3** (Srivatsan et al., Trapnell laboratory) is a genuine third
+institution and third technology, and shares A549, K562 and MCF7 with LINCS. It
+returns median r = −0.055 (p1) and −0.063 (p2) — but this is **not evidence about
+laboratories** and should not be read as such. sciPlex3 has only **three cell
+lines**, so its leave-one-context-out shared response is the mean of *two* lines,
+while LINCS's is the mean of sixty-nine. The two residuals are not the same
+quantity, and §19 independently shows the estimator drifting outside the 20–50
+context range. The arm is ill-posed rather than informative.
+
+**Gap 6 therefore remains open.** A third laboratory arm needs a dataset with
+both an independent institution and enough contexts, and no public dataset we
+could reach satisfies both. This is the single most valuable addition new data
+could make, and it is why the laboratory-versus-assay apportionment is reported
+with an interval that reaches 100% (§20) rather than as a resolved split.
+
+Figure bundle: `results/figures/15_architecture/robustness_interpretation/`.
+
 ## Reproducing
 
 ```bash
