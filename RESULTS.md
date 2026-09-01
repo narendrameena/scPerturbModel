@@ -1120,6 +1120,96 @@ non-circular value is the held-out-compound result (59% → 87%).
 Figure bundles: `results/figures/16_crosslab/cross_lab_reproducibility/`,
 `.../matching_strategy/`, `.../cross_lab_transcription/`.
 
+## 19. The estimator recovers a known interaction share; the shortcuts do not
+
+Every number in this document rests on one estimator, and until now it was
+defended by argument plus the observation that the alternatives disagree with it.
+Disagreement is not evidence of correctness. `scripts/simulate_estimator.py`
+generates data whose interaction share is fixed by construction —
+
+    d[c,p,q,r,w] = shared[p,q] + interaction[c,p]·a(q) + batch[r] + noise
+
+over contexts *c*, perturbations *p*, doses *q*, replicate plates *r* and wells
+*w* — and asks each estimator to return it.
+
+**Recovery across the range** (mean of 3 seeds; 30 contexts, 20 perturbations,
+3 doses, 2 plates × 2 wells, batch σ = 0.8, dose persistence 0.7):
+
+| true share | 0.0 | 0.1 | 0.2 | 0.3 | 0.5 | mean bias |
+|---|---|---|---|---|---|---|
+| **recommended** | **0.011** | 0.086 | 0.161 | 0.235 | 0.381 | **−0.045** |
+| pooled batch | **0.149** | 0.213 | 0.277 | 0.341 | 0.466 | +0.069 |
+| in-sample prior | 0.001 | 0.070 | 0.142 | 0.214 | 0.358 | −0.063 |
+| cross-dose as replicate | 0.005 | 0.043 | 0.086 | 0.131 | 0.233 | −0.120 |
+| residual variance | **0.498** | 0.535 | 0.572 | 0.608 | 0.681 | +0.359 |
+
+The decisive column is the first. **On data containing no interaction at all,
+residual variance reports 50% and pooled batch reports 15%** — both are
+manufacturing the quantity they claim to measure. Only the recommended estimator
+returns approximately zero.
+
+**Sensitivity to noise** (true share fixed at 0.2), which no estimator of a
+*reproducible* component should show:
+
+| noise σ | 0.5 | 1.0 | 2.0 | 4.0 |
+|---|---|---|---|---|
+| residual variance | 0.384 | 0.587 | 0.819 | **0.939** |
+| recommended | 0.187 | 0.193 | 0.214 | 0.280 |
+
+Residual variance tracks noise almost perfectly — at σ = 4 it reports 94%
+interaction from data that is 20%. The recommended estimator is flat to within a
+few points up to σ = 2 and inflates modestly beyond it.
+
+**Two honest caveats, because the validation produces them.**
+
+*The recommended estimator is conservative.* Its recovery is highly linear
+(R² = 0.999) but the slope is **0.74**, so it underestimates by roughly a
+quarter in this regime. Reported shares should be read as **lower bounds**,
+which is the safe direction but should not be glossed.
+
+*It is stable near Tahoe's context count and drifts outside it.* At a true share
+of 0.2 the estimate is 0.241 at 10 contexts, 0.204 at 20, 0.192 at 47 and 0.182
+at 100 — accurate in the 20–50 range that these atlases occupy, mildly optimistic
+below it and mildly conservative above.
+
+Figure bundle: `results/figures/00_manuscript/estimator_simulation/`.
+
+## 20. Confidence intervals on the headline quantities
+
+The pooled shares and the cross-laboratory quantities were reported as point
+estimates. Bootstrapping them — over cross-replicate pairs for the decomposition
+(reservoir-sampled, 200,000 pairs), over compounds for everything else — gives:
+
+| quantity | estimate | 95% interval |
+|---|---|---|
+| LINCS phase 1 interaction share | 57% | 56.9–57.4% |
+| LINCS phase 2 interaction share | 47% | 46.4–47.1% |
+| PRISM interaction share | 22.1% | 20.2–23.5% |
+| Tahoe, true replicates | 11.5% | 10.5–12.5% |
+| Tahoe, cross-dose pairing | 20.7% | 20.5–20.9% |
+| cross-lab reproducible fraction, all lines | 56.1% | 48.2–60.4% |
+| cross-lab reproducible fraction, identity-validated | 87.3% | **69.5–102.9%** |
+| **share of the loss due to laboratory** | 84% | **72–106%** |
+
+The decomposition shares are tightly determined; their uncertainty is systematic,
+not statistical. **The two derived cross-laboratory quantities are not**, and
+both intervals cross or approach 100%, which changes how they should be stated:
+
+- After identity validation, cross-laboratory agreement is **statistically
+  indistinguishable from the within-laboratory ceiling** (87.3%, CI 69.5–102.9%).
+  That is a cleaner claim than "87%".
+- The laboratory accounts for 84% of the loss with a CI of 72–106%, so **the
+  assay contribution is not distinguishable from zero**. The direction of the
+  claim strengthens — protocol is not the problem — while the precise 84/16 split
+  should not be quoted as if resolved.
+
+A sampling bug is recorded here because it produced a plausible wrong answer: the
+first version kept the *first* 200,000 cross-replicate pairs for the bootstrap,
+but pairs arrive in group order, so the prefix covered a handful of contexts
+rather than a sample of them, and the resulting interval (55.1–55.8%) did not
+even contain the point estimate it was meant to bracket. Reservoir sampling fixed
+it.
+
 ## Reproducing
 
 ```bash

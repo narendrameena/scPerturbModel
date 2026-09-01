@@ -172,6 +172,17 @@ def main():
           f"interaction {tii:.4f} ({tii/(ta+tii):.0%})")
     print(f"  median CDI {P.cdi.median():.3f}  "
           f"[IQR {P.cdi.quantile(.25):.3f}-{P.cdi.quantile(.75):.3f}]")
+    # 95% interval on the pooled split, resampling COMPOUNDS -- the shares were
+    # previously reported as bare point estimates
+    _b = np.array([[P.additive.sample(len(P), replace=True,
+                                      random_state=s).median(),
+                    P.interaction.sample(len(P), replace=True,
+                                         random_state=s).median()]
+                   for s in range(1000)])
+    _sh = _b[:, 1] / (_b[:, 0] + _b[:, 1])
+    print(f"  interaction share {tii/(ta+tii):.1%} "
+          f"[{np.percentile(_sh, 2.5):.1%}-{np.percentile(_sh, 97.5):.1%}] "
+          f"(bootstrap over {len(P)} compounds)")
 
     moa = ti.drop_duplicates("name").set_index("name").moa
     P["moa"] = P.compound.map(moa)

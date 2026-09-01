@@ -34,7 +34,10 @@ dose) combinations are replicated and the interaction is 11.5% [10.5–12.5%] of
 reproducible variance** (*P* = 2×10⁻⁷); dropping it leaves only cross-dose pairs,
 which are not replicates and **inflate the estimate to 20.7%, nearly double**. In
 LINCS phase 1, where 6.1 million same-dose replicate pairs are available, the
-interaction is 57%.
+interaction is 57% [56.9–57.4%]. On simulated data with a known interaction
+share the recommended estimator recovers it (R² = 0.999, slope 0.74, so reported
+values are lower bounds) while **residual variance reports 50% and pooled-batch
+15% from data containing none**.
 Estimating the interaction is subject to four failure modes that are invisible in
 the output — using residual variance rather than replicate covariance, pooling
 same-batch comparisons, taking an in-sample rather than leave-one-context-out
@@ -51,11 +54,12 @@ falls between (+0.005), beating mutations but trailing expression by 0.088, and
 lineage (+0.020) adds nothing once expression is included — the ordering places
 DNA-level features last. Finally, of the line-specific response that
 an assay reproduces with itself, only **56% survives transfer to another
-laboratory** — but **87%** survives once cell-line identity is verified from the
-data rather than assumed from an identifier, on held-out compounds. Only 5–12% of
-identifier-matched lines are their own best match across atlases. Apportioning
-the loss, changing assay within one laboratory costs 16% of it and changing
-laboratory the remaining 84%. Context count and replication, not cell count, are
+laboratory** [48–60%] — but once cell-line identity is verified from the data
+rather than assumed from an identifier, agreement on held-out compounds becomes
+**statistically indistinguishable from the within-laboratory ceiling** (87%,
+CI 70–103%). Only 5–12% of
+identifier-matched lines are their own best match across atlases. Apportioning the loss, the laboratory accounts for 84% of it (CI 72–106%), so
+the assay contribution is not distinguishable from zero. Context count and replication, not cell count, are
 the binding constraints on what these atlases can answer.
 
 ---

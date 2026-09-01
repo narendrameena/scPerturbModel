@@ -283,6 +283,27 @@ def main():
          .rename(columns={"<lambda_0>": "frac_positive"}))
     print(S.round(3).to_string())
 
+    # Bootstrap over COMPOUNDS, which are the independent unit here: each
+    # comparison's median is a median over compounds, so resampling compounds
+    # propagates the uncertainty that matters. Reporting these medians as point
+    # estimates hid how much of the lab-vs-assay apportionment is resolvable.
+    def boot_median(sub, n=2000):
+        v = sub.rho.dropna().to_numpy()
+        if len(v) < 5:
+            return np.nan, np.nan
+        b = np.array([np.median(v[rng_b.integers(0, len(v), len(v))])
+                      for _ in range(n)])
+        return float(np.percentile(b, 2.5)), float(np.percentile(b, 97.5))
+
+    rng_b = np.random.default_rng(0)
+    ci = {}
+    for cmp_ in R.comparison.unique():
+        ci[cmp_] = boot_median(R[R.comparison == cmp_])
+    print("\n95% bootstrap intervals on each median (resampling compounds):")
+    for cmp_, (lo, hi) in ci.items():
+        med = R[R.comparison == cmp_].rho.median()
+        print(f"  {cmp_[:52]:52s} {med:.3f} [{lo:.3f}-{hi:.3f}]")
+
     ceil_p = R[R.comparison.str.startswith("PRISM replicate")].rho.median()
     ceil_g = R[R.comparison.str.startswith("GDSC1")].rho.median()
     xl_all = R[R.comparison == "PRISM vs GDSC (CROSS-LAB)"].rho.median()
@@ -349,6 +370,52 @@ def main():
               "and it means the\n  reproducible fraction above is a floor for "
               "the compounds worth modelling.")
 
+    # propagate to the derived quantities by resampling compounds jointly
+    def draw():
+        vals = {}
+        for cmp_ in R.comparison.unique():
+            v = R[R.comparison == cmp_].rho.dropna().to_numpy()
+            vals[cmp_] = np.median(v[rng_b.integers(0, len(v), len(v))]) \
+                if len(v) >= 5 else np.nan
+        return vals
+
+    key_p = "PRISM replicate split (within-lab ceiling)"
+    key_g = "GDSC1 vs GDSC2 (within-lab ceiling)"
+    key_x = "PRISM vs GDSC (CROSS-LAB)"
+    key_v = [c for c in R.comparison.unique() if "identity-validated" in c]
+    fr_all, fr_val, lab_share = [], [], []
+    for _ in range(2000):
+        d_ = draw()
+        cp, cg, cx = d_.get(key_p), d_.get(key_g), d_.get(key_x)
+        if not all(np.isfinite([cp, cg, cx])) or cp <= 0 or cg <= 0:
+            continue
+        ceil_b = np.sqrt(cp * cg)
+        fr_all.append(cx / ceil_b)
+        if key_v and np.isfinite(d_.get(key_v[0], np.nan)):
+            fr_val.append(d_[key_v[0]] / ceil_b)
+        tot_b = cp - cx
+        if tot_b > 0:
+            lab_share.append((cg - cx) / tot_b)
+
+    def pct(a):
+        return (np.nan, np.nan) if len(a) < 50 else (
+            float(np.percentile(a, 2.5)), float(np.percentile(a, 97.5)))
+
+    fa_lo, fa_hi = pct(fr_all); fv_lo, fv_hi = pct(fr_val)
+    ls_lo, ls_hi = pct(lab_share)
+    print(f"\nderived quantities with 95% bootstrap intervals:")
+    print(f"  reproducible fraction, all lines        {frac:.1%} "
+          f"[{fa_lo:.1%}-{fa_hi:.1%}]")
+    if np.isfinite(fv_lo):
+        print(f"  reproducible fraction, validated        "
+              f"{xl_val/ceiling:.1%} [{fv_lo:.1%}-{fv_hi:.1%}]")
+    if np.isfinite(ls_lo):
+        print(f"  share of the loss due to LABORATORY     "
+              f"{step_lab/tot:.0%} [{ls_lo:.0%}-{ls_hi:.0%}]")
+        print("  The apportionment is a ratio of differences between three "
+              "medians, so its\n  interval is the widest of the three and is "
+              "what should be quoted.")
+
     summary = pd.DataFrame([
         {"quantity": "PRISM replicate ceiling", "value": ceil_p},
         {"quantity": "GDSC1 vs GDSC2 ceiling", "value": ceil_g},
@@ -361,7 +428,13 @@ def main():
         {"quantity": "share of loss from changing assay within a lab",
          "value": step_assay / tot if tot > 0 else np.nan},
         {"quantity": "share of loss from changing laboratory",
-         "value": step_lab / tot if tot > 0 else np.nan}])
+         "value": step_lab / tot if tot > 0 else np.nan},
+        {"quantity": "reproducible fraction (all) CI low", "value": fa_lo},
+        {"quantity": "reproducible fraction (all) CI high", "value": fa_hi},
+        {"quantity": "reproducible fraction (validated) CI low", "value": fv_lo},
+        {"quantity": "reproducible fraction (validated) CI high", "value": fv_hi},
+        {"quantity": "laboratory share of loss CI low", "value": ls_lo},
+        {"quantity": "laboratory share of loss CI high", "value": ls_hi}])
     summary.to_csv(TAB / "cross_lab_summary.csv", index=False)
 
     plt.rcParams.update({"font.size": 9, "axes.spines.top": False,

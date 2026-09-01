@@ -216,6 +216,15 @@ def decompose(adata, context: str, perturbation: str, control,
     R = D - P
 
     # reproducible interaction, cross-batch pairs only
+    # Reservoir sample of cross-replicate pair covariances, for the bootstrap
+    # below. Keeping the FIRST n pairs was tried and is wrong: pairs arrive in
+    # groupby order, so the prefix is a handful of contexts and perturbations
+    # rather than a sample of them, and the resulting interval did not even
+    # bracket the point estimate. Reservoir sampling keeps a uniform draw.
+    kept_pairs: list[float] = []
+    _seen = [0]
+    RESERVOIR = 200000
+
     def pair_cov(same_batch: bool):
         cov, n = 0.0, 0
         for _, g in K.groupby(["ctx", "pert"], observed=True):
@@ -227,7 +236,16 @@ def decompose(adata, context: str, perturbation: str, control,
                         continue
                     if (bt[a] == bt[b]) != same_batch:
                         continue
-                    cov += float(np.mean(R[v[a]] * R[v[b]])); n += 1
+                    c_ = float(np.mean(R[v[a]] * R[v[b]]))
+                    cov += c_; n += 1
+                    if not same_batch:
+                        _seen[0] += 1
+                        if len(kept_pairs) < RESERVOIR:
+                            kept_pairs.append(c_)
+                        else:
+                            j = int(rng.integers(0, _seen[0]))
+                            if j < RESERVOIR:
+                                kept_pairs[j] = c_
         return cov, n
 
     def null_cov():
@@ -263,6 +281,21 @@ def decompose(adata, context: str, perturbation: str, control,
     raw = (cov / npair) if npair else float("nan")
     interaction = max(raw - offset, 0.0) if npair else float("nan")
     additive = float(np.mean(P ** 2))
+    # 95% interval on the share, by resampling the cross-replicate pairs. The
+    # pooled shares were previously reported as point estimates, which hid how
+    # much of the difference between datasets is resolvable.
+    share_ci = (float("nan"), float("nan"))
+    if len(kept_pairs) >= 100:
+        arr = np.asarray(kept_pairs)
+        b = np.array([arr[rng.integers(0, len(arr), len(arr))].mean()
+                      for _ in range(300)])
+        lo, hi = np.percentile(b - offset, [2.5, 97.5])
+        share_ci = (float(max(lo, 0) / (additive + max(lo, 0))),
+                    float(max(hi, 0) / (additive + max(hi, 0))))
+        warnings.append(
+            f"interaction share 95% interval (bootstrap over "
+            f"{len(arr):,} sampled cross-replicate pairs): "
+            f"{share_ci[0]:.1%}-{share_ci[1]:.1%}")
     if npair and n_null:
         warnings.append(
             f"interaction is reported against a matched cross-context null: "
