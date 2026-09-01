@@ -117,7 +117,12 @@ removing the whole context eliminates the coupling. We additionally report the
 interaction against a **matched cross-context null**, which removes the residual
 construction offset without assuming its magnitude; where the signal is strong
 this changes nothing (LINCS phase 2: 45% → 47%), and where it is weak it was the
-entire result. These guards are released as `pertdecomp`.
+entire result. These guards are released as `pertdecomp`. Against a standard mixed-model
+decomposition on the same simulated data, the two agree to 0.051 where both are
+identifiable — ours is not a reinvention — but without replicates the mixed model
+returns 0.161 for a true share of 0.1 and 0.182 for 0.3, a number set by the
+optimiser rather than the data and flagged by nothing in its output. That is the
+case for a tool that refuses.
 
 ### The replicate structure exists, and discarding it doubles the estimate
 

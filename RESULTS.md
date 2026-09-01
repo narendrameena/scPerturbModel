@@ -1210,6 +1210,75 @@ rather than a sample of them, and the resulting interval (55.1–55.8%) did not
 even contain the point estimate it was meant to bracket. Reservoir sampling fixed
 it.
 
+## 21. Against a standard mixed model, and why a tool is still warranted
+
+The obvious objection to `pertdecomp` is that variance partitioning is solved:
+fit `y ~ (1|perturbation) + (1|context) + (1|context:perturbation)` and read the
+components off, as variancePartition, lme4 or GxEMM would. Fitting exactly that
+with `statsmodels` on the simulated data of §19, where the truth is known:
+
+| regime | true 0.1 | true 0.3 | mean bias, ours | mean bias, mixed model |
+|---|---|---|---|---|
+| replicated | 0.150 / 0.157 | 0.338 / 0.298 | +0.044 | +0.028 |
+| batch-confounded | 0.106 / 0.154 | 0.261 / 0.357 | **−0.016** | +0.055 |
+| unreplicated | **refuses** / 0.161 | **refuses** / 0.182 | — | −0.028 |
+
+*(cells show ours / mixed model)*
+
+Three things follow, and the first is not in our favour.
+
+**Where both are identifiable they agree**, to 0.051 on average. The mixed model
+is a perfectly valid alternative with replicates, and our estimator is not a
+reinvention of it — it is the same quantity in closed form. We say so.
+
+**Without replicates the mixed model returns a number anyway, and it is the same
+number regardless of the truth**: 0.161 when the true share is 0.1, and 0.182
+when it is 0.3. Context×perturbation and residual enter the likelihood
+identically when each condition is measured once, so the split is set by the
+optimiser rather than the data — and nothing in the output says so. This is the
+practical case for a tool that **refuses**, and it is precisely the regime a
+Tahoe-like atlas falls into once its replicate plate is dropped (§14).
+
+**With batch structure ours is the less biased of the two** (−0.016 versus
++0.055), because same-batch pairs are excluded by construction rather than
+requiring the user to specify a plate term.
+
+Cost is a secondary but real consideration: 0.1 s for the closed form across all
+genes against 0.18 s *per gene* for the mixed model, about 6 minutes for a
+2,000-gene panel and proportionally worse for the 978-gene LINCS panels run
+across four datasets.
+
+Figure bundle: `results/figures/00_manuscript/variance_components/`.
+
+## 22. Testing the dose explanation — supported away from the ceiling, not at it
+
+§13 explained the dose curve by asserting that the interaction is largest where
+lines differ most in *where they sit on the dose–response curve*. That was a
+just-so story until tested. It predicts that the interaction should track the
+between-line spread of response, dose by dose, within each compound.
+
+| test | result |
+|---|---|
+| interaction vs between-line spread, within compound | median ρ = **+0.405**, 79% positive, p = 4×10⁻¹³⁵ (n = 1,442) |
+| restricted to **non-saturating** doses (positions 1–6) | median ρ = **+0.486**, 82% positive, p = 6×10⁻¹⁴⁰ |
+| dose position of peak interaction vs peak spread | ρ = +0.211, p = 6×10⁻¹⁶; identical for only **14%**, within one position for 45% |
+| interaction peaks below the dose of maximal killing | **81%** of compounds |
+
+**The explanation is supported, but not in the simple form it was stated.** The
+interaction tracks the between-line spread strongly, and *more* strongly once the
+saturating doses are removed (ρ = +0.49 versus +0.41) — which rules out the
+competing account that the whole pattern is a ceiling artefact of the viability
+assay, since a ceiling artefact cannot operate where there is no ceiling.
+
+But the two peaks do **not** coincide: the spread peaks at the top dose (8/8)
+while the interaction peaks at 6/8. So at saturating doses the lines still differ
+in measured viability — the spread is real — yet that difference **stops
+reproducing between replicate plates**. The refinement is therefore that
+context-dependence tracks *reproducible* between-line spread, and at the lethal
+dose the spread survives while its reproducibility does not.
+
+Figure bundle: `results/figures/13_prism/dose_mechanism/`.
+
 ## Reproducing
 
 ```bash
