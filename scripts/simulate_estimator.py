@@ -79,22 +79,38 @@ def simulate(true_share, n_ctx=30, n_pert=20, n_dose=3, n_rep=2, n_well=2,
     # there are no same-plate pairs at all, and "pooling same-batch
     # comparisons" would be indistinguishable from excluding them -- the
     # failure mode would be untestable rather than absent.
+    # A control well per (context, plate), subtracted from every treated well on
+    # that plate -- exactly what build_deltas does to the real data. Without
+    # this the simulation is unfaithful in a way that breaks the estimator
+    # rather than testing it: an additive plate offset that the prior averages
+    # over both plates contributes -(b1-b2)^2/4 to every cross-plate pair,
+    # a negative term of size sigma_batch^2/2 that has no counterpart in
+    # plate-matched data. `batch_residual` is the part that does NOT cancel,
+    # which is what keeps the pooled-batch failure mode testable.
+    ctrl = {}
+    for c, r in product(range(n_ctx), range(n_rep)):
+        ctrl[(c, r)] = batch[r] + rng.normal(0, sigma_noise, n_genes)
+    bres = rng.normal(0, sigma_batch * 0.5, (n_rep, n_genes)) \
+        if sigma_batch > 0 else np.zeros((n_rep, n_genes))
     rows, mats = [], []
     for c, p, q, r, w in product(range(n_ctx), range(n_pert), range(n_dose),
                                  range(n_rep), range(n_well)):
         v = (shared[p, q]
              + a * inter[c, p] + np.sqrt(max(1 - a * a, 0)) * inter_d[c, p, q]
-             + batch[r]
+             + batch[r] + bres[r]
              + rng.normal(0, sigma_noise, n_genes))
-        rows.append((c, p, q, r, w)); mats.append(v)
+        rows.append((c, p, q, r, w)); mats.append(v - ctrl[(c, r)])
     K = pd.DataFrame(rows, columns=["ctx", "pert", "dose", "rep", "well"])
     return K, np.stack(mats).astype(np.float32)
 
 
 def estimate(K, D, exclude_same_batch=True, in_sample=False, cross_dose=False,
-             use_variance=False, subtract_null=True, rng=None):
+             use_variance=False, subtract_null=True, split_prior=False,
+             rng=None):
     """Return the estimated interaction share under one set of choices."""
     rng = rng or np.random.default_rng(0)
+    if split_prior:
+        return _estimate_split(K, D, rng, cross_dose)
     resid, shared_num, shared_den = {}, 0.0, 0
     for (p, q), g in K.groupby(["pert", "dose"], observed=True):
         ii = g.index.to_numpy(); cx = g.ctx.to_numpy()
@@ -155,8 +171,55 @@ def estimate(K, D, exclude_same_batch=True, in_sample=False, cross_dose=False,
     return inter / (shared + inter) if shared + inter > 0 else np.nan
 
 
+
+def _estimate_split(K, D, rng, cross_dose=False):
+    """Split-prior estimator: two disjoint leave-one-context-out priors.
+
+    Each condition gets priors from disjoint halves of the other contexts, so
+    the two members of a replicate pair share no prior-estimation noise, and
+    var(shared) can be estimated as <P_A, P_B> rather than mean(P**2) -- which
+    also contains noise/n_out and batch/n_rep.
+    """
+    PA = np.zeros_like(D); PB = np.zeros_like(D)
+    usable = np.zeros(len(D), bool)
+    for _, g in K.groupby(["pert", "dose"], observed=True):
+        ii = g.index.to_numpy(); cx = g.ctx.to_numpy()
+        uc = np.unique(cx)
+        if len(uc) < 3:
+            continue
+        for i, ci in zip(ii, cx):
+            oc = uc[uc != ci]
+            perm = rng.permutation(len(oc))
+            h = max(len(oc) // 2, 1)
+            ca, cb = set(oc[perm[:h]]), set(oc[perm[h:]])
+            ia = ii[np.array([c in ca for c in cx])]
+            ib = ii[np.array([c in cb for c in cx])]
+            if len(ia) and len(ib):
+                PA[i] = D[ia].mean(0); PB[i] = D[ib].mean(0); usable[i] = True
+    if not usable.any():
+        return np.nan
+    RA, RB = D - PA, D - PB
+    shared = float(np.mean(PA[usable] * PB[usable]))
+    grp = ["ctx", "pert"] if cross_dose else ["ctx", "pert", "dose"]
+    cov, n = 0.0, 0
+    for _, g in K.groupby(grp, observed=True):
+        v = [i for i in g.index.to_numpy() if usable[i]]
+        rp = K.rep.loc[v].to_numpy(); dz = K.dose.loc[v].to_numpy()
+        for a in range(len(v)):
+            for b in range(a + 1, len(v)):
+                if rp[a] == rp[b]:
+                    continue
+                if cross_dose and dz[a] == dz[b]:
+                    continue
+                cov += float(np.mean(RA[v[a]] * RB[v[b]])); n += 1
+    if not n:
+        return np.nan
+    inter = max(cov / n, 0.0)
+    return inter / (shared + inter) if shared + inter > 0 else np.nan
+
 ESTIMATORS = {
-    "recommended": dict(),
+    "recommended": dict(split_prior=True),
+    "old (shared prior)": dict(),
     "residual variance": dict(use_variance=True),
     "pooled batch": dict(exclude_same_batch=False),
     "in-sample prior": dict(in_sample=True),

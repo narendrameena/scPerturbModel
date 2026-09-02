@@ -97,3 +97,18 @@ def test_no_false_replicate_when_batches_are_disjoint():
     obs.loc[obs.rep == "r0", "pert"] = obs.loc[obs.rep == "r0", "pert"] + "_A"
     obs.loc[obs.rep == "r1", "pert"] = obs.loc[obs.rep == "r1", "pert"] + "_B"
     assert len(find_replicate_batches(obs, "ctx", "pert", "rep")) == 0
+
+
+def test_works_with_caller_column_names():
+    """decompose() must not assume the caller named its columns ctx/pert.
+
+    Every other test here happens to use context="ctx", perturbation="pert",
+    which is exactly why a hard-coded lookup of those names inside the function
+    passed the suite while raising KeyError on every real dataset.
+    """
+    a = synth(n_ctx=4, n_pert=6, n_rep=2, n_genes=60)
+    a.obs = a.obs.rename(columns={"ctx": "cell_line", "pert": "drug",
+                                  "rep": "plate"})
+    r = decompose(a, context="cell_line", perturbation="drug", control="CTRL",
+                  replicate="plate", n_genes=60)
+    assert np.isfinite(r.interaction_share)

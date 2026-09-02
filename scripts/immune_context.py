@@ -27,6 +27,7 @@ Outputs: results/tables/immune_context_prism.csv
          figure bundle results/figures/14_immune/immune_context/
 """
 import argparse
+import re
 from pathlib import Path
 
 import matplotlib
@@ -94,7 +95,17 @@ def main():
     rng = np.random.default_rng(0)
 
     lfc = pd.read_csv(PR / "secondary-screen-logfold-change.csv", index_col=0)
-    lfc.index = [i.split("_")[-1] for i in lfc.index]
+    # PRISM row names are pool_line, but 8 are pool_line_FAILED_STR. The old
+    # split("_")[-1] returned the literal "STR" for all eight, and
+    # groupby.mean() then averaged eight different cell lines into one
+    # fabricated line that carried data in 32,230 of 36,076 profiles and was
+    # published in our own tables. Parse the ACH id, and DROP the STR failures
+    # rather than average an unauthenticated culture into an authenticated one:
+    # all eight lines also appear as clean rows, so nothing is lost. 770 rows
+    # -> 737 distinct cell lines.
+    keep = [not i.endswith("_FAILED_STR") for i in lfc.index]
+    lfc = lfc[keep]
+    lfc.index = [re.search(r"(ACH-\d+)", i).group(1) for i in lfc.index]
     lfc = lfc.groupby(level=0).mean()
     ti = pd.read_csv(PR / "secondary-screen-replicate-treatment-info.csv",
                      low_memory=False)

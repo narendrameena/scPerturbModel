@@ -244,16 +244,58 @@ def decompose(adata, context: str, perturbation: str, control,
     sel = np.sort(np.argsort(D.var(0))[-min(n_genes, D.shape[1]):])
     D = D[:, sel]
 
-    # additive prior: leave-one-context-out mean for each (perturbation, dose)
-    P = np.zeros_like(D)
+    # SPLIT PRIOR. Two independent leave-one-context-out priors per condition,
+    # built from disjoint halves of the other contexts. This removes two biases
+    # that a single shared prior creates and that were both live in earlier
+    # versions of this code:
+    #
+    #   numerator   both members of a same-context pair subtracted the SAME
+    #               prior, so its estimation noise appeared in their covariance
+    #               as signal. With disjoint priors the noise cannot covary, and
+    #               the estimator returns ~0 on data with no interaction at any
+    #               noise level rather than only at the one it was tested at.
+    #   denominator mean(P**2) estimates var(shared) PLUS noise/n_out and
+    #               batch/n_rep, so it inflated with nuisance variance and
+    #               shrank the reported share by a dataset-specific factor
+    #               (recovery slope 0.47-1.01 depending on the nuisances).
+    #               E[<P_A, P_B>] over disjoint halves is var(shared) alone.
+    #
+    # Conditions in a (pert, dose) group with too few other contexts to split
+    # are dropped outright: previously their prior stayed zero and the raw
+    # response entered the pair and null sums un-residualised.
+    PA = np.zeros_like(D)
+    PB = np.zeros_like(D)
+    usable = np.zeros(len(D), dtype=bool)
     for _, g in K.groupby(["pert", "dose"], observed=True):
         ii = g.index.to_numpy()
         ctxs = K.ctx[ii].to_numpy()
+        uc = np.unique(ctxs)
+        if len(uc) < 3:                      # need self + two disjoint halves
+            continue
         for i, ci in zip(ii, ctxs):
-            other = ii[ctxs != ci]
-            if len(other):
-                P[i] = D[other].mean(0)
-    R = D - P
+            other_c = uc[uc != ci]
+            perm = rng.permutation(len(other_c))
+            h = max(len(other_c) // 2, 1)
+            ca = set(other_c[perm[:h]]); cb = set(other_c[perm[h:]])
+            if not ca or not cb:
+                continue
+            ia = ii[np.array([c in ca for c in ctxs])]
+            ib = ii[np.array([c in cb for c in ctxs])]
+            if not len(ia) or not len(ib):
+                continue
+            PA[i] = D[ia].mean(0); PB[i] = D[ib].mean(0)
+            usable[i] = True
+    RA = D - PA
+    RB = D - PB
+    # keep only conditions that have both priors
+    K = K[usable].copy()
+    D, RA, RB, PA, PB = (D[usable], RA[usable], RB[usable],
+                         PA[usable], PB[usable])
+    K.index = np.arange(len(K))
+    if not len(K):
+        raise ValueError("no (perturbation, dose) group has >=3 contexts; the "
+                         "split-prior estimator cannot be formed")
+    R = 0.5 * (RA + RB)          # for the descriptive residual correlations
 
     # reproducible interaction, cross-batch pairs only
     # Reservoir sample of cross-replicate pair covariances, for the bootstrap
@@ -266,8 +308,13 @@ def decompose(adata, context: str, perturbation: str, control,
     RESERVOIR = 200000
 
     def pair_cov(same_batch: bool):
+        # Grouped by (ctx, pert, DOSE): different doses are different
+        # conditions, not replicates -- pairing across them is the error this
+        # package exists to warn about, and the previous groupby(["ctx","pert"])
+        # committed it. One residual is taken against prior A and the other
+        # against prior B so their prior-estimation noise is independent.
         cov, n = 0.0, 0
-        for _, g in K.groupby(["ctx", "pert"], observed=True):
+        for _, g in K.groupby(["ctx", "pert", "dose"], observed=True):
             v = g.index.to_numpy()
             rp, bt = K.rep[v].to_numpy(), K.batch[v].to_numpy()
             for a in range(len(v)):
@@ -276,7 +323,7 @@ def decompose(adata, context: str, perturbation: str, control,
                         continue
                     if (bt[a] == bt[b]) != same_batch:
                         continue
-                    c_ = float(np.mean(R[v[a]] * R[v[b]]))
+                    c_ = float(np.mean(RA[v[a]] * RB[v[b]]))
                     cov += c_; n += 1
                     if not same_batch:
                         _seen[0] += 1
@@ -298,9 +345,10 @@ def decompose(adata, context: str, perturbation: str, control,
         and it is what made the raw covariance come out negative and the
         clamped per-perturbation index collapse to exact zeros.
 
-        A cross-context pair carries that offset but no interaction, because
-        the interaction is by definition specific to a context. Subtracting it
-        removes the offset without assuming its size.
+        With the split-prior construction above the shared-noise term is
+        already gone, so this offset should now be near zero; it is retained as
+        a diagnostic and a safeguard, and the report prints it so a large value
+        is visible rather than silently absorbed.
         """
         cov, n = 0.0, 0
         for _, g in K.groupby("pert", observed=True):
@@ -313,13 +361,17 @@ def decompose(adata, context: str, perturbation: str, control,
                 a, b = rng.integers(0, len(v), 2)
                 if cx[a] == cx[b] or bt[a] == bt[b]:
                     continue
-                cov += float(np.mean(R[v[a]] * R[v[b]])); n += 1
+                cov += float(np.mean(RA[v[a]] * RB[v[b]])); n += 1
         return (cov / n) if n else 0.0, n
 
     # Flag deliberate replicate batches, since losing them is the single most
     # consequential processing mistake for this estimate.
-    rep_pairs = find_replicate_batches(obs, "ctx", "pert", bat,
-                                       dcol if dose else None)
+    # K carries the internal column names ("ctx", "pert", "batch"); obs carries
+    # the caller's. Passing obs here made decompose() raise KeyError on every
+    # real dataset, and the tests missed it because they happen to name their
+    # columns "ctx"/"pert".
+    rep_pairs = find_replicate_batches(K, "ctx", "pert", "batch",
+                                       "dose" if dose else None)
     if len(rep_pairs):
         top = rep_pairs.iloc[0]
         warnings.append(
@@ -334,7 +386,9 @@ def decompose(adata, context: str, perturbation: str, control,
     offset, n_null = null_cov()
     raw = (cov / npair) if npair else float("nan")
     interaction = max(raw - offset, 0.0) if npair else float("nan")
-    additive = float(np.mean(P ** 2))
+    # var(shared) from two disjoint prior halves; mean(P**2) also contained
+    # noise/n_out and batch/n_rep, which is what set the recovery slope to 0.74
+    additive = float(np.mean(PA * PB))
     # 95% interval on the share, by resampling the cross-replicate pairs. The
     # pooled shares were previously reported as point estimates, which hid how
     # much of the difference between datasets is resolvable.
