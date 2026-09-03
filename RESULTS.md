@@ -1721,15 +1721,118 @@ because each is a covariance between two independent estimates. A statistic
 computed on a raw residual is mostly measuring noise, so removing a term worth a
 few percent of it changes little.
 
-**Prediction, not demonstration:** the inflation should appear in
+**Prediction, since tested — see §29.** The inflation should appear in
 *replicate-validated* context-specificity statistics and not in raw-residual
-ones. We have no other group's replicate-validated statistic to test this on —
-TRADE (Nadig et al., *Nat Genet* 2025) is the nearest and its Perturb-seq data is
-not on disk.
+ones. TRADE's deposit was obtained and the prediction **holds**: on the same
+data, the omission moves the noise-corrected split by 11.7 points and the raw one
+by 3.4. §29 also shows why the diagnostic in this section fails — it was measured
+without centring the correction across contexts, which is what makes it a context
+property rather than a shared programme.
 
 **Consequence for the manuscript.** The defect is reported as ours, quantified,
 with the tool that prevents it and the simulation that shows what it costs. The
 claim that the field's published numbers are inflated is **not** made.
+
+---
+
+## 29. The prediction tested on another group's data: it holds
+
+§28 could not show the inflation in other groups' published numbers and proposed
+one reason: those statistics are computed on raw, noise-dominated residuals,
+whereas ours compares components noise cannot inflate. That was a prediction with
+no data behind it. Nadig, Replogle, Pogson et al. (*Nature Genetics* 57:1228,
+2025) supply the missing case — their TRADE deposit ships **lfcSE beside every
+log2 fold change** for four cell lines given the same 2,052 essential-gene
+perturbations (K562, RPE1, HepG2, Jurkat; 6,642 shared genes). The standard
+errors make the noise-corrected statistic constructible, and four cell lines make
+the consistent component estimable as a between-line covariance, which noise
+cannot inflate because two lines are measured independently.
+
+**The correction must be a contrast, and that is easy to get wrong.** A first
+version subtracted each line's uncentred mean response across the other
+perturbations. In this dataset every perturbation is an essential-gene knockdown,
+which drives a common growth-arrest programme, so those four vectors correlate
+**with each other at r = +0.51** and with the cross-line shared response at
+**r = +0.80** — one shared programme, not four line properties. Subtracting it
+removed signal the statistic is meant to keep, and the split moved the wrong way.
+Centred across lines, as `perturbmodel.celldrug` does, the same vectors correlate
+at **r = −0.53** between lines and −0.19 with the shared response, and behave as
+line properties should.
+
+| statistic | line effect left in | line effect removed | shift |
+|---|---:|---:|---:|
+| raw (noise included) | 61.5% cell-type-dependent | 58.1% | **+3.4 points** |
+| **noise-corrected** (covariance + published SEs) | 66.3% | **54.6%** | **+11.7 points** |
+
+The noise-corrected split moves **3.4× more**, and by 11.7 points — a 1.21×
+inflation of the cell-type-dependent share. Sampling noise is 38% of the raw
+per-line variance here, which is why the raw statistic is comparatively inert.
+
+**What this does and does not license.** Our raw replication gives 39% consistent
+against TRADE's published 56%, so it is **not reproduced** and nothing here
+restates or corrects their number. What it establishes is that the effect is not
+peculiar to us or to viability: on another group's data, in a different
+perturbation modality (CRISPR rather than chemical), across four cell lines, a
+context-specificity statistic of the same form is inflated by the same omission
+whenever it is noise-corrected. That is a statement about the method.
+
+---
+
+## 30. Does drug exposure remodel the expression programme, or move cells along it?
+
+"The drug changes gene expression" is not a finding — at 5 µM almost anything
+does. The question with content is whether exposure moves cells along directions
+they already had, or into directions no untreated cell occupies.
+
+The baseline programme space is the span of principal components of **untreated**
+Tahoe pseudobulk across cell lines. Each response is split into the part inside
+that span and the part outside. Every term is an inner product between deltas
+measured on **two independent plates** (plate 14 duplicates plate 6), because
+noise is close to isotropic and lands outside any low-dimensional span — a purely
+noisy response would otherwise read as pure remodelling. Measured from single
+observations the shift share is 8.5%; measured across plates it is 10.1%.
+
+**The reference that makes the number readable** is a held-out untreated cell
+line: a signal that is a shift by construction, since it *is* line-to-line
+variation. Over 5,345 replicated conditions, with 36 lines fitting the span and
+12 held out:
+
+| baseline directions used | captures of a drug response | captures of a held-out untreated line |
+|---:|---:|---:|
+| 1 | 1.7% | 9.7% |
+| 5 | 6.2% | 22.1% |
+| 10 | 9.0% | 25.0% |
+| 20 | 12.2% | 29.6% |
+| 35 | 15.7% | 32.8% |
+
+Drug responses are captured **two to five times less** than a held-out untreated
+line at every k. **Drug exposure does not move cells along the axes that separate
+untreated lines — it adds a new one.**
+
+Three controls decide what kind of remodelling this is:
+
+- **Not death.** The outside-span share is 89%, 86% and 90% at 0.05, 0.5 and
+  5 µM — flat, and already at its full size at the lowest dose, where cells are
+  not dying. Cytotoxic collapse would appear only at the top dose.
+- **Cell identity is preserved.** Between-line spread, treated against the same
+  lines untreated, has ratio 1.002 / 1.000 / 1.007 across the three doses (all
+  *P* > 0.5). Lines stay exactly as far apart as they were; the drug does not
+  overwrite what makes them different.
+- **Coordination is untouched.** The gene–gene correlation structure across lines
+  is essentially unchanged by treatment (ρ = +0.998 over 400 genes; mean absolute
+  change 0.0127 against a label-permutation null of 0.150 [0.128, 0.173]) — the
+  observed change is far *smaller* than any random split of the same samples.
+
+**So: yes, but additively.** Drug exposure writes a new, drug-specific axis that
+baseline variation does not contain, while leaving cell identity and the
+co-expression architecture intact. It is not reprogramming and not convergence
+onto a common stress state — it is a new programme laid on top of an unchanged
+one.
+
+This is also the geometric reason the decomposition in §27 works so cleanly. The
+drug axis is close to orthogonal to the axes on which cells differ, which is why
+a drug main effect can account for 94.1% of the variance while the cell property
+and the cell–drug relation stay small and separable.
 
 ## Reproducing
 
