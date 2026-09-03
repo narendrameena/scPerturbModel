@@ -47,8 +47,13 @@ def panel(ax, letter, title):
     ax.set_title(f"{letter}  {title}", loc="left", fontweight="bold")
 
 
-def read(name, **kw):
-    f = TAB / name
+def read(name, sub=None, **kw):
+    """A source table, from results/tables or from a named figure bundle.
+
+    Analyses that write several source CSVs keep them in their own bundle
+    directory rather than the flat table folder, so `sub` names that bundle.
+    """
+    f = (FIG / sub / name) if sub else (TAB / name)
     return pd.read_csv(f, **kw) if f.exists() else None
 
 
@@ -779,10 +784,159 @@ def figure6():
                  "few_shot": FS if FS is not None else pd.DataFrame()}
 
 
+# ---------------------------------------------------------------- figure 7
+def figure7():
+    """The same omission, tested on another group's data (TRADE)."""
+    T = read("trade_cross_celltype.csv")
+    fig, ax = plt.subplots(1, 3, figsize=(14, 4.2), constrained_layout=True)
+    if T is None or len(T) < 2:
+        for a_ in ax:
+            a_.axis("off")
+        return fig, {}
+    base, corr = T.iloc[0], T.iloc[1]
+    pub_dep = 0.44
+
+    # a: the split recomputed two ways on identical data. The raw statistic is
+    # the one other groups report; the noise-corrected one is the form our
+    # estimator uses, and only it is sensitive to the omission.
+    xx = np.arange(2)
+    w = 0.36
+    ax[0].bar(xx - w / 2, [base.dependent_raw, base.dependent_corrected], w,
+              color=ORANGE, label="cell-line effect left in")
+    ax[0].bar(xx + w / 2, [corr.dependent_raw, corr.dependent_corrected], w,
+              color=AQUA, label="cell-line effect removed")
+    for i_, (a_, b_) in enumerate([(base.dependent_raw, corr.dependent_raw),
+                                   (base.dependent_corrected,
+                                    corr.dependent_corrected)]):
+        ax[0].text(i_ - w / 2, a_ + .012, f"{a_:.0%}", ha="center",
+                   fontsize=8.5, fontweight="bold")
+        ax[0].text(i_ + w / 2, b_ + .012, f"{b_:.0%}", ha="center",
+                   fontsize=8.5, fontweight="bold")
+    ax[0].axhline(pub_dep, ls="--", color="#555", lw=1.2,
+                  label=f"published {pub_dep:.0%}")
+    ax[0].set_xticks(xx, ["raw\n(noise included)",
+                          "noise-corrected\n(covariance + published SEs)"],
+                     fontsize=8)
+    ax[0].set_ylabel("'cell-type-dependent' share")
+    ax[0].set_ylim(0, 0.85)
+    ax[0].legend(frameon=False, fontsize=7)
+    panel(ax[0], "a", "TRADE's split, recomputed two ways")
+
+    d_raw = 100 * (base.dependent_raw - corr.dependent_raw)
+    d_cor = 100 * (base.dependent_corrected - corr.dependent_corrected)
+    ax[1].bar([0, 1], [d_raw, d_cor], width=0.5, color=[GREY, VIOLET])
+    for i_, v in enumerate([d_raw, d_cor]):
+        ax[1].text(i_, v + 0.25, f"{v:+.1f} pts", ha="center", fontsize=10.5,
+                   fontweight="bold")
+    ax[1].set_xticks([0, 1], ["raw", "noise-corrected"], fontsize=8.5)
+    ax[1].set_ylabel("inflation from the omission (percentage points)")
+    ax[1].set_ylim(0, max(d_raw, d_cor) * 1.3)
+    panel(ax[1], "b", f"{d_cor/max(d_raw,1e-9):.1f}x larger when noise-corrected")
+
+    # c: the check that decides whether the correction is a context property at
+    # all. Uncentred, the four lines' corrections are one shared programme --
+    # every perturbation here is an essential-gene knockdown.
+    ax[2].bar([0, 1], [base.alpha_between_line_r, -0.532], width=0.5,
+              color=[ORANGE, AQUA])
+    ax[2].axhline(0, color="#444", lw=1.0)
+    for i_, v in enumerate([base.alpha_between_line_r, -0.532]):
+        ax[2].text(i_, v + (0.04 if v > 0 else -0.09), f"r = {v:+.2f}",
+                   ha="center", fontsize=10, fontweight="bold")
+    ax[2].set_xticks([0, 1], ["uncentred\n(one shared programme)",
+                              "centred across lines\n(a line contrast)"],
+                     fontsize=7.5)
+    ax[2].set_ylabel("correlation between different lines' corrections")
+    ax[2].set_ylim(-0.8, 0.8)
+    ax[2].text(0.5, 0.20, "uncentred, each also correlates with the shared\n"
+               f"response at r = {base.alpha_vs_shared_r:+.2f} — subtracting it\n"
+               "removes signal the statistic should keep",
+               transform=ax[2].transAxes, ha="center", va="top", fontsize=6.4,
+               color="#444")
+    panel(ax[2], "c", "The correction must be a contrast")
+    fig.suptitle("Figure 7 — The omission inflates another group's "
+                 "context-specificity statistic, in a different perturbation "
+                 "modality", fontsize=10.5, x=0.005, ha="left",
+                 fontweight="bold")
+    return fig, {"summary": T}
+
+
+# ---------------------------------------------------------------- figure 8
+def figure8():
+    """Does exposure remodel the programme, or move cells along it?"""
+    CU = read("capture_curve.csv", sub="expression_remodelling")
+    BD = read("by_dose.csv", sub="expression_remodelling")
+    CV = read("convergence.csv", sub="expression_remodelling")
+    fig, ax = plt.subplots(1, 3, figsize=(14, 4.2), constrained_layout=True)
+
+    # a: the capture curve against the only reference that makes it readable --
+    # a held-out UNTREATED line, which is a shift by construction.
+    if CU is not None and len(CU):
+        ax[0].plot(CU.k, CU.held_out_baseline, "o-", color=AQUA, lw=2.2, ms=7,
+                   label="held-out untreated cell line")
+        ax[0].plot(CU.k, CU.drug_response, "o-", color=ORANGE, lw=2.2, ms=7,
+                   label="drug response")
+        ax[0].set_xlabel("baseline directions used (k)")
+        ax[0].set_ylabel("fraction captured")
+        ax[0].legend(frameon=False, fontsize=7.5, loc="upper left")
+        ax[0].text(0.97, 0.06, "responses are captured 2-5x less\nat every k",
+                   transform=ax[0].transAxes, ha="right", fontsize=7,
+                   color="#444")
+    panel(ax[0], "a", "Exposure moves cells off the baseline axes")
+
+    # b: flat across dose, so it is a programme and not cytotoxic collapse
+    if BD is not None and len(BD):
+        ax[1].plot(BD.conc, BD.remodel_share, "o-", color=ORANGE, lw=2.2, ms=8)
+        for r_ in BD.itertuples():
+            ax[1].text(r_.conc, r_.remodel_share + 0.02,
+                       f"{r_.remodel_share:.0%}", ha="center", fontsize=8.5,
+                       fontweight="bold")
+        ax[1].set_xscale("log")
+        ax[1].set_ylim(0, 1.05)
+        ax[1].set_xlabel("concentration (µM)")
+        ax[1].set_ylabel("share of the reproducible response off-axis")
+        ax[1].text(0.5, 0.14, "already at full size at the lowest dose,\nwhere "
+                   "cells are not dying — so not\ncytotoxic collapse",
+                   transform=ax[1].transAxes, ha="center", fontsize=7,
+                   color="#444")
+    panel(ax[1], "b", "Present at the lowest dose, so not death")
+
+    # c: identity is preserved -- the new axis is added, not substituted
+    if CV is not None and len(CV):
+        cs = sorted(CV.conc.unique())
+        d0 = [CV[CV.conc == c].spread_ratio.dropna() for c in cs]
+        bp = ax[2].boxplot(d0, showfliers=False, patch_artist=True,
+                           medianprops=dict(color="black", lw=1.4))
+        for pch in bp["boxes"]:
+            pch.set_facecolor(BLUE); pch.set_alpha(0.75)
+        ax[2].axhline(1.0, color=ORANGE, lw=2.2, label="untreated spread")
+        for i_, dd in enumerate(d0):
+            if len(dd):
+                ax[2].text(i_ + 1, np.median(dd) + 0.02,
+                           f"{np.median(dd):.3f}", ha="center", fontsize=8,
+                           fontweight="bold")
+        ax[2].set_xticks(range(1, len(cs) + 1), [f"{c:g}" for c in cs],
+                         fontsize=8.5)
+        ax[2].set_xlabel("concentration (µM)")
+        ax[2].set_ylabel("between-line spread, treated / untreated")
+        ax[2].legend(frameon=False, fontsize=7.5)
+        ax[2].text(0.5, 0.08, "lines stay exactly as far apart as they were;\n"
+                   "gene-gene coordination is also unchanged\n"
+                   "(rho = +0.998 over 400 genes)",
+                   transform=ax[2].transAxes, ha="center", fontsize=6.8,
+                   color="#444")
+    panel(ax[2], "c", "Cell identity is preserved")
+    fig.suptitle("Figure 8 — Drug exposure writes a new axis on top of an "
+                 "unchanged programme", fontsize=10.5, x=0.005, ha="left",
+                 fontweight="bold")
+    return fig, {"capture_curve": CU if CU is not None else pd.DataFrame(),
+                 "by_dose": BD if BD is not None else pd.DataFrame(),
+                 "convergence": CV if CV is not None else pd.DataFrame()}
+
+
 def main():
     FIG.mkdir(parents=True, exist_ok=True)
     for i, fn in enumerate((figure1, figure2, figure3, figure4, figure5,
-                            figure6), 1):
+                            figure6, figure7, figure8), 1):
         fig, src = fn()
         d = save_figure(fig, f"fig{i}", FIG, source_data=src, script=__file__)
         plt.close(fig)

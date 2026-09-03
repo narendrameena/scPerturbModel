@@ -31,6 +31,16 @@ tool.
 > The estimator now recovers a known share with slope **0.950** (R² = 0.9995) and
 > returns 0.008 from data containing none. See `RESULTS.md` §27 and
 > `docs/novelty_audit.md`.
+>
+> **The defect is not ours alone (§29).** On TRADE's deposited data (Nadig et
+> al., *Nat Genet* 2025) — four cell lines, 2,052 essential-gene perturbations,
+> published standard errors — the same omission inflates the cell-type-dependent
+> share by **11.7 points when the statistic is noise-corrected and 3.4 when it is
+> not**. Our raw replication gives 39% consistent against their published 56%, so
+> it is **not reproduced** and no claim is made about their number; what this
+> establishes is that the effect appears in another group's data and another
+> perturbation modality. It does **not** appear in sci-Plex or CMap statistics as
+> we implemented them (§28), and both of those failed to reproduce too.
 
 > **Revision note (2026-08-31).** An earlier draft of this manuscript was titled
 > *"Transcriptional drug response transfers between cellular contexts to a degree
@@ -74,6 +84,19 @@ each plate's control noise and subtracts var(control)/2 from the pair covariance
 which drove the estimate to exactly zero in simulation while appearing correct in
 review. We release the decomposition and a per-pair query as a tool.
 
+The omission is not confined to this project. On the deposited data of Nadig et
+al. (*Nature Genetics* 2025) — four cell lines given the same 2,052
+essential-gene perturbations, with published standard errors — removing the same
+term shifts the cell-type-dependent share by **11.7 percentage points when the
+statistic is noise-corrected and 3.4 when it is not**, a 3.4-fold difference in a
+different perturbation modality. Our raw replication of that statistic gives 39%
+consistent against a published 56%, so it does not reproduce and we make no claim
+about their reported value. The correction must be a **contrast across contexts**:
+taken as an absolute per-context mean it captures the common growth-arrest
+programme those perturbations share (the four vectors correlate with each other
+at *r* = +0.51 and with the shared response at *r* = +0.80) and removes signal the
+statistic should keep.
+
 Applied across four atlases, the corrected interaction is dose-dependent, and
 transcriptional and viability context-dependence remain **decoupled** (ρ = −0.18
 across mechanism classes). Asking what predicts the corrected relation once per
@@ -92,8 +115,20 @@ rather than assumed from an identifier — against a reliability-matched control
 49%, so the effect is specific to identity rather than to measurement quality.
 Apportioned on a matched compound set, the **assay accounts for 81% of the loss
 and the laboratory 19%**, the opposite of what the unmatched comparison reports.
-Context count and replication, not cell count, are the binding constraints on
-what these atlases can answer.
+Separately, we ask what drug exposure does to the transcriptome geometrically.
+Against a held-out untreated cell line as the reference — a signal that is a pure
+shift by construction — drug responses are captured **two to five times less** by
+baseline directions at every dimension, so exposure moves cells into directions no
+untreated line occupies. It is not cytotoxic collapse (the off-axis share is 89%,
+86% and 90% at 0.05, 0.5 and 5 µM, already full-size where cells are not dying),
+it does not converge cell identity (between-line spread ratio 1.002/1.000/1.007,
+all *P* > 0.5), and it does not reorganise co-expression (gene–gene correlation
+across lines ρ = +0.998, mean absolute change 0.0127 against a permutation null of
+0.150). Exposure writes a **new drug-specific axis on top of an unchanged
+programme**, and that near-orthogonality is why a drug main effect can take 94.1%
+of the variance while the cell property and the cell–drug relation stay small and
+separable. Context count and replication, not cell count, are the binding
+constraints on what these atlases can answer.
 
 ---
 
@@ -129,7 +164,54 @@ question our data can pose but, as we show, not settle.
 
 ## Results
 
-### Estimating a context × compound interaction is fragile in four specific ways
+### A measured response is three things, and the middle one is usually discarded
+
+A response measured in a cellular context contains a drug effect, a property of
+the cell that has nothing to do with any drug, and the relation between the pair:
+
+    y(context, drug, dose) = β(drug, dose) + α(context) + γ(context, drug) + noise
+
+Only γ is context-dependence. α — a context's **general sensitivity**, how it
+responds to every compound, set by growth rate, seeding density and drug
+metabolism — is almost always left inside the residual, because the standard
+construction removes the perturbation mean and nothing else. Whatever makes one
+context respond strongly to everything then reads as that context responding
+*differently*.
+
+That term is not noise. Estimated on one half of a compound library it predicts
+the estimate on a disjoint half at **r = 0.989** across 737 PRISM cell lines, and
+**570 of 736 lines (77.4%)** carry a reproducible line-level shift at FDR < 0.05.
+Because it is identical across replicate detection plates, it survives every
+noise-cancelling device an estimator applies and lands directly in the replicate
+covariance that validates interactions. Ben-David et al. (2018) name the same
+axis: their most resistant MCF7 strains are resistant *in general*, through
+downregulated drug-metabolism pathways, not through anything drug-specific.
+
+Estimating all three terms as covariances between independent estimates, so that
+noise contributes zero to each:
+
+| component | share | variance |
+|---|---:|---:|
+| drug effect (identical in every context) | 94.1% | 1.6338 |
+| **cell property** (general sensitivity) | **2.0%** | 0.0343 |
+| **cell–drug relation** (interaction) | **3.9%** | 0.0683 |
+
+PRISM, 737 lines × 1,324 compounds. Interaction estimates that omit the middle
+term are inflated by roughly **1.5×**, and a claim that the variation is "a
+relation rather than a property" is not supportable — both are real, and the
+relation is 2.0× the larger.
+
+Two rules make the estimates honest. Both main effects must be estimated **out of
+fold** — β from other contexts, α from other perturbations — since an α computed
+with the perturbation included absorbs the interaction and biases it toward zero.
+And α must be estimated **within a replicate batch**: pooled across batches it
+carries a share of each batch's control noise and subtracts var(control)/2 from
+the pair covariance. In simulation that error drove the estimate to exactly
+**0.000** while appearing correct in review. With a planted general response of
+0, 0.5 and 1.0 SD the corrected estimator returns 0.211, 0.212 and 0.211 against
+a truth of 0.20, where the uncorrected one returns 0.170, 0.347 and 0.595.
+
+### Four further ways the estimate goes wrong, none visible in the output
 
 The interaction is naturally estimated as the covariance of response residuals
 between independent replicates of the same context × compound × dose. Four
@@ -259,7 +341,7 @@ mutational burden, and neighbouring recurrent variants that are synonymous. The
 same pipeline recovers 11 of 11 known biomarkers in GDSC (BRAF V600E ×
 dabrafenib, *P* = 3×10⁻³¹), so the negative is informative.
 
-### Cross-laboratory transfer is limited by the laboratory, not the assay
+### Cross-laboratory transfer is limited by the assay and by cell-line identity
 
 Against within-laboratory ceilings of r = 0.473 (PRISM replicate plates) and
 0.438 (GDSC1 vs GDSC2), the line-specific response transfers between institutions
@@ -302,6 +384,104 @@ the analysis on transcription gives **46%** (LINCS phase 1 vs phase 2 within-lab
 r = 0.061; Tahoe vs LINCS cross-lab 0.032), and the identity check behaves the
 same way: 16 of 16 name-matched lines are reciprocal best matches within the
 Broad, but only 3 of 6 across laboratories.
+
+### The same omission inflates another group's statistic, in another modality
+
+A defect in our own code becomes a methodological finding only if the same term
+sits inside statistics computed elsewhere. We tested three published
+context-specificity statistics on the publishing group's own data, under the rule
+that the published number must be reproduced first — a correction applied to a
+statistic we cannot reproduce measures our reimplementation, not their result.
+
+Two failed that test outright. Our implementation of the sci-Plex classification
+(Srivatsan et al. 2020) gives 74.4% cell-type-dependent against a published 48%,
+and our implementation of the CMap panel-conservation statistic (Subramanian et
+al. 2017) gives 5.0% against a published 26%. Neither reproduces, so neither says
+anything about those papers; and within our own versions the correction moves the
+statistic by only 1.01× and 1.15×, the latter in the opposite direction.
+
+The informative case is TRADE (Nadig et al. 2025), whose deposit carries
+**lfcSE beside every log2 fold change** for four cell lines given the same 2,052
+essential-gene perturbations over 6,642 shared genes. The standard errors make a
+noise-corrected version constructible, and four cell lines make the consistent
+component estimable as a between-line covariance, which noise cannot inflate
+because two lines are measured independently. Both forms are computed on
+identical data with the identical correction:
+
+| statistic | cell-line effect left in | removed | shift |
+|---|---:|---:|---:|
+| raw (noise included) | 61.5% cell-type-dependent | 58.1% | +3.4 points |
+| **noise-corrected** (covariance + published SEs) | 66.3% | **54.6%** | **+11.7 points** |
+
+The noise-corrected split moves **3.4× more**, a 1.21-fold inflation of the
+cell-type-dependent share. Sampling noise is 38% of the raw per-line variance
+here, which is why the raw form is comparatively inert — and why the two
+statistics above, computed on raw residuals, barely moved.
+
+**The correction must be a contrast across contexts, and this is easy to get
+wrong.** A first version subtracted each line's uncentred mean response across
+the other perturbations. Every perturbation in this deposit is an essential-gene
+knockdown, and knocking down any essential gene drives a common growth-arrest
+programme, so those four vectors correlate **with each other at r = +0.51** and
+with the cross-line shared response at **r = +0.80**: one shared programme, not
+four line properties. Subtracting it removed signal the statistic is meant to
+keep and drove the split the wrong way. Centred across lines, the same vectors
+correlate at **r = −0.53** between lines and −0.19 with the shared response, and
+behave as context properties should. Any application of this correction should
+report that diagnostic.
+
+Our raw replication gives 39% consistent against TRADE's published 56%, so this
+does not restate or correct their number. What it establishes is that the effect
+is not peculiar to us, to viability, or to chemical perturbation.
+
+### Drug exposure writes a new axis rather than reorganising the programme
+
+The decomposition treats the drug effect and the cell's own state as separable
+terms. Whether that is geometrically reasonable is testable: does exposure move
+cells along the directions in which untreated cells already differ, or into
+directions none of them occupies?
+
+The baseline programme space is the span of principal components of **untreated**
+pseudobulk across the Tahoe cell lines. Every component here is an inner product
+between deltas measured on **two independent plates**, because measurement noise
+is close to isotropic and lands outside any low-dimensional span — a purely noisy
+response would otherwise read as pure remodelling. From single observations the
+shift share is 8.5%; across plates it is 10.1%.
+
+The reference that makes the number readable is a **held-out untreated cell
+line**, a signal that is a shift by construction since it *is* line-to-line
+variation. Over 5,345 replicated conditions, with 36 lines fitting the span and
+12 held out:
+
+| baseline directions (k) | captures of a drug response | captures of a held-out untreated line |
+|---:|---:|---:|
+| 1 | 1.7% | 9.7% |
+| 5 | 6.2% | 22.1% |
+| 10 | 9.0% | 25.0% |
+| 20 | 12.2% | 29.6% |
+| 35 | 15.7% | 32.8% |
+
+Responses are captured **two to five times less at every k**. Exposure does not
+move cells along the axes that separate untreated lines; it adds one.
+
+Three controls fix what kind of change this is. It is **not cytotoxic collapse**:
+the off-axis share is 89%, 86% and 90% at 0.05, 0.5 and 5 µM — flat, and already
+at full size at the lowest dose, where cells are not dying. **Cell identity is
+preserved**: between-line spread, treated against the same lines untreated, has
+ratio 1.002 / 1.000 / 1.007 across the three doses (all *P* > 0.5), so lines stay
+exactly as far apart as they were. **Co-expression is untouched**: the gene–gene
+correlation structure across lines is essentially unchanged by treatment
+(ρ = +0.998 over 400 genes; mean absolute change 0.0127 against a
+label-permutation null of 0.150 [0.128, 0.173]) — a smaller change than any
+random split of the same samples produces.
+
+So exposure remodels expression, but additively: a new drug-specific axis laid on
+top of an unchanged programme, rather than reprogramming or convergence onto a
+common stress state. This is also the geometric reason the decomposition
+separates so cleanly — the drug axis is close to orthogonal to the axes on which
+cells differ, which is how a drug main effect can account for 94.1% of the
+variance while the cell property and the cell–drug relation remain small and
+separable.
 
 ### What the measurements imply for models
 
@@ -392,6 +572,28 @@ replicate across datasets needs no biological explanation, since a ~56%
 reproducible fraction concentrated in strong-interaction compounds suffices. What
 the loss consists of — divergent cultures, unmeasured protocol variables, or
 simply a noisy line-specific signal — we can bound but not resolve.
+
+Two results decide how far the central methodological claim travels. On TRADE's
+deposited data the same omission inflates a context-specificity statistic by 11.7
+percentage points when that statistic is noise-corrected and 3.4 when it is not —
+another group, another perturbation modality, four cell lines. That the effect is
+three times larger in the noise-corrected form is the general rule: an estimator
+built to remove noise concentrates what remains, and a context property is a
+large fraction of what remains. Statistics computed on raw residuals are mostly
+measuring noise, which is why our implementations of the sci-Plex and CMap
+statistics barely moved — though neither of those reproduced its published value,
+so they carry no weight either way. We make no claim about any published number,
+including TRADE's, which our raw implementation does not reproduce.
+
+The second result explains why the decomposition is well posed at all. Drug
+exposure moves cells into directions that untreated cells do not occupy — two to
+five times less captured by baseline axes than a held-out untreated line — while
+leaving cell identity and co-expression architecture intact. The drug axis is
+close to orthogonal to the axis on which cells differ. That is what allows a drug
+main effect to take 94.1% of the variance while a cell property and a cell–drug
+relation remain small, separable and individually measurable. Had exposure
+instead rotated cells onto their own baseline axes, the three terms would be
+confounded and no amount of estimator care would separate them.
 
 ### Limitations
 
@@ -581,3 +783,26 @@ correlation for MSI, and lineage stratification for allele associations.
    the same probe compounds — the gap between the two curves is what the model
    contributes beyond learning that a line responds strongly to everything.
    (c) Apparent model gain as a function of benchmark context count.
+7. **The omission inflates another group's statistic, in another perturbation
+   modality.** TRADE's deposited data (Nadig et al. 2025): four cell lines, 2,052
+   essential-gene perturbations, published standard errors. (a) The
+   consistent/cell-type-dependent split recomputed two ways on identical data,
+   with and without the cell-line main effect; the published value is marked.
+   (b) The shift the omission produces — 11.7 percentage points when the
+   statistic is noise-corrected against 3.4 when it is not. (c) The diagnostic
+   that decides whether the correction is a context property at all: uncentred,
+   the four lines' correction vectors correlate with **each other** at r = +0.51
+   and with the shared response at r = +0.80, so they are one growth-arrest
+   programme rather than four line properties; centred across lines they
+   correlate at r = −0.53 and behave correctly.
+8. **Drug exposure writes a new axis on top of an unchanged programme.** (a) How
+   much of a response k baseline directions capture, against how much they
+   capture of a held-out untreated cell line — a shift by construction.
+   Responses are captured two to five times less at every k. (b) The off-axis
+   share against dose: 89%, 86%, 90% at 0.05, 0.5, 5 µM, already full-size where
+   cells are not dying, so not cytotoxic collapse. (c) Between-line spread,
+   treated against the same lines untreated: unchanged at every dose, so cell
+   identity is preserved; gene–gene co-expression across lines is likewise
+   untouched (ρ = +0.998). Every component is an inner product between two
+   independent plates, since isotropic noise lands outside any low-dimensional
+   span and would otherwise read as remodelling.
