@@ -105,14 +105,20 @@ def build():
                 continue
             inter = max(cov / npair, 0.0)
             den = add + inter
+            # `spread` must be measured on a DISJOINT replicate from the one
+            # the interaction is estimated on. Using std of the replicate mean
+            # makes spread^2 = interaction + sigma^2/k algebraically, so the
+            # two correlate at +0.98 by construction and Test 1 was correlating
+            # a quantity with itself.
+            spread_disj = (float(np.nanstd(reps[valid, 0]))
+                           if reps.shape[1] >= 2 else np.nan)
             rows.append({
                 "compound": cpd, "dose": float(dose), "dose_rank": di + 1,
                 "n_dose": len(doses), "n_lines": n,
                 "cdi": inter / den if den > 0 else np.nan,
                 "interaction": inter,
-                # the quantity the explanation is about: how far apart the lines
-                # are at this dose, measured on the line-level responses
-                "spread": float(np.std(lm)),
+                "spread": float(np.std(lm)),          # kept for comparison
+                "spread_disjoint": spread_disj,       # measured on replicate 1
                 "mean_effect": float(np.mean(lm))})
     D = pd.DataFrame(rows)
     D["dose_pos"] = np.ceil(D.dose_rank / D.n_dose * 8).clip(1, 8).astype(int)
@@ -139,9 +145,23 @@ def main():
         if np.isfinite(r):
             rs.append(r)
     rs = np.array(rs)
+    rs_d = []
+    for _, g in D.groupby("compound", observed=True):
+        g = g.dropna(subset=["cdi", "spread_disjoint"])
+        if g.dose_pos.nunique() < 4:
+            continue
+        r = stats.spearmanr(g.spread_disjoint, g.cdi).statistic
+        if np.isfinite(r):
+            rs_d.append(r)
+    rs_d = np.array(rs_d)
     print(f"\n1. interaction vs between-line spread, within compound:")
-    print(f"   median rho = {np.median(rs):+.3f}, {(rs > 0).mean():.0%} "
-          f"positive, p = {stats.wilcoxon(rs)[1]:.2e} (n = {len(rs)})")
+    print(f"   shared-replicate spread (CIRCULAR: spread^2 = interaction + "
+          f"noise/k):\n     median rho = {np.median(rs):+.3f}, "
+          f"{(rs > 0).mean():.0%} positive (n = {len(rs)})")
+    if len(rs_d) > 10:
+        print(f"   DISJOINT-replicate spread (the valid test):\n     median "
+              f"rho = {np.median(rs_d):+.3f}, {(rs_d > 0).mean():.0%} "
+              f"positive, p = {stats.wilcoxon(rs_d)[1]:.2e} (n = {len(rs_d)})")
 
     # 2. do the two peaks coincide?
     pk = []
@@ -169,6 +189,33 @@ def main():
     below = float((P.peak_cdi < P.peak_effect).mean())
     print(f"\n3. the interaction peaks BELOW the dose of maximal killing for "
           f"{below:.0%} of compounds")
+
+    # Tests 2 and 3 need their own null. Both are statements about coincidence
+    # between peak POSITIONS, and both marginal distributions are highly
+    # concentrated (maximal killing is at the top dose for most compounds), so
+    # a large percentage can be pure chance. Permute the peak labels across
+    # compounds, preserving each marginal.
+    rngp = np.random.default_rng(0)
+    n_perm = 2000
+    null_same, null_w1, null_below = [], [], []
+    for _ in range(n_perm):
+        ps = rngp.permutation(P.peak_spread.to_numpy())
+        pe = rngp.permutation(P.peak_effect.to_numpy())
+        null_same.append(float((P.peak_cdi.to_numpy() == ps).mean()))
+        null_w1.append(float((np.abs(P.peak_cdi.to_numpy() - ps) <= 1).mean()))
+        null_below.append(float((P.peak_cdi.to_numpy() < pe).mean()))
+    def band(a):
+        return np.percentile(a, 2.5), np.percentile(a, 97.5)
+    print(f"\n   against a label-permutation null ({n_perm} permutations, "
+          f"marginals preserved):")
+    for lab, obs_, nul in (("peaks identical", same, null_same),
+                           ("within one position", within1, null_w1),
+                           ("peak below max killing", below, null_below)):
+        lo, hi = band(nul)
+        verdict = ("ABOVE null" if obs_ > hi else
+                   "BELOW null" if obs_ < lo else "AT CHANCE")
+        print(f"     {lab:24s} observed {obs_:.1%}   null "
+              f"{np.mean(nul):.1%} [{lo:.1%}-{hi:.1%}]   {verdict}")
 
     # discriminating test: does the relationship hold away from the ceiling?
     lowmid = D[D.dose_pos <= 6].dropna(subset=["cdi", "spread"])

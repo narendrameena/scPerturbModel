@@ -269,10 +269,19 @@ def main():
     A.to_csv(TAB / "genetic_architecture.csv", index=False)
 
     def line(lbl, col):
-        v = A[col]
+        # cluster bootstrap over compounds: a Wilcoxon here would treat 150
+        # correlated compounds as independent (effective n is about 11)
+        v = A[col].dropna()
+        rb = np.random.default_rng(0)
+        a_ = v.to_numpy()
+        bm = np.array([np.median(a_[rb.integers(0, len(a_), len(a_))])
+                       for _ in range(4000)])
+        lo, hi = np.percentile(bm, [2.5, 97.5])
         w = stats.wilcoxon(v)[1] if v.abs().sum() > 0 else np.nan
+        flag = "" if (lo > 0 or hi < 0) else "  <-- CI includes 0"
         print(f"  {lbl:44s} median {v.median():+.4f}  "
-              f"{(v > 0).mean():5.1%} positive  p={w:.2e}")
+              f"{(v > 0).mean():5.1%} positive  CI [{lo:+.4f},{hi:+.4f}]"
+              f"  (Wilcoxon p={w:.1e}){flag}")
 
     print(f"\n=== cross-validated R^2 across {len(A)} compounds ===")
     for lbl, col in (("lineage alone", "r2_lineage"),
