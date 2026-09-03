@@ -121,7 +121,11 @@ def main():
                 & ~tx.comparison.str.contains("validated")].r.median()
         xl = tx[tx.comparison.str.contains("Tahoe vs LINCS")
                 & ~tx.comparison.str.contains("validated")].r.median()
-        if np.isfinite(wl) and wl > 0:
+        # The transcriptional arm has no cross-laboratory comparison at all:
+        # after identity validation no (line, compound) pair is shared between
+        # Tahoe and LINCS. Checking prose for a value that does not exist would
+        # report a permanent failure and train the reader to ignore this audit.
+        if np.isfinite(wl) and wl > 0 and np.isfinite(xl):
             check(rows, "transcription reproducible fraction",
                   round(float(xl / wl), 3), f"{xl/wl*100:.0f}%", docs)
 

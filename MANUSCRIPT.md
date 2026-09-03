@@ -231,7 +231,7 @@ because the mean subtracted from replicate A still contains replicate B. Only
 removing the whole context eliminates the coupling. We additionally report the
 interaction against a **matched cross-context null**, which removes the residual
 construction offset without assuming its magnitude; where the signal is strong
-this changes nothing (LINCS phase 2: 45% → 47%), and where it is weak it was the
+this changes nothing (LINCS phase 2: 45% → 63%), and where it is weak it was the
 entire result. These guards are released as `pertdecomp`. Against a standard mixed-model
 decomposition on the same simulated data, the two agree to 0.051 where both are
 identifiable — ours is not a reinvention — but without replicates the mixed model
@@ -307,11 +307,11 @@ sample, across 150 compounds with 5-fold cross-validated ridge:
 
 | predictor block | median CV *R*² | compounds positive |
 |---|---|---|
-| **baseline expression** (2,000 genes) | **+0.0927** | **92.5%** |
-| **baseline protein** (RPPA, 214 antibodies) | **+0.0731** | 88.3% |
-| lineage | +0.0201 | 74.2% |
-| copy number (2,000 genes) | +0.0051 | 57.5% |
-| nonsynonymous variants | +0.0002 | 50.8% |
+| **baseline expression** (2,000 genes) | **+0.0998** | **99.2%** |
+| **baseline protein** (RPPA, 214 antibodies) | **+0.0763** | 88.3% |
+| lineage | +0.0251 | 86.7% |
+| copy number (2,000 genes) | +0.0075 | 57.5% |
+| nonsynonymous variants | +0.0012 | 18.3% |
 | mutational burden | −0.0023 | 32.0% |
 | synonymous variants | −0.0064 | 22.0% |
 
@@ -343,24 +343,31 @@ dabrafenib, *P* = 3×10⁻³¹), so the negative is informative.
 
 ### Cross-laboratory transfer is limited by the assay and by cell-line identity
 
-Against within-laboratory ceilings of r = 0.473 (PRISM replicate plates) and
-0.438 (GDSC1 vs GDSC2), the line-specific response transfers between institutions
-at r = 0.255 — **56% of what the assay achieves with itself**. The ceiling is
-itself low: even repeating a measurement in one laboratory, the line's
-compound-specific deviation agrees at only r ≈ 0.45.
+Against within-laboratory ceilings of r = 0.685 (PRISM replicate plates) and
+0.365 (GDSC1 vs GDSC2), the line-specific response transfers between institutions
+at r = 0.290 — **57.9% [49.0–77.5%] of what the assay achieves with itself**. The
+ceiling is itself low: even repeating a measurement in one laboratory, the line's
+compound-specific deviation agrees at only r ≈ 0.5.
 
 Cross-atlas comparisons assert that a line in one atlas is the same as a line in
 another, from an identifier that is never checked. Verifying it — each line must
 be its own best match among all candidates by **response fingerprint**, its
 residual across the compounds both atlases share — shows the assertion usually
 fails: of 488 COSMIC→DepMap-matched lines, **only 5–12% are their own best
-match**, ranking a median 82nd of 971 candidates. That is far better than chance
+match**, ranking a median 82nd of 971 candidates. Pairing each line with its
+single best fingerprint match instead of its identifier raises agreement to
+r = 0.427, against 0.241 for identifier matching and 0.048 for a same-tissue
+random line — an upper bound the atlas's own design does not let us reach. That is far better than chance
 (~486), so identity carries real information; it is simply not unique.
 
-**Verifying identity raises transfer from 56% to 87% of the ceiling.** This is
-not circular: identity is validated on one random half of the shared compounds
-and agreement measured on the disjoint other half (all-lines control on the same
-held-out compounds: 59%). We initially attributed this to detecting divergent
+**Verifying identity raises transfer from 57.9% to 98.0% of the ceiling**
+[47.0–116.2%], measured against a ceiling computed on the same lines and
+compounds; against the all-lines ceiling it reads 110%, which a fraction of a
+ceiling cannot be. This is not circular: identity is validated on one random half
+of the shared compounds and agreement measured on the disjoint other half. A
+reliability-matched control — lines selected for how well they are measured
+rather than for identity — reaches only 49%, so the gain is specific to
+identity. We initially attributed this to detecting divergent
 cultures; baseline expression does not support that (below), so the gain is
 reported as a practical filter whose mechanism is unresolved.
 
@@ -491,7 +498,7 @@ can achieve.
 
 **The baseline they must beat depends on how many contexts it averages.** The
 perturbation-mean prediction improves monotonically with the number of contexts
-it is estimated from: r = 0.550 at 2 contexts, 0.592 at 3, 0.625 at 6, 0.654 at
+it is estimated from: r = 0.557 at 2 contexts, 0.592 at 3, 0.625 at 6, 0.660 at
 18 and 0.666 at 45. A model that is *equally good everywhere* would therefore
 appear **21% stronger** against a 2-context baseline than against an 18-context
 one.
@@ -521,7 +528,7 @@ headline context-generalisation setting supplies each model with 30% of the
 perturbations in the test context, making it an *underrepresented* rather than
 unseen context — so the two results corroborate each other.
 
-**The ceiling on cross-atlas training is 56–87% of an assay's own
+**The ceiling on cross-atlas training is 58–98% of an assay's own
 reproducibility.** A model trained on one atlas and applied to another is
 predicting a quantity that transfers at just over half the within-laboratory
 ceiling if cell lines are matched by identifier, and close to the ceiling if
@@ -623,18 +630,23 @@ a factorial design; a cross-laboratory comparison with the assay held exactly
 fixed would settle it, and CTRP would have provided one but its NCI data portal
 has been retired.
 
-*Identity verification, and a correction.* Every cell line in the
-cross-laboratory comparison passes STR profiling — PRISM excludes failures from
-its released screen, so all 738 screened lines are authenticated — which rules
-out outright misidentification and leaves metric noise and culture drift within
-correctly labelled lines as the explanations. We first read reciprocal-best-hit
-failure as evidence of culture divergence. Baseline expression, now obtained from
-the legacy CCLE distribution, does not support that: for the 423 lines whose
-identifier match was outranked, the outranking line sits at a median expression
-rank of **306 of 798** (chance 399) and shares the primary tissue only **7%** of
-the time. Genuine divergence would place the better match among close relatives;
+*Identity verification, and two corrections.* An earlier draft asserted that
+every line in the cross-laboratory comparison passes STR profiling, PRISM having
+excluded failures from its released screen. That is **false**: the status is
+recoverable only from `row_name`, where 10 of the screened lines carry
+`FAILED_STR` records, and the released count is **737 lines, not 738** — the
+extra line was an artefact of parsing `pool_line_FAILED_STR` on its last
+underscore, which returned the literal string `STR` for eight rows and averaged
+eight different cell lines into one fabricated line. Outright misidentification
+is therefore not excluded, though it is rare.
+
+We also first read reciprocal-best-hit failure as evidence of culture
+divergence. Baseline expression, obtained from the legacy CCLE distribution, does
+not support that: for the **435** lines whose identifier match was outranked, the
+outranking line sits at a median expression rank of **327 of 796** (chance 398)
+and shares the primary tissue only **6%** of the time. Genuine divergence would place the better match among close relatives;
 a near-random partner instead indicates the best-hit is largely fingerprint
-noise. The held-out gain from 59% to 87% stands, but its mechanism does not — it
+noise. The held-out gain, now 57.9% to 98.0%, stands, but its mechanism does not — it
 selects lines whose cross-laboratory signal is strong and self-consistent, which
 is a useful filter, not a demonstrated detector of divergent cultures. The 5–12%
 figure characterises the metric's resolution, not the rate of identity problems.
