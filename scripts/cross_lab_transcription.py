@@ -82,11 +82,20 @@ def load_lincs(gctx, inst_info, gene_info, tag):
     for k, gg in meta.groupby("k", observed=True):
         pos = {c: i for i, c in enumerate(M.index)}
         by_line = {}
+        acc = {}
         for cid, gl in gg.groupby("cell_id", observed=True):
             ii = [pos[x] for x in gl.index]
-            # LINCS appends assay suffixes (A549.311, HELA.311); strip them and
-            # normalise, or the key never meets Tahoe's cell_name
-            by_line[norm(str(cid).split(".")[0])] = X[ii].mean(0)
+            # LINCS appends assay suffixes (A549.311, HELA.311). Stripping them
+            # makes several ids collide -- ASC/ASC.C, NPC/NPC.CAS9/NPC.TAK,
+            # SKL/SKL.C -- and plain dict assignment silently DISCARDED the
+            # earlier groups, dropping 12,313 of 21,627 instances in colliding
+            # groups. Accumulate and average instead. NPC.CAS9 is a Cas9
+            # derivative rather than the same culture, so this is a compromise;
+            # it is at least no longer a silent last-wins.
+            k = norm(str(cid).split(".")[0])
+            acc.setdefault(k, []).append(X[ii])
+        for k, mats in acc.items():
+            by_line[k] = np.concatenate(mats, axis=0).mean(0)
         if len(by_line) < 2:
             continue
         names = list(by_line)
@@ -234,12 +243,27 @@ def load_sciplex(path):
     tot = X.sum(1, keepdims=True)
     X = np.log1p(X / np.where(tot > 0, tot, 1) * 1e6).astype(np.float32)
     genes = np.array([str(g) for g in a.var_names])
+    # Subtract each line's own vehicle. Without it the "residual" is baseline
+    # expression: measured against the file's own control wells, the previous
+    # residuals correlated with the same line's vehicle at median r = 0.898.
+    veh = {}
+    for cl, gl in obs[obs.k.isin({"control", "vehicle", "dmso"})].groupby(
+            "cl", observed=True):
+        ii = [obs.index.get_loc(i) for i in gl.index]
+        veh[cl] = X[ii].mean(0)
+    if not veh:
+        print("  sciPlex3: no vehicle wells found; arm skipped", flush=True)
+        return {}, genes
     out = {}
     for k, gg in obs.groupby("k", observed=True):
+        if k in {"control", "vehicle", "dmso"}:
+            continue
         by_line = {}
         for cl, gl in gg.groupby("cl", observed=True):
+            if cl not in veh:
+                continue
             ii = [obs.index.get_loc(i) for i in gl.index]
-            by_line[cl] = X[ii].mean(0)
+            by_line[cl] = X[ii].mean(0) - veh[cl]
         if len(by_line) < 2:
             continue
         names = list(by_line)
@@ -368,10 +392,21 @@ def main():
     # non-identity-validated rows only, and excluding sciPlex3, whose three
     # contexts make its leave-one-context-out residual a different quantity
     # (see RESULTS.md 23). Pooling those rows in silently moved this number.
-    within = R[R.comparison.str.contains("within-lab")
-               & ~R.comparison.str.contains("validated")].r.median()
-    cross = R[R.comparison.str.contains("Tahoe vs LINCS")
-              & ~R.comparison.str.contains("validated")].r.median()
+    # Use ONE cross-lab comparison, not the pooled pair: 228 of the 489 pooled
+    # rows were the same (line, compound) counted twice, once against phase 1
+    # and once against phase 2. And measure the ceiling on the SAME (line,
+    # compound) pairs as the numerator, which the previous ratio did not --
+    # it divided 489 cross-lab pairs over 3-6 lines by 5,803 within-lab pairs
+    # over 16 lines.
+    wl_all = R[R.comparison.str.contains("within-lab")
+               & ~R.comparison.str.contains("validated")]
+    xl = R[(R.comparison == "Tahoe vs LINCS p1 (CROSS-LAB)")]
+    keys = set(zip(xl.line, xl.compound))
+    wl_m = wl_all[[(l, c) in keys for l, c in zip(wl_all.line, wl_all.compound)]]
+    within = float(wl_m.r.median()) if len(wl_m) >= 20 else float(wl_all.r.median())
+    cross = float(xl.r.median()) if len(xl) else np.nan
+    print(f"\nmatched ceiling: {len(wl_m)} within-lab pairs sharing a "
+          f"(line, compound) with the {len(xl)} cross-lab pairs", flush=True)
     if np.isfinite(within) and np.isfinite(cross) and within > 0:
         print(f"\nwithin-lab (Broad, p1 vs p2): {within:.3f}")
         print(f"cross-lab (Tahoe vs LINCS):   {cross:.3f}")

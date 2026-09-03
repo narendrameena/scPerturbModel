@@ -304,6 +304,7 @@ def decompose(adata, context: str, perturbation: str, control,
     # rather than a sample of them, and the resulting interval did not even
     # bracket the point estimate. Reservoir sampling keeps a uniform draw.
     kept_pairs: list[float] = []
+    kept_blocks: list = []          # perturbation id, for the block bootstrap
     _seen = [0]
     RESERVOIR = 200000
 
@@ -327,12 +328,13 @@ def decompose(adata, context: str, perturbation: str, control,
                     cov += c_; n += 1
                     if not same_batch:
                         _seen[0] += 1
+                        pk = K.pert.iat[v[a]]
                         if len(kept_pairs) < RESERVOIR:
-                            kept_pairs.append(c_)
+                            kept_pairs.append(c_); kept_blocks.append(pk)
                         else:
                             j = int(rng.integers(0, _seen[0]))
                             if j < RESERVOIR:
-                                kept_pairs[j] = c_
+                                kept_pairs[j] = c_; kept_blocks[j] = pk
         return cov, n
 
     def null_cov():
@@ -394,9 +396,22 @@ def decompose(adata, context: str, perturbation: str, control,
     # much of the difference between datasets is resolvable.
     share_ci = (float("nan"), float("nan"))
     if len(kept_pairs) >= 100:
+        # BLOCK bootstrap over perturbations. Resampling pairs i.i.d. treats
+        # every pair as independent, but each residual vector appears in many
+        # pairs and every pair is a mean over the same genes; a coverage
+        # experiment put the implied sd 3.9x below the actual spread of the
+        # estimate across independent datasets, which is why intervals came out
+        # as narrow as +/-0.25 points on a 57% quantity.
         arr = np.asarray(kept_pairs)
-        b = np.array([arr[rng.integers(0, len(arr), len(arr))].mean()
-                      for _ in range(300)])
+        blocks = np.asarray(kept_blocks)
+        uniq = np.unique(blocks)
+        idx_by_block = {b_: np.where(blocks == b_)[0] for b_ in uniq}
+        b = []
+        for _ in range(300):
+            pick = rng.choice(uniq, len(uniq), replace=True)
+            sel = np.concatenate([idx_by_block[b_] for b_ in pick])
+            b.append(arr[sel].mean())
+        b = np.array(b)
         lo, hi = np.percentile(b - offset, [2.5, 97.5])
         share_ci = (float(max(lo, 0) / (additive + max(lo, 0))),
                     float(max(hi, 0) / (additive + max(hi, 0))))
@@ -435,7 +450,17 @@ def decompose(adata, context: str, perturbation: str, control,
                 if K.loc[i, differ] != K.loc[j, differ] and \
                         K.rep[i] != K.rep[j] and K.batch[i] != K.batch[j]:
                     out.append((i, j))
-        return np.array(out[:max_pairs]) if out else np.empty((0, 2), int)
+        # Truncating the prefix samples groupby ORDER, not pairs: the
+        # "across replicates" row was drawn from six alphabetically-first
+        # contexts while "across perturbations" covered all 47, so the defining
+        # contrast compared statistics from different parts of the atlas. The
+        # same bug was fixed for the bootstrap and missed here.
+        if not out:
+            return np.empty((0, 2), int)
+        out = np.array(out)
+        if len(out) > max_pairs:
+            out = out[rng.choice(len(out), max_pairs, replace=False)]
+        return out
 
     crecs = []
     for label, (m, d) in {

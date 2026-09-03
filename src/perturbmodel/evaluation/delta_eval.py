@@ -100,15 +100,28 @@ def build_deltas(X: np.ndarray, cond: pd.DataFrame,
 def additive_prior(G: pd.DataFrame, DELTA: np.ndarray,
                    train_mask: np.ndarray, loo: bool = False) -> np.ndarray:
     """Additive-shift prior per row of G: mean TRAIN delta of the same
-    (drug, conc). With loo=True a train row's own delta is excluded from its
-    prior (prevents target leakage when the prior is a model input).
+    (drug, conc). With loo=True the row's whole CONTEXT is excluded from its
+    prior -- not merely the row -- so a per-plate build cannot leak a
+    condition's own replicate into its own prior.
     Rows with no available train delta get a zero prior."""
     sums: dict = {}
     counts: dict = {}
+    # Leave-one-out must remove the whole CONTEXT, not just the row. With
+    # keep_plate=True the same (line, drug, conc) appears once per plate, so
+    # removing row i alone leaves that condition's own replicate in its prior --
+    # 23.7% of rows in the full Tahoe build share a triple with another row, and
+    # for those the "leave-one-out" prior was still self-informed.
+    has_line = "cell_line_id" in G.columns
+    csums: dict = {}
+    ccounts: dict = {}
     for i in np.where(train_mask)[0]:
         k = (G.drug[i], G.conc[i])
         sums[k] = sums.get(k, 0.0) + DELTA[i]
         counts[k] = counts.get(k, 0) + 1
+        if has_line:
+            ck = (G.drug[i], G.conc[i], G.cell_line_id[i])
+            csums[ck] = csums.get(ck, 0.0) + DELTA[i]
+            ccounts[ck] = ccounts.get(ck, 0) + 1
     P = np.zeros_like(DELTA)
     for i in range(len(G)):
         k = (G.drug[i], G.conc[i])
@@ -116,8 +129,13 @@ def additive_prior(G: pd.DataFrame, DELTA: np.ndarray,
             continue
         s, c = sums[k], counts[k]
         if loo and train_mask[i]:
-            if c > 1:
-                P[i] = (s - DELTA[i]) / (c - 1)
+            if has_line:
+                ck = (G.drug[i], G.conc[i], G.cell_line_id[i])
+                s_, c_ = s - csums.get(ck, 0.0), c - ccounts.get(ck, 0)
+            else:
+                s_, c_ = s - DELTA[i], c - 1
+            if c_ > 0:
+                P[i] = s_ / c_
         else:
             P[i] = s / c
     return P
