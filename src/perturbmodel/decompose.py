@@ -344,10 +344,10 @@ def decompose(adata, context: str, perturbation: str, control,
             ctx_ok[i] = True
     n_drop = int((~ctx_ok).sum())
     if ctx_ok.sum() < MIN_PAIRS_GLOBAL:
-        warnings.warn(
+        warnings.append(
             f"only {int(ctx_ok.sum())} conditions have >=3 perturbations in "
             f"their context, so the general-context response cannot be removed; "
-            f"the interaction estimate will include it and is an upper bound.")
+            f"the interaction estimate includes it and is an UPPER BOUND")
     else:
         RA = RA - CA
         RB = RB - CB
@@ -356,8 +356,8 @@ def decompose(adata, context: str, perturbation: str, control,
                              PA[ctx_ok], PB[ctx_ok])
         K.index = np.arange(len(K))
         if n_drop:
-            warnings.warn(f"dropped {n_drop} conditions whose context had <3 "
-                          f"perturbations, so no general-response estimate")
+            warnings.append(f"dropped {n_drop} conditions whose context had "
+                            f"<3 perturbations, so no general-response estimate")
     R = 0.5 * (RA + RB)          # for the descriptive residual correlations
 
     # reproducible interaction, cross-batch pairs only

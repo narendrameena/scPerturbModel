@@ -20,7 +20,7 @@ tool.
 > | claim | was | now |
 > |---|---|---|
 > | the interaction is a **pair** property, not a cell property | our top-ranked novel result; contradicted Lim & Pavlidis (*Sci Rep* 2021) | **withdrawn.** A cell-line responsiveness factor exists as published. The relation is **2.0× the property** (3.9% vs 2.0%) — a measurement, not a refutation |
-> | interaction shares | e.g. Tahoe 11.5%, LINCS-1 57% | inflated ~**1.5×**; drug 94.1% / cell property 2.0% / relation 3.9% in PRISM |
+> | interaction shares | e.g. Tahoe 11.5%, LINCS-1 57% | **Tahoe falls to 0.5% [0.0–1.5%], *P* = 0.10 — not detectable at same dose.** OP3 33.1%, sciPlex3 30.2%. PRISM: drug 94.1% / cell property 2.0% / relation 3.9% |
 > | title / apportionment | laboratory 84% of the loss | **assay 81%, laboratory 19%** on the 75 compounds all three rungs share |
 > | identity-validated transfer | 87% | **98%** against a ceiling on the same lines; a reliability-matched control gives 49%, so the effect is identity-specific |
 > | expression over genotype | 92.5% of compounds | **119/120 (99.2%)** beat their own permutation null; mutations 22/120, zero compounds mutation-only (p = 1×10⁻²⁹) |
@@ -46,8 +46,9 @@ tool.
 > *"Transcriptional drug response transfers between cellular contexts to a degree
 > set by drug mechanism."* That framing has been withdrawn. The mechanism ranking
 > is significant within Tahoe-100M (P = 6.0×10⁻⁴) but does **not** reproduce
-> against LINCS phase 1 (ρ = +0.09) or PRISM viability (ρ = −0.09 over 67
-> classes, a well-powered null). The earlier supporting value of ρ = +0.56 was
+> against LINCS phase 1 (ρ = +0.19) or PRISM viability (ρ = −0.18) — though on
+> only 11–12 shared mechanism classes, so this is an absence of evidence rather
+> than the well-powered null an earlier draft claimed. The supporting ρ = +0.56 was
 > produced by a biased per-perturbation estimator and does not survive its
 > correction. The paper below is built on what replicates.
 
@@ -84,6 +85,19 @@ each plate's control noise and subtracts var(control)/2 from the pair covariance
 which drove the estimate to exactly zero in simulation while appearing correct in
 review. We release the decomposition and a per-pair query as a tool.
 
+Replication is what makes any of this measurable, and it is routinely discarded.
+Tahoe-100M contains a deliberate biological replicate — plate 14 duplicates plate
+6 across 50 lines and 95 compounds — which its authors withhold from training and
+which downstream pipelines therefore drop. Retaining it, **13.5% of (line,
+compound, dose) combinations are replicated, and at matched dose the interaction
+is 0.5% [0.0–1.5%] of reproducible variance, not distinguishable from zero**
+(*P* = 0.10, 11,492 replicate pairs, which bound it below 1.5%). Dropping the
+replicate plate leaves only cross-dose pairs, which are not replicates and
+**inflate the estimate eighteen-fold, to 9.2%**. The largest atlas built for this
+purpose therefore cannot resolve, at 95.6 million cells, the quantity it is
+quoted for. Where the interaction is resolvable it is real but modest: 33.1% of
+reproducible variance in OP3 and 30.2% in sci-Plex 3.
+
 The omission is not confined to this project. On the deposited data of Nadig et
 al. (*Nature Genetics* 2025) — four cell lines given the same 2,052
 essential-gene perturbations, with published standard errors — removing the same
@@ -98,8 +112,10 @@ at *r* = +0.51 and with the shared response at *r* = +0.80) and removes signal t
 statistic should keep.
 
 Applied across four atlases, the corrected interaction is dose-dependent, and
-transcriptional and viability context-dependence remain **decoupled** (ρ = −0.18
-across mechanism classes). Asking what predicts the corrected relation once per
+transcriptional and viability context-dependence show no detectable agreement
+(ρ = −0.18 against PRISM, +0.19 against LINCS phase 1) — though with only 11–12
+mechanism classes shared between platforms this is an underpowered comparison,
+not a demonstrated decoupling. Asking what predicts the corrected relation once per
 compound, against that compound's own permutation null with FDR across the
 family, **baseline expression beats its null in 119 of 120 compounds (99.2%)**,
 lineage in 104, and **genome-wide mutation status in 22**, whose median
@@ -220,10 +236,10 @@ output. On our data:
 
 | shortcut | why it fails | measured cost |
 |---|---|---|
-| residual **variance** instead of replicate covariance | noise does not cancel | 82% "interaction" against a true value near zero |
-| pooling **same-batch** comparisons | batch state is shared signal | within-plate pairs agree ~7× better than cross-plate; 41% vs 28% |
+| residual **variance** instead of replicate covariance | noise does not cancel | 66% "interaction" from data containing none; 72% at a true share of 20% |
+| pooling **same-batch** comparisons | batch state is shared signal | within-plate pairs agree ~7× better than cross-plate; 41% against a true share of 20%, and 28% from data containing none |
 | **in-sample** shared response | residuals sum to zero, forcing E[r_a·r_b] = −σ²/n | per-drug covariance driven negative for 21 of 24 drugs; clamping then yields exact zeros |
-| treating **doses as replicates** | doses are different conditions | 11.5% on true replicates vs 20.7% cross-dose — nearly double (Tahoe, plate 6 vs 14) |
+| treating **doses as replicates** | doses are different conditions | 0.5% on true replicates vs 9.2% cross-dose — an 18× inflation (Tahoe, plate 6 vs 14) |
 
 The third has a counterintuitive property worth stating because we got it wrong
 twice: the obvious repair, leave-one-*condition*-out, makes the bias *worse*,
@@ -260,14 +276,25 @@ replication to 5.4%. Measured against a matched cross-context null:
 
 | pairing | pairs | interaction share | *P* vs null |
 |---|---|---|---|
-| **true replicate** (same line, compound **and dose**) | 11,492 | **11.5% [10.5–12.5%]** | 2×10⁻⁷ |
-| cross-dose (what remains without plate 14) | 67,744 | 20.7% [20.5–20.9%] | 1×10⁻³² |
-| pooled | 79,236 | 19.5% [19.3–19.8%] | 7×10⁻²⁸ |
+| **true replicate** (same line, compound **and dose**) | 11,492 | **0.5% [0.0–1.5%]** | 0.10 |
+| cross-dose (what remains without plate 14) | 67,744 | 9.2% [9.0–9.4%] | 6×10⁻¹¹ |
+| pooled | 79,236 | 8.0% [7.8–8.3%] | 9×10⁻⁸ |
 
-The interaction is real and well determined at **11.5%**, and the cross-dose
-pairing **nearly doubles it**. That pairing also attenuates with dose separation
-(ρ = −0.020, *P* = 2×10⁻⁷), as expected if those pairs are different conditions
+**At same-dose replicates, Tahoe shows no detectable context × compound
+interaction**: 0.5%, with a confidence interval reaching zero and *P* = 0.10. The
+interval is informative rather than merely powerless — with 11,492 replicate
+pairs it bounds the interaction below 1.5%. The cross-dose pairing does not
+"nearly double" this figure, as an earlier draft reported from a residual that
+still contained each line's general response; it **manufactures almost all of
+it**, turning 0.5% into 9.2%. That pairing also attenuates with dose separation
+(ρ = −0.031, *P* = 8×10⁻¹⁶), as expected if those pairs are different conditions
 rather than repeats.
+
+This is the paper's sharpest demonstration and its most uncomfortable one. The
+atlas built specifically to support this measurement, at 95.6 million cells,
+cannot resolve the quantity it is quoted for once the cell's own general response
+is removed. What was previously reported as an 11.5% interaction was
+predominantly that general response.
 
 LINCS phase 1, with 6.1 million same-dose cross-plate pairs across 2,834
 compounds and 70 lines, gives **43% shared / 57% interaction** — a different
@@ -287,19 +314,30 @@ is little left to differ about. The rising limb replicates in LINCS transcriptio
 response (+74% vs +36%), which is why the ratio rises. A context-dependence index
 is therefore only comparable at matched dose.
 
-### Transcriptional and viability context-dependence are decoupled
+### Transcriptional and viability context-dependence cannot be shown to agree
 
 With every dataset on one corrected estimator, mechanism structures
 context-dependence *within* Tahoe (Kruskal–Wallis *P* = 6.0×10⁻⁴ across 24
-classes) but the ordering does not transfer: ρ = +0.09 (n.s.) against LINCS phase
-1 and **ρ = −0.09 against PRISM viability over 67 shared classes — a well-powered
-null**. A drug whose transcriptional response is highly line-specific is not
-thereby a drug whose killing is line-specific. Since the two readouts are used
-interchangeably as "drug response", this is a substantive caution.
+classes) and within PRISM (*P* = 2×10⁻¹⁶ across 67 classes), but we cannot show
+that the ordering transfers. Across the mechanism classes both platforms measure,
+ρ = −0.18 against PRISM viability and +0.19 against LINCS phase 1 — neither
+significant.
+
+**This is an underpowered comparison, not a demonstrated decoupling.** Only
+**11–12 mechanism classes** clear the minimum class size on both platforms, and
+at that n even ρ = 0.6 would not reach significance, so these correlations are
+consistent with anything from strong agreement to strong disagreement. An earlier
+draft reported this as "ρ = −0.09 over 67 shared classes — a well-powered null";
+the class count was wrong by six-fold and the power claim was unsupportable. What
+the data support is the weaker statement that a transcriptional
+context-dependence index and a viability one are **not interchangeable without
+evidence**, and that the evidence is not yet available at this n. Establishing
+either agreement or decoupling needs a platform pair sharing far more mechanism
+classes than any we have.
 
 ### Molecular state predicts the interaction; genotype does not
 
-At 738 PRISM cell lines the genotype scan recovers the clinical biomarker set de
+At 737 PRISM cell lines the genotype scan recovers the clinical biomarker set de
 novo (TP53 with MDM2 inhibitors, BRAF with vemurafenib and dabrafenib, PIK3CA
 with alpelisib, KRAS with a MEK inhibitor; 80 associations at FDR < 0.05 over 1.5
 million tests), confirming the estimator and the genotype join. But out of
@@ -377,10 +415,13 @@ Identifier matching beats same-tissue pairing decisively (*P* = 1.5×10⁻¹²�
 identity carries information well beyond lineage — but the best available partner
 reaches nearly twice what the identifier finds.
 
-Apportioning the loss across the ladder — repeat plates (0.473) → different assay
-version within one laboratory (0.438) → different laboratory and assay (0.255) —
-**changing assay costs 16% of the total drop and changing laboratory the
-remaining 84%.**
+Apportioning the loss across the ladder — repeat plates (0.685) → different assay
+version within one laboratory (0.365) → different laboratory and assay (0.290) —
+**changing assay costs 81% of the total drop and changing laboratory the
+remaining 19%** (CI on the laboratory share [−6%, 38%], which includes zero). The
+apportionment must be computed on compounds all three rungs share: on the 1,435 /
+123 / 187 different compounds each rung happened to cover, it inverts to 84%
+laboratory, which is what an earlier draft reported and what its title asserted.
 
 Transfer scales steeply with signal strength (ρ = +0.54, *P* = 1.8×10⁻²⁹): the
 strongest quartile of compounds transfers *at* the within-laboratory ceiling,
@@ -517,10 +558,10 @@ should report the number of contexts behind their mean baseline.
 
 **Prediction for an unseen context cannot come from a context descriptor.** No
 line-level feature we tested recovers a new line's interaction — driver
-mutations, tissue, baseline transcriptome, DNA methylation — and §17 explains
+mutations, tissue, baseline transcriptome, DNA methylation — and the decomposition above explains
 why the search was ill-posed rather than merely underpowered: the interaction is
 a property of a *pairing*, and the best available descriptor, baseline
-expression, reaches only ≈9% of it. What does work is measurement: profiling
+expression, reaches only ≈10% of it. What does work is measurement: profiling
 roughly **20 arbitrary compounds** in the new line and fine-tuning recovers 98%
 of the achievable gain, and designing that probe panel does not beat choosing it
 at random. State reaches the same conclusion from the opposite direction — its
@@ -549,18 +590,20 @@ Three conclusions follow, in increasing order of consequence for how these
 atlases are built and used.
 
 **The estimator must be stated, because it decides the answer.** The same data
-yield 82%, 41%, 28%, 21.6% or 0% interaction depending on choices that are rarely
+yield 66%, 41%, 28%, 20.2% or 0% interaction depending on choices that are rarely
 reported: variance or covariance, pooled or cross-batch, in-sample or
 leave-one-context-out prior, doses or true replicates as the replicate axis. Any
 figure quoted for "the context-specific fraction" is uninterpretable without
 them.
 
 **Replication is what gets discarded, not what is missing.** Tahoe-100M was
-built with a replicate plate and can measure the interaction — 11.5%
-[10.5–12.5%]. The problem is that the replicate plate is withheld from training
-by convention, and pipelines inherit that exclusion, leaving a cross-dose pairing
-that doubles the estimate. We made this mistake ourselves and reported the
-opposite conclusion before catching it. The practical recommendation is
+built with a replicate plate, and it is the only reason we can say anything about
+the interaction there at all — which turns out to be that it is **not detectable
+at same dose** (0.5%, CI [0.0–1.5%]). The replicate plate is withheld from
+training by convention and pipelines inherit that exclusion, leaving a cross-dose
+pairing that reports 9.2% instead. We made this mistake ourselves, twice: first
+by dropping the replicate plate, then by leaving the line's general response in
+the residual, which is what made the corrected 0.5% look like 11.5%. The practical recommendation is
 therefore analytical rather than architectural: **keep the replicate plate in
 when measuring, and never treat doses as replicates.** Where atlases genuinely
 are short is contexts — the power curve gives 4% recovery of genotype
@@ -568,11 +611,12 @@ associations at 47 contexts against 72% at 400 — so an atlas of roughly 400
 lines with two plates per condition and one-tenth the cells per condition remains
 the design target.
 
-**Cross-atlas integration should verify identity, not assume it.** The
-laboratory step costs 84% of the loss and the assay step 16%, so the problem is
-not protocol; and much of the loss is recoverable: checking that a line is its own best
-match by response fingerprint lifts transfer from 56% to 87% of the achievable
-ceiling. Combined with weighting compounds by the strength of their line-specific
+**Cross-atlas integration should verify identity, not assume it.** The assay
+step costs 81% of the loss and the laboratory step 19%, so the problem is largely
+protocol rather than institution; and much of the loss is recoverable: checking
+that a line is its own best match by response fingerprint lifts transfer from
+57.9% to 98.0% of the achievable ceiling, against a reliability-matched control
+at 49%. Combined with weighting compounds by the strength of their line-specific
 component, this is a cheap and immediate improvement to any analysis that pools
 atlases. It also dissolves one puzzle of our own: the mechanism ranking's failure to
 replicate across datasets needs no biological explanation, since a ~56%
@@ -607,6 +651,24 @@ confounded and no amount of estimator care would separate them.
 *Design.* These are computational analyses of existing data, with no new
 experiments and no prospective validation.
 
+*The mechanism comparison is underpowered.* Only 11–12 mechanism classes clear
+the minimum class size on both a transcriptional and a viability platform, so the
+cross-platform correlations (ρ = −0.18 against PRISM, +0.19 against LINCS phase
+1) exclude almost nothing. We report them as an absence of evidence, not as
+evidence of decoupling; an earlier draft called them "a well-powered null" over
+67 classes, which was wrong on both counts.
+
+*The transcriptional arm has no cross-laboratory test.* After identity
+validation, no (line, compound) pair is shared between Tahoe and LINCS, so every
+cross-laboratory number in this paper rests on viability. Whether transfer
+behaves the same way transcriptionally is untested here.
+
+*One atlas carries the apportionment.* The three-way variance split is measured
+in PRISM alone. TRADE provides an independent demonstration that the omission
+matters (Results), but not an independent estimate of the three shares, which may
+differ by assay, by perturbation class and by panel composition.
+
+
 *Only two laboratories.* Every cross-laboratory result rests on the Broad and the
 Sanger. A third was attempted twice and not achieved: NCI-60 is unreachable
 without a browser session and CTRP's portal is retired, while sciPlex3 — a
@@ -616,7 +678,7 @@ mean of two lines against LINCS's mean of sixty-nine. This is the single most
 valuable thing new data could add, and it is why the laboratory-versus-assay
 apportionment is quoted with an interval that reaches 100%.
 
-*What expression predicts is not a programme.* The 9% is carried diffusely — 751
+*What expression predicts is not a programme.* The ~10% is carried diffusely — 751
 of 2,000 genes hold half the ridge weight, and no gene set among 5,457 survives
 correction — so the predictor tracks global transcriptional state rather than an
 interpretable mechanism.
@@ -624,8 +686,12 @@ interpretable mechanism.
 *Laboratory versus assay.* PRISM and GDSC differ in institution and in assay, so
 neither is isolated by that comparison alone. We apportion them using GDSC1
 versus GDSC2, which changes screening version, concentration range and assay
-chemistry within one institution, and conclude that laboratory dominates
-(84% versus 16%). This is a partial separation from two points on a ladder, not
+chemistry within one institution, and conclude that the **assay** dominates
+(81% versus 19%, CI on the laboratory share [−6%, 38%], which includes zero). An
+earlier draft reported the opposite, 84% laboratory, computed on 1,435 / 123 /
+187 different compounds for the three rungs; on the 75 compounds all three share
+the apportionment inverts. This is a partial separation from two points on a
+ladder, not
 a factorial design; a cross-laboratory comparison with the assay held exactly
 fixed would settle it, and CTRP would have provided one but its NCI data portal
 has been retired.
@@ -686,7 +752,7 @@ in `docs/methodology_rationale.md`.
 **Data.** Tahoe-100M (95.6M cells; 50 lines, 379 compounds, three doses, 14
 plates) aggregated to 65,918 (line, drug, dose, plate) pseudobulk profiles; LINCS
 phase 1 (GSE92742) and phase 2 (GSE70138) Level 4, landmark genes only; PRISM
-Repurposing secondary screen (738 lines, ~1,500 compounds, 8 doses, replicate
+Repurposing secondary screen (737 lines, ~1,500 compounds, 8 doses, replicate
 detection plates); GDSC1 and GDSC2 fitted dose response (978 lines, 542 drugs);
 CCLE mutation calls via Cellosaurus, together with CCLE baseline expression
 (19,221 genes), gene-level copy number and RPPA protein (214 antibodies) from
@@ -767,7 +833,9 @@ correlation for MSI, and lineage stratification for allele associations.
    as the per-compound nonsynonymous-minus-synonymous difference, since both
    blocks are individually negative and the claim is about their gap.
    (c) Power curve for genotype linkage versus context count. (d) Readout
-   decoupling: transcription versus viability mechanism rankings. (e) The same
+   readout comparison: transcription versus viability mechanism rankings, on
+   the 11-12 classes both platforms share — too few to establish agreement or
+   decoupling. (e) The same
    question asked once per compound against that compound's own permutation null,
    with FDR across the family — a count that a few strong compounds cannot carry
    the way a median can: expression 119/120, lineage 104/120, mutations 22/120,

@@ -423,9 +423,10 @@ def figure3():
         rho = st.spearmanr(v.Tahoe, v.PRISM)
         ax[3].set_xlabel("mechanism CDI — transcription (Tahoe)")
         ax[3].set_ylabel("mechanism CDI — viability (PRISM)")
-        ax[3].text(0.04, 0.94, f"ρ = {rho.statistic:+.2f}\n(n.s., n={len(v)})",
-                   transform=ax[3].transAxes, va="top", fontsize=8)
-    panel(ax[3], "d", "Transcription and viability are decoupled")
+        ax[3].text(0.04, 0.94, f"ρ = {rho.statistic:+.2f}, n = {len(v)}\n"
+                   f"underpowered:\nρ = 0.6 would not reach\nsignificance at "
+                   f"this n", transform=ax[3].transAxes, va="top", fontsize=7)
+    panel(ax[3], "d", "Readouts: too few shared classes to tell")
 
     # e: the median R2 in panel a is one number over correlated compounds. This
     # asks the question once per compound against that compound's OWN

@@ -1834,6 +1834,70 @@ drug axis is close to orthogonal to the axes on which cells differ, which is why
 a drug main effect can account for 94.1% of the variance while the cell property
 and the cell–drug relation stay small and separable.
 
+---
+
+## 31. Gap sweep: what the corrected estimator does to the rest of the paper
+
+§27 corrected the estimator; §28–30 tested how far the correction generalises. A
+systematic sweep of every claim against the current tables found four analyses
+that had never been re-run under it, and three claims that were wrong
+independently of it.
+
+### Analyses that had not been re-run
+
+| analysis | before | after correction |
+|---|---:|---:|
+| **Tahoe, same-dose replicates** | 11.5% [10.5–12.5%], *P* = 2×10⁻⁷ | **0.5% [0.0–1.5%], *P* = 0.10** |
+| Tahoe, cross-dose pairing | 20.7% | 9.2% |
+| OP3 | — | 33.1% |
+| sci-Plex 3 | — | 30.2% |
+
+**The Tahoe result is the consequential one.** `tahoe_true_replicates.py` carried
+its own inline estimator and never imported the corrected library, so the paper's
+headline empirical claim was still computed from a residual containing each
+line's general response. Corrected, Tahoe shows **no detectable context ×
+compound interaction at matched dose**. With 11,492 replicate pairs the interval
+bounds it below 1.5%, so this is an informative null rather than an absence of
+power. The cross-dose pairing does not "nearly double" the estimate as previously
+written — it **manufactures eighteen-fold**, 0.5% → 9.2%.
+
+The largest atlas built for this measurement cannot resolve, at 95.6 million
+cells, the quantity it is quoted for. OP3 and sci-Plex 3 — smaller, but with more
+replicates per condition — do resolve it, at 33.1% and 30.2%.
+
+An internal check confirms the correction did what it should: in both external
+datasets, residual agreement *across perturbations within a context* now sits at
++0.007 (OP3) and +0.026 (sci-Plex 3), against strongly positive values before.
+That is the quantity a leftover context main effect inflates, and it is now at
+its null.
+
+### Claims wrong independently of the estimator
+
+**The readout-decoupling claim was drastically underpowered.** The manuscript
+reported "ρ = −0.09 against PRISM viability over **67 shared classes** — a
+well-powered null". Only **11–12** mechanism classes clear the minimum class size
+on both platforms; the true values are ρ = −0.18 (PRISM, n = 12) and +0.19
+(LINCS phase 1, n = 10). At that n even ρ = 0.6 would not reach significance. The
+class count was wrong six-fold and the power claim was unsupportable. Restated as
+an absence of evidence.
+
+**The laboratory-versus-assay apportionment was still inverted in three places** —
+the Discussion, the Limitations and a Results paragraph — despite having been
+corrected in the status banner. It is assay 81% / laboratory 19%, with the
+laboratory CI [−6%, 38%] including zero.
+
+**The withdrawn STR claim was still asserted in the Limitations**, stating that
+all 738 screened lines are authenticated. Ten carry `FAILED_STR` and the count is
+737.
+
+### Still outstanding
+
+The few-shot evaluation is being re-run with the honest floor added in §27 — the
+additive prior plus the line's general response estimated from the same probe
+compounds. Until it completes, the claim that fine-tuning on ~20 compounds
+"recovers 98% of the achievable gain" is measured against a baseline that does
+not know a line's general sensitivity, and so credits the model for learning it.
+
 ## Reproducing
 
 ```bash

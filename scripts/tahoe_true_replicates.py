@@ -107,6 +107,50 @@ def main():
     print(f"shared component {shared:.5f} over {shared_den} conditions",
           flush=True)
 
+    # Remove each line's GENERAL response before calling the rest interaction.
+    # Subtracting the leave-one-line-out drug mean removes the drug effect and
+    # nothing else, so the line's own response to being perturbed at all stays
+    # in the residual -- and because it is identical on plate 6 and plate 14, it
+    # lands directly in the cross-plate covariance below and is counted as
+    # context-dependence. In PRISM the same term reproduces across disjoint
+    # compound halves at r = 0.989 (RESULTS.md sec.27).
+    #
+    # Two properties, both required (see perturbmodel.celldrug):
+    #   * leave-one-DRUG-out, so a real interaction is not absorbed;
+    #   * estimated WITHIN a plate and CENTRED across lines, so it is a contrast
+    #     between lines rather than the shared response wearing a line label.
+    #     Uncentred it would capture the common perturbation programme; on TRADE
+    #     data that mistake reversed the sign of the effect (RESULTS.md sec.29).
+    alpha = {}
+    for (ln, pl), g in K.groupby(["line", "plate"], observed=True):
+        ii = [i for i in g.i.to_numpy() if i in resid]
+        if len(ii) < 3:
+            continue
+        dv = K.drug.to_numpy()
+        by = {}
+        for i in ii:
+            by.setdefault(dv[i], []).append(resid[i])
+        by = {d: np.mean(v, axis=0) for d, v in by.items()}
+        if len(by) < 3:
+            continue
+        tot_a = np.sum(list(by.values()), axis=0)
+        n_a = len(by)
+        for i in ii:
+            alpha[i] = (tot_a - by[dv[i]]) / (n_a - 1)
+    # centre across lines within each (drug, dose, plate), making it a contrast
+    n_corr = 0
+    for (drug, conc, pl), g in K.groupby(["drug", "conc", "plate"],
+                                         observed=True):
+        ii = [i for i in g.i.to_numpy() if i in alpha]
+        if len(ii) < 2:
+            continue
+        m = np.mean([alpha[i] for i in ii], axis=0)
+        for i in ii:
+            resid[i] = resid[i] - (alpha[i] - m)
+            n_corr += 1
+    print(f"general line response removed from {n_corr} of {len(resid)} "
+          f"conditions", flush=True)
+
     # collect the three pair sets
     true_p, xdose_p = [], []
     for (line, drug), g in K.groupby(["line", "drug"], observed=True):
