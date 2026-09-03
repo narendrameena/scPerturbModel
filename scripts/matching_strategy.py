@@ -149,14 +149,37 @@ def main():
         if np.isfinite(r):
             rows.append({"strategy": "identifier\n(standard practice)",
                          "line": x, "r": r})
-    # fingerprint-validated subset of the identifier match
+    # Fingerprint-validated subset. Selecting a line because it is its own best
+    # match and then REPORTING that same maximum is circular -- previously all
+    # 61 reported values were numerically identical to the "best hit" rung. The
+    # selection now uses one half of the compounds and the reported value the
+    # disjoint other half, as cross_lab_reproducibility.py already did.
+    rs_sel = np.random.default_rng(1)
+    cperm = rs_sel.permutation(shared_cpd)
+    sel_c = set(cperm[:len(cperm) // 2]); ev_c = set(cperm[len(cperm) // 2:])
+
+    def half_fp(x, y, cset):
+        common = sorted((set(FA[x]) & set(FB[y])) & cset)
+        if len(common) < MIN_CPD_FP:
+            return np.nan
+        u_ = np.array([FA[x][c] for c in common])
+        v_ = np.array([FB[y][c] for c in common])
+        if np.std(u_) == 0 or np.std(v_) == 0:
+            return np.nan
+        return float(stats.spearmanr(u_, v_).statistic)
+
     validated = []
     for x in both:
-        s = Mx.loc[x].dropna()
-        if len(s) and s.idxmax() == x:
+        sc = [(half_fp(x, y, sel_c), y) for y in lb]
+        sc = [(r_, y) for r_, y in sc if np.isfinite(r_)]
+        if not sc:
+            continue
+        if max(sc)[1] == x:                      # selected on half A
             validated.append(x)
-            rows.append({"strategy": "identifier +\nfingerprint-validated",
-                         "line": x, "r": float(s.max())})
+            r_ev = half_fp(x, x, ev_c)           # reported on half B
+            if np.isfinite(r_ev):
+                rows.append({"strategy": "identifier +\nfingerprint-validated",
+                             "line": x, "r": r_ev})
     # best-hit (upper bound; circular by construction)
     for x in both:
         s = Mx.loc[x].dropna()

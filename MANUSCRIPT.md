@@ -1,4 +1,4 @@
-# Laboratory, not assay, limits the reproducibility of context-dependent drug response
+# Measuring context-dependent drug response: what the estimator, the replicates and the compound set decide
 
 **Draft manuscript.** Every number below is reproducible from this repository;
 figure bundles (PNG/SVG/PDF + source data + generating script) are under
@@ -6,6 +6,26 @@ figure bundles (PNG/SVG/PDF + source data + generating script) are under
 See `RESULTS.md` for the full result set, `docs/methodology_rationale.md` for why
 each method was chosen over its alternatives, and `docs/pertdecomp.md` for the
 tool.
+
+> ## ⚠ STATUS (2026-09-03): under revision after three independent audits
+>
+> Three adversarial audits — statistics, data handling, claims-versus-evidence —
+> returned ~60 defects between them, several of which change headline numbers.
+> **Numbers in this draft are being replaced section by section; treat any figure
+> not listed below as stale.** Settled corrections so far:
+>
+> | claim | was | now |
+> |---|---|---|
+> | title / apportionment | laboratory 84% of the loss | **assay 68%, laboratory 32%** — computed on the 75 compounds all three rungs share, rather than on 1,435 / 123 / 187 different ones. The previous title asserted the opposite of this and has been withdrawn. |
+> | identity-validated transfer | 87% | **71%**, against a ceiling measured on the same lines and compounds; a reliability-matched control gives 59%, so the effect is identity-specific but smaller |
+> | PRISM cell lines | 738 | **737** — the old count included a cell line fabricated by a parsing bug |
+> | "all lines pass STR profiling" | asserted | **false**; 10 lines carry FAILED_STR records |
+> | copy number beats mutations | p = 5.7×10⁻⁴ | **withdrawn** — CI [−0.002, +0.015] once compound correlation is respected |
+> | dose peak-coincidence tests | 14% / 81% cited as support | **at or barely above their own permutation nulls** |
+> | interaction shares | e.g. LINCS-2 47% | rising (LINCS-2 **63%**) under a corrected estimator; all shares being recomputed |
+>
+> The estimator itself had a numerator and a denominator bias, and `decompose()`
+> crashed on any real dataset. Both are fixed (`RESULTS.md` §26).
 
 > **Revision note (2026-08-31).** An earlier draft of this manuscript was titled
 > *"Transcriptional drug response transfers between cellular contexts to a degree

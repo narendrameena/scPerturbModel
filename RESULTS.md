@@ -1,5 +1,16 @@
 # Results
 
+> ## ⚠ STATUS (2026-09-03): numbers under revision after three independent audits
+>
+> Three adversarial audits returned ~60 defects. Sections below are being
+> corrected in dependency order and **any number not yet re-run is stale**. The
+> corrections already applied, and the sections they invalidate, are listed in
+> §26. The largest are: the laboratory-versus-assay apportionment inverts on a
+> matched compound set (§18), the identity-validated fraction falls from 87% to
+> 71% (§18), the copy-number claim is withdrawn (§17), two dose-mechanism tests
+> sit at their permutation null (§22), and every variance share is being
+> recomputed under a corrected estimator (§26).
+
 Modelling drug-perturbation response in **Tahoe-100M** (Zhang et al. 2025,
 [doi:10.1101/2025.02.20.639398](https://doi.org/10.1101/2025.02.20.639398)).
 All numbers below are reproducible from this repository; every figure is a
@@ -1452,6 +1463,97 @@ labelled lines, not mislabelling. This independently supports the correction
 already made rather than reopening it.
 
 Tables: `number_audit.csv`, `str_identity_check.csv`.
+
+## 26. Audit repairs: what changed and what it cost
+
+Three adversarial audits (statistics, data handling, claims-versus-evidence) were
+commissioned against this work and returned roughly sixty defects. The repairs
+are recorded here because several change published numbers, and two were bugs in
+code this project releases.
+
+### The estimator had two biases with one root
+
+Both members of a replicate pair subtracted the **same** leave-one-context-out
+prior, so that prior's estimation noise entered their covariance as signal; and
+the denominator `mean(P²)` estimated `var(shared)` **plus** noise/n_out **plus**
+batch/n_rep rather than `var(shared)` alone. Consequences, measured on simulated
+data with a known share:
+
+- the recovery slope was **0.741**, and the attenuation was not a fixed
+  "conservative" factor but ranged from **0.47 to 1.01** with nuisance variance,
+  so every published share was scaled by an unknown dataset-specific amount;
+- at a true share of **zero** the estimator returned **0.036**, not zero — the
+  claim in §19 that only this estimator returns ~0 on null data was false, and it
+  looked true only at the single noise level and context count tested.
+
+Both are fixed by a **split prior**: two disjoint leave-one-context-out priors per
+condition, pairing residual A with residual B, and estimating `var(shared)` as
+⟨P_A, P_B⟩. Recovery slope **0.911**, and **exactly 0.000** at a true share of
+zero. The library was also pairing across doses — the error this paper is built
+on criticising — and now groups by dose.
+
+The simulation itself had to be fixed first: it applied a plate offset with no
+control subtraction, contributing −(b₁−b₂)²/4 to every cross-plate pair, which
+has no counterpart in plate-matched data. My first attempt at the split prior
+looked *worse* because of it.
+
+Two biases remain, stated rather than hidden: the estimate still drifts upward at
+extreme noise, and **overestimates at low context counts** (0.294 against a true
+0.200 at n=10), which makes the OP3 (6 contexts) and sciPlex3 (3) arms
+unreliable.
+
+### `decompose()` crashed on every real dataset
+
+`find_replicate_batches` was passed the caller's dataframe while hard-coding the
+internal column names, so the module's own documented example raised `KeyError`.
+It was introduced by the commit that *added* the feature together with two tests
+that could not catch it, because every test in the suite names its columns
+`ctx`/`pert`. A regression test now renames them.
+
+### A cell line that did not exist
+
+Eight PRISM rows are `pool_line_FAILED_STR`. `split("_")[-1]` returned the
+literal string `"STR"` for all eight, and `groupby.mean()` averaged eight
+different cell lines into one — a chimera carrying data in 32,230 of 36,076
+profiles that was **published in our own table**
+(`cross_lab_identity_viability.csv`). Fixed in eight scripts by parsing the ACH
+identifier and dropping STR failures rather than averaging an unauthenticated
+culture into an authenticated one; all eight lines also appear as clean rows, so
+nothing is lost. **The count is 737 lines, not 738.**
+
+### Three claims that do not survive proper accounting
+
+| claim | why it fails | corrected |
+|---|---|---|
+| laboratory accounts for 84% of the cross-lab loss | the three rungs were medians over 1,435 / 123 / 187 **different** compounds, while agreement depends strongly on the compound | on the 75 compounds all three share: **assay 68%, laboratory 32%** |
+| identity validation recovers 87% of the ceiling | numerator on 25 selected lines, denominator on all 488 — a mismatch that returns 182% in a simulation where every line is identical | **71%** against a matched ceiling; a reliability-selected control gives 59%, so the effect is real but smaller |
+| copy number beats mutations (p = 5.7×10⁻⁴) | 150 compounds treated as independent; their residuals correlate at mean r = +0.23, effective n ≈ 11 | cluster bootstrap CI **[−0.002, +0.015]** — withdrawn |
+
+### Two claims that survive, one in weaker form
+
+The **dose-mechanism Test 1** correlated a quantity with itself: `spread` was the
+SD of the replicate mean, so `spread² = interaction + σ²/k` algebraically and the
+two agreed at r = +0.98 by construction. Recomputed with spread measured on a
+**disjoint replicate**, the relationship holds at ρ = **+0.317** (74% positive,
+p = 4×10⁻⁹³) against the circular +0.405. But its companion tests do not: against
+a label-permutation null preserving both marginals, "peaks identical" is **at
+chance** (14.3% vs 15.2%) and "peak below maximal killing" clears its null by
+**1.8 points** (80.4% vs 78.6%). Neither should be cited as support.
+
+The **identity effect** survives its control. Selecting the same number of lines
+by within-PRISM replicate agreement alone — using no cross-laboratory information
+— gives 59.2%, indistinguishable from all lines (59.3%), while identity selection
+gives 70.9%. So the criterion is not merely picking well-measured lines.
+
+### A false claim withdrawn
+
+§25 asserted that "all 738 lines with response data pass STR profiling". The join
+behind it was degenerate: every one of the 248 STR-failing rows has
+`depmap_id = NaN`, so the lookup returned 747 True and 1 False and the test could
+not fail. Parsed correctly from `row_name`, **10 lines carry FAILED_STR
+records**. Of the nine that appear in the identity table, none is its own best
+fingerprint match — too few to test formally, but pointing the opposite way to
+the claim it replaced.
 
 ## Reproducing
 

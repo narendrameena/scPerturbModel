@@ -64,11 +64,23 @@ def main():
     import cross_lab_reproducibility as clr
 
     ci = pd.read_csv(PR / "secondary-screen-cell-line-info.csv")
-    str_ok = dict(zip(ci.depmap_id, ci.passed_str_profiling))
-    n_pass = int((ci.passed_str_profiling == True).sum())
-    n_fail = int((ci.passed_str_profiling == False).sum())
-    print(f"STR profiling: {n_pass} pass, {n_fail} fail, "
-          f"{int(ci.passed_str_profiling.isna().sum())} unknown", flush=True)
+    # The STR status cannot be joined on depmap_id: every one of the 248
+    # STR-failing rows has depmap_id = NaN, so that join returned 747 True and
+    # 1 False and the whole test was vacuous -- which is how the published claim
+    # "all 738 lines with response data pass STR profiling" came about. The
+    # status is only recoverable from row_name (PR500_ACH-000010_FAILED_STR).
+    rn = ci.row_name.astype(str)
+    ach = rn.str.extract(r"(ACH-\d+)")[0]
+    failed = rn.str.contains("FAILED_STR", na=False)
+    str_ok = {}
+    for a, f in zip(ach, failed):
+        if isinstance(a, str):
+            str_ok[a] = (not f) and str_ok.get(a, True)
+    n_fail_lines = sum(1 for v in str_ok.values() if not v)
+    print(f"STR status parsed from row_name: {len(str_ok)} lines, "
+          f"{n_fail_lines} with at least one FAILED_STR record", flush=True)
+    print(f"  (the depmap_id column carries the status for none of the "
+          f"failures)", flush=True)
 
     print("building residuals ...", flush=True)
     p_full, _, _ = clr.prism_residuals()
