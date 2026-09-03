@@ -100,6 +100,20 @@ def mwu_z(ranks, M, nm, n):
 
 
 def residuals():
+    """Per-compound interaction residual over cell lines.
+
+    Delegates to ``perturbmodel.celldrug.prism_gamma``, which removes the
+    compound main effect AND each line's general sensitivity. The local
+    version removed only the first, so a line that responds to everything --
+    reproducible across disjoint compound halves at r = 0.989 -- looked like a
+    line with a specific relation to every compound it was screened against.
+    """
+    from perturbmodel.celldrug import prism_gamma
+    g, ti, _ = prism_gamma()
+    return g, ti
+
+
+def _residuals_legacy():
     lfc = pd.read_csv(PR / "secondary-screen-logfold-change.csv", index_col=0)
     # PRISM row names are pool_line, but 8 are pool_line_FAILED_STR. The old
     # split("_")[-1] returned the literal "STR" for all eight, and

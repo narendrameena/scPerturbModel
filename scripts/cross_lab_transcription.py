@@ -44,6 +44,7 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
+from perturbmodel.celldrug import remove_line_effect_profiles
 from perturbmodel.utils import save_figure
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -103,7 +104,9 @@ def load_lincs(gctx, inst_info, gene_info, tag):
         tot = A.sum(0)
         for j, c in enumerate(names):
             out[(c, k)] = A[j] - (tot - A[j]) / (len(names) - 1)
-    return out, genes
+    # remove each line's general response before calling the rest a
+    # cell-drug relation -- see celldrug.remove_line_effect_profiles
+    return remove_line_effect_profiles(out), genes
 
 
 def load_tahoe(pb_dir):
@@ -138,7 +141,9 @@ def load_tahoe(pb_dir):
         tot = A.sum(0)
         for j, c in enumerate(names):
             out[(c, k)] = A[j] - (tot - A[j]) / (len(names) - 1)
-    return out, genes
+    # remove each line's general response before calling the rest a
+    # cell-drug relation -- see celldrug.remove_line_effect_profiles
+    return remove_line_effect_profiles(out), genes
 
 
 def identity_check(a, ga, b, gb, label, min_cpd=8):
@@ -273,7 +278,9 @@ def load_sciplex(path):
             out[(c, k)] = A[j] - (tot_ - A[j]) / (len(names) - 1)
     print(f"  sciPlex3: {len({k[0] for k in out})} lines, "
           f"{len({k[1] for k in out})} compounds", flush=True)
-    return out, genes
+    # remove each line's general response before calling the rest a
+    # cell-drug relation -- see celldrug.remove_line_effect_profiles
+    return remove_line_effect_profiles(out), genes
 
 
 def compare(a, ga, b, gb, label, allowed=None):

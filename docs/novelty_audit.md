@@ -1,5 +1,41 @@
 # Novelty audit: what is already published, claim by claim
 
+> ## ⚠ 2026-09-03: claim 2 — the audit's top-ranked novelty — is WITHDRAWN
+>
+> This audit ranked "the interaction is a **pair** property, not a cell
+> property" as our most defensible novel result, and noted it **contradicted**
+> Lim & Pavlidis (*Sci Rep* 2021), who assert a line-level "cell-line
+> responsiveness" factor.
+>
+> **Lim & Pavlidis were right and we were wrong.** Our residual removed the
+> compound main effect only, so a line's general sensitivity was never in view.
+> Measured directly it is large and almost perfectly reproducible: a line's mean
+> residual on one half of the compounds predicts the other half at **r = 0.989**
+> (737 lines), and **570 of 736 lines (77.4%)** carry a reproducible line-level
+> shift at FDR < 0.05. A cell-line responsiveness factor exists, exactly as
+> published.
+>
+> What survives is quantitative, not qualitative: with both main effects removed
+> out of fold, the **relation is 2.0x the property** (3.9% vs 2.0% of variance;
+> drug effect 94.1%). That is a measurement of the two terms, not a refutation of
+> either — and it is a much weaker claim than the one this audit ranked first.
+>
+> Knock-on effects: the 59/41 split and every interaction share were inflated by
+> roughly 1.5x, which moves our numbers **further** from TRADE's 56/44 rather
+> than closer. See `RESULTS.md` §27.
+>
+> Also note the general-sensitivity axis is not itself new. Division-rate
+> confounding of apparent drug sensitivity is the subject of GR metrics
+> (Hafner et al., *Nat Methods* 2016), and regressing out mean sensitivity before
+> looking for selective effects is routine in DepMap-style analyses. Our
+> contribution is measuring the three terms with replicate-validated covariances
+> and showing what the omission costs — not discovering the axis.
+>
+> **A live literature search could not be run when this was written (search
+> budget exhausted), so the paragraph above rests on this repository's earlier
+> sweep plus prior knowledge. The two unresolved risks below still stand and
+> must be checked manually before any submission.**
+
 Assessed against the literature sweep in `docs/related_work_perturbation_models.md`
 (which included Europe PMC full-text phrase searches) plus full readings of MAP,
 XPert and the GLP1R GWAS. Verdicts are graded, and the two items I could not

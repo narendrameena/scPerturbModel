@@ -45,6 +45,7 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
+from perturbmodel.celldrug import general_sensitivity_by_rep
 from perturbmodel.utils import save_figure
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -79,28 +80,44 @@ def prism_dose():
     colpos = {c: i for i, c in enumerate(lfc.columns)}
 
     recs = []
+    # Each line's general sensitivity, leave-one-compound-out, removed before
+    # anything below is called context-dependence. It reproduces across disjoint
+    # compound halves at r = 0.989 and is shared between replicate plates
+    # exactly as a genuine interaction is.
+    _Kall = pd.DataFrame({"compound": ti.name.to_numpy(),
+                          "rep": ti.rep.to_numpy()})
+    _Rall = L[:, [colpos[c] for c in ti.column_name]]
+    ALPHA, ACPD = general_sensitivity_by_rep(_Rall, _Kall)
+    apos = {c: j for j, c in enumerate(ACPD)}
+
     for cpd, gc in ti.groupby("name", observed=True):
+        aj = apos.get(cpd)
         doses = sorted(gc.dose.unique())
         if len(doses) < 4:
             continue
         for di, dose in enumerate(doses):
             gd = gc[gc.dose == dose]
+            rep_groups = list(gd.groupby("rep", observed=True))
             cols_by_rep = [[colpos[c] for c in g.column_name]
-                           for _, g in gd.groupby("rep", observed=True)]
+                           for _, g in rep_groups]
+            # each replicate column corrected from its OWN plate
+            Acol = (np.stack([ALPHA[r][:, aj] for r, _ in rep_groups], axis=1)
+                    if aj is not None else np.zeros((L.shape[0],
+                                                     len(rep_groups))))
             if len(cols_by_rep) < 2:
                 continue
             with np.errstate(invalid="ignore"):
                 reps = np.stack([np.nanmean(L[:, ix], axis=1)
                                  for ix in cols_by_rep], axis=1)
                 line_mean = np.nanmean(reps, axis=1)
-            valid = np.isfinite(line_mean)
+            valid = np.isfinite(line_mean) & np.isfinite(Acol).all(axis=1)
             n = int(valid.sum())
             if n < MIN_LINES:
                 continue
             tot = line_mean[valid].sum()
             loo = (tot - line_mean[valid]) / (n - 1)
             add = float(np.mean(loo ** 2))
-            res = reps[valid] - loo[:, None]
+            res = reps[valid] - loo[:, None] - Acol[valid]
             cov, npair = 0.0, 0
             for a in range(res.shape[1]):
                 for b in range(a + 1, res.shape[1]):

@@ -141,6 +141,51 @@ def additive_prior(G: pd.DataFrame, DELTA: np.ndarray,
     return P
 
 
+def line_effect_prior(G: pd.DataFrame, DELTA: np.ndarray,
+                      train_mask: np.ndarray, P: np.ndarray,
+                      min_drugs: int = 3) -> np.ndarray:
+    """Add each cell line's GENERAL response to the additive prior.
+
+    ``additive_prior`` is the drug's average effect, so what a model gains over
+    it includes learning that some lines respond strongly to everything -- a
+    property of the culture, not of any pairing. Reporting that as
+    context-specific pharmacology overstates the model in exactly the way the
+    interaction estimator was overstating context-dependence.
+
+    The line term is the mean TRAIN residual for that line across its OTHER
+    drugs, so a line's own drug never enters its own correction, and a genuine
+    interaction cannot be absorbed. Lines with fewer than ``min_drugs`` training
+    drugs get no correction rather than a self-informed one.
+
+    Returns the prior to compare against; ``P + line`` is the honest baseline.
+    """
+    if "cell_line_id" not in G.columns:
+        return P
+    Rres = DELTA - P
+    sums, counts = {}, {}
+    for i in np.where(train_mask)[0]:
+        ln = G.cell_line_id[i]
+        sums[ln] = sums.get(ln, 0.0) + Rres[i]
+        counts[ln] = counts.get(ln, 0) + 1
+        dk = (ln, G.drug[i])
+        sums[dk] = sums.get(dk, 0.0) + Rres[i]
+        counts[dk] = counts.get(dk, 0) + 1
+    ndrug = {}
+    for i in np.where(train_mask)[0]:
+        ndrug.setdefault(G.cell_line_id[i], set()).add(G.drug[i])
+    out = P.copy()
+    for i in range(len(G)):
+        ln = G.cell_line_id[i]
+        if ln not in counts or len(ndrug.get(ln, ())) < min_drugs:
+            continue
+        s, c = sums[ln], counts[ln]
+        dk = (ln, G.drug[i])
+        s, c = s - sums.get(dk, 0.0), c - counts.get(dk, 0)
+        if c > 0:
+            out[i] = P[i] + s / c
+    return out
+
+
 def pearson(a: np.ndarray, b: np.ndarray) -> float:
     a, b = a - a.mean(), b - b.mean()
     den = np.linalg.norm(a) * np.linalg.norm(b)

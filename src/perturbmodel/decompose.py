@@ -41,6 +41,7 @@ Command line::
 from __future__ import annotations
 
 import argparse
+import warnings
 from dataclasses import dataclass, field
 from typing import Optional
 
@@ -295,6 +296,68 @@ def decompose(adata, context: str, perturbation: str, control,
     if not len(K):
         raise ValueError("no (perturbation, dose) group has >=3 contexts; the "
                          "split-prior estimator cannot be formed")
+
+    # ---- remove each context's GENERAL response before calling anything an
+    # interaction. Subtracting the perturbation prior leaves the context's own
+    # response to being perturbed at all -- growth rate, stress tolerance, drug
+    # metabolism -- inside the residual. That term is shared between replicate
+    # batches exactly as a genuine interaction is, so it lands in the pair
+    # covariance and is counted as context-dependence. In PRISM the same
+    # quantity reproduces across disjoint compound halves at r = 0.989 and
+    # carries a third of what had been reported as interaction.
+    #
+    # It is estimated TWICE, on disjoint halves of the OTHER perturbations, with
+    # half A subtracted from RA and half B from RB. Subtracting one shared
+    # estimate from both would inject its estimation noise into <RA, RB> as a
+    # positive term -- replacing one bias with another. Disjoint halves make
+    # those two errors independent, so the covariance stays clean.
+    # Grouped by (context, BATCH), not context alone. The control wells are per
+    # (context, batch), so every condition in a context on a batch carries the
+    # same control noise. A correction averaged over batches carries a share of
+    # each, and the cross-terms then subtract var(control)/2 from the pair
+    # covariance -- large enough in simulation to drive the estimate to zero.
+    # Within a batch the correction cancels exactly the nuisance its own
+    # residual carries, and the two members of a cross-batch pair are corrected
+    # using independent batches. Simulation: with a planted general response of
+    # 0, 0.5 and 1.0 SD the corrected estimator returns 0.211, 0.212, 0.211
+    # against a truth of 0.20, where the uncorrected one returns 0.170, 0.347,
+    # 0.595.
+    CA = np.zeros_like(RA)
+    CB = np.zeros_like(RB)
+    ctx_ok = np.zeros(len(K), dtype=bool)
+    for _, g in K.groupby(["ctx", "batch"], observed=True):
+        ii = g.index.to_numpy()
+        perts = K.pert[ii].to_numpy()
+        up = np.unique(perts)
+        if len(up) < 3:          # need self plus two disjoint halves
+            continue
+        for i, pi in zip(ii, perts):
+            other_p = up[up != pi]
+            perm = rng.permutation(len(other_p))
+            h = max(len(other_p) // 2, 1)
+            pa, pb = set(other_p[perm[:h]]), set(other_p[perm[h:]])
+            ja = ii[np.array([p in pa for p in perts])]
+            jb = ii[np.array([p in pb for p in perts])]
+            if not len(ja) or not len(jb):
+                continue
+            CA[i] = RA[ja].mean(0); CB[i] = RB[jb].mean(0)
+            ctx_ok[i] = True
+    n_drop = int((~ctx_ok).sum())
+    if ctx_ok.sum() < MIN_PAIRS_GLOBAL:
+        warnings.warn(
+            f"only {int(ctx_ok.sum())} conditions have >=3 perturbations in "
+            f"their context, so the general-context response cannot be removed; "
+            f"the interaction estimate will include it and is an upper bound.")
+    else:
+        RA = RA - CA
+        RB = RB - CB
+        K = K[ctx_ok].copy()
+        D, RA, RB, PA, PB = (D[ctx_ok], RA[ctx_ok], RB[ctx_ok],
+                             PA[ctx_ok], PB[ctx_ok])
+        K.index = np.arange(len(K))
+        if n_drop:
+            warnings.warn(f"dropped {n_drop} conditions whose context had <3 "
+                          f"perturbations, so no general-response estimate")
     R = 0.5 * (RA + RB)          # for the descriptive residual correlations
 
     # reproducible interaction, cross-batch pairs only

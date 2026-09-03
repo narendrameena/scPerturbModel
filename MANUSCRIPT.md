@@ -7,25 +7,30 @@ See `RESULTS.md` for the full result set, `docs/methodology_rationale.md` for wh
 each method was chosen over its alternatives, and `docs/pertdecomp.md` for the
 tool.
 
-> ## ⚠ STATUS (2026-09-03): under revision after three independent audits
+> ## ⚠ STATUS (2026-09-03): the central claim is withdrawn; the paper is now a measurement paper
 >
-> Three adversarial audits — statistics, data handling, claims-versus-evidence —
-> returned ~60 defects between them, several of which change headline numbers.
-> **Numbers in this draft are being replaced section by section; treat any figure
-> not listed below as stale.** Settled corrections so far:
+> A defect larger than the ~60 the three audits found was located on 2026-09-03.
+> **Every residual in this project removed the compound main effect but not each
+> cell line's general sensitivity** — its response to *every* compound, set by
+> growth rate, seeding density and drug metabolism. That term reproduces across
+> disjoint compound halves at **r = 0.989** (737 lines) and is shared between
+> replicate detection plates exactly as a genuine interaction is, so it entered
+> the pair covariance and was counted as context-dependence.
 >
 > | claim | was | now |
 > |---|---|---|
-> | title / apportionment | laboratory 84% of the loss | **assay 68%, laboratory 32%** — computed on the 75 compounds all three rungs share, rather than on 1,435 / 123 / 187 different ones. The previous title asserted the opposite of this and has been withdrawn. |
-> | identity-validated transfer | 87% | **71%**, against a ceiling measured on the same lines and compounds; a reliability-matched control gives 59%, so the effect is identity-specific but smaller |
-> | PRISM cell lines | 738 | **737** — the old count included a cell line fabricated by a parsing bug |
-> | "all lines pass STR profiling" | asserted | **false**; 10 lines carry FAILED_STR records |
-> | copy number beats mutations | p = 5.7×10⁻⁴ | **withdrawn** — CI [−0.002, +0.015] once compound correlation is respected |
+> | the interaction is a **pair** property, not a cell property | our top-ranked novel result; contradicted Lim & Pavlidis (*Sci Rep* 2021) | **withdrawn.** A cell-line responsiveness factor exists as published. The relation is **2.0× the property** (3.9% vs 2.0%) — a measurement, not a refutation |
+> | interaction shares | e.g. Tahoe 11.5%, LINCS-1 57% | inflated ~**1.5×**; drug 94.1% / cell property 2.0% / relation 3.9% in PRISM |
+> | title / apportionment | laboratory 84% of the loss | **assay 81%, laboratory 19%** on the 75 compounds all three rungs share |
+> | identity-validated transfer | 87% | **98%** against a ceiling on the same lines; a reliability-matched control gives 49%, so the effect is identity-specific |
+> | expression over genotype | 92.5% of compounds | **119/120 (99.2%)** beat their own permutation null; mutations 22/120, zero compounds mutation-only (p = 1×10⁻²⁹) |
+> | copy number beats mutations | p = 5.7×10⁻⁴ | **withdrawn** — CI [−0.000, +0.010] under a compound-cluster bootstrap |
+> | PRISM cell lines | 738 | **737** — the old count included a line fabricated by a parsing bug |
 > | dose peak-coincidence tests | 14% / 81% cited as support | **at or barely above their own permutation nulls** |
-> | interaction shares | e.g. LINCS-2 47% | rising (LINCS-2 **63%**) under a corrected estimator; all shares being recomputed |
 >
-> The estimator itself had a numerator and a denominator bias, and `decompose()`
-> crashed on any real dataset. Both are fixed (`RESULTS.md` §26).
+> The estimator now recovers a known share with slope **0.950** (R² = 0.9995) and
+> returns 0.008 from data containing none. See `RESULTS.md` §27 and
+> `docs/novelty_audit.md`.
 
 > **Revision note (2026-08-31).** An earlier draft of this manuscript was titled
 > *"Transcriptional drug response transfers between cellular contexts to a degree
@@ -41,46 +46,54 @@ tool.
 ## Abstract
 
 Giga-scale perturbation atlases are being built to predict how any cell responds
-to any drug, and their central quantity — the part of a drug's effect that is
-specific to a cellular context rather than shared across contexts — is widely
-quoted but rarely measured properly. We show that measuring it requires
-independent replicates at matched dose, that the replicate structure supplying
-them is routinely discarded, and that the dominant obstacle to transferring the
-quantity between studies is the laboratory rather than the assay. Tahoe-100M
-contains a deliberate biological replicate — plate 14 duplicates plate 6 across
-50 lines and 95 compounds — which its authors withhold from training and which
-downstream pipelines therefore drop. Retaining it, **13.5% of (line, compound,
-dose) combinations are replicated and the interaction is 11.5% [10.5–12.5%] of
-reproducible variance** (*P* = 2×10⁻⁷); dropping it leaves only cross-dose pairs,
-which are not replicates and **inflate the estimate to 20.7%, nearly double**. In
-LINCS phase 1, where 6.1 million same-dose replicate pairs are available, the
-interaction is 57% [56.9–57.4%]. On simulated data with a known interaction
-share the recommended estimator recovers it (R² = 0.999, slope 0.74, so reported
-values are lower bounds) while **residual variance reports 50% and pooled-batch
-15% from data containing none**.
-Estimating the interaction is subject to four failure modes that are invisible in
-the output — using residual variance rather than replicate covariance, pooling
-same-batch comparisons, taking an in-sample rather than leave-one-context-out
-shared response, and treating doses as replicates — each of which we quantify and
-guard against in a released tool. Applying the corrected estimator across four
-atlases, the interaction is dose-dependent, rising roughly fourfold to a peak
-just below lethality and collapsing where every line is dying (*P* = 4×10⁻⁹²),
-and transcriptional and viability context-dependence are **decoupled**
-(ρ = −0.09 across 67 mechanism classes). Genome-wide mutation status has **no
-cross-validated predictive power** for the interaction (median CV *R*² = +0.0002,
-50.8% of compounds positive), whereas **baseline expression predicts it in 92.5%
-of compounds** (+0.093) and baseline protein nearly as well (+0.073); copy number
-falls between (+0.005), beating mutations but trailing expression by 0.088, and
-lineage (+0.020) adds nothing once expression is included — the ordering places
-DNA-level features last. Finally, of the line-specific response that
-an assay reproduces with itself, only **56% survives transfer to another
-laboratory** [48–60%] — but once cell-line identity is verified from the data
-rather than assumed from an identifier, agreement on held-out compounds becomes
-**statistically indistinguishable from the within-laboratory ceiling** (87%,
-CI 70–103%). Only 5–12% of
-identifier-matched lines are their own best match across atlases. Apportioning the loss, the laboratory accounts for 84% of it (CI 72–106%), so
-the assay contribution is not distinguishable from zero. Context count and replication, not cell count, are
-the binding constraints on what these atlases can answer.
+to any drug, and their central quantity — the part of a drug's effect specific to
+a cellular context rather than shared across contexts — is widely quoted but
+rarely measured properly. We show that a measured response contains **three**
+terms, not two: the drug's average effect, a property of the cell that has
+nothing to do with any drug, and the relation between the pair. Only the third is
+context-dependence. The middle term — a line's *general sensitivity*, its
+response to every compound — is routinely left inside the residual, where it is
+indistinguishable from a genuine interaction because it is equally reproducible
+across replicates. It is large: a line's general sensitivity estimated on one
+half of a compound library predicts the estimate on a disjoint half at
+**r = 0.989** across 737 cell lines, and **570 of 736 lines (77.4%)** carry a
+reproducible line-level shift at FDR < 0.05.
+
+Estimating the three terms as covariances between independent estimates, so that
+noise contributes zero to each, gives **drug effect 94.1%, cell property 2.0%,
+cell–drug relation 3.9%** (PRISM, 737 lines × 1,324 compounds). Interaction
+shares that omit the middle term are inflated by roughly **1.5×**. On simulated
+data with a known share the corrected estimator recovers it (slope 0.950,
+R² = 0.9995) and returns 0.008 from data containing none, while residual variance
+reports 72% and pooled-batch 41%; leaving general sensitivity in place drives the
+same estimator from 0.170 to 0.595 as the planted cell property grows, with the
+truth fixed at 0.20. Both main effects must be estimated out of fold — the drug
+effect from other lines, the cell property from other compounds — and the cell
+property **within a replicate plate**: pooled across plates it carries a share of
+each plate's control noise and subtracts var(control)/2 from the pair covariance,
+which drove the estimate to exactly zero in simulation while appearing correct in
+review. We release the decomposition and a per-pair query as a tool.
+
+Applied across four atlases, the corrected interaction is dose-dependent, and
+transcriptional and viability context-dependence remain **decoupled** (ρ = −0.18
+across mechanism classes). Asking what predicts the corrected relation once per
+compound, against that compound's own permutation null with FDR across the
+family, **baseline expression beats its null in 119 of 120 compounds (99.2%)**,
+lineage in 104, and **genome-wide mutation status in 22**, whose median
+cross-validated *R*² is negative; 97 compounds are expression-significant and
+mutation-non-significant and **none** the reverse (p = 1×10⁻²⁹). Expression
+predicts the *relation* (+0.081 [+0.072, +0.093]) better than it predicts the
+*cell property* (+0.068), so the result is not general sensitivity in disguise;
+copy number does not separate from mutations once compound correlation is
+respected (+0.005, CI [−0.000, +0.010]). Finally, of the line-specific response
+an assay reproduces with itself, **58% [49–77%]** survives transfer to another
+laboratory, rising to **98%** once cell-line identity is verified from the data
+rather than assumed from an identifier — against a reliability-matched control at
+49%, so the effect is specific to identity rather than to measurement quality.
+Apportioned on a matched compound set, the **assay accounts for 81% of the loss
+and the laboratory 19%**, the opposite of what the unmatched comparison reports.
+Context count and replication, not cell count, are the binding constraints on
+what these atlases can answer.
 
 ---
 
@@ -512,36 +525,59 @@ correlation for MSI, and lineage stratification for allele associations.
 
 ## Figures
 
-1. **Estimating the interaction, and the replication that makes it possible.**
-   (a) The four failure modes and what each reports, each labelled with the data
-   it was measured on. (b) Tahoe's replicate structure counted from the released
-   metadata: 13.5% of (line, drug, dose) triples sit on more than one plate, but
-   only 5.4% once plate 14 — a designed replicate of plate 6 — is dropped under
-   the training convention. (c) True replicate versus cross-dose pairing against
-   a matched null: 11.5% versus 20.7%.
+1. **A response is three things, not two.** (a) Variance apportionment into the
+   drug effect, the cell property and the cell–drug relation, each measured as a
+   covariance between independent estimates so noise contributes zero
+   (94.1% / 2.0% / 3.9%; PRISM, 737 lines × 1,324 compounds; log axis, since the
+   drug term is 25× the other two combined). (b) A line's general sensitivity
+   estimated on one half of the compounds against the estimate on a disjoint
+   half, r = 0.989 — it is a property of the culture, not noise. (c) With the
+   truth held at 0.20 and only the planted general response growing, the
+   corrected estimator returns 0.211 / 0.212 / 0.211 where the uncorrected one
+   returns 0.170 / 0.347 / 0.595. (d) The four failure modes on data with a known
+   answer, each dumbbell labelled with the estimator that produced it.
+   (e) Tahoe's replicate structure from the released metadata: 13.5% of
+   (line, drug, dose) triples sit on more than one plate, 5.4% once plate 14 — a
+   designed replicate of plate 6 — is dropped under the training convention.
+   (f) True replicate versus cross-dose pairing against a matched null.
 2. **Architecture where it can be measured.** (a) Shared/interaction shares in
-   LINCS phase 1 and 2, PRISM, OP3. (b) Residual reproduces across replicates but
-   not across compounds or contexts. (c) Dose curve: rise to a peak below
-   lethality, then collapse.
-3. **What does and does not predict it.** (a) Cross-validated *R*² by predictor
-   block — baseline expression, baseline protein, lineage, gene-level copy
-   number and nonsynonymous variants — on identical compounds and lines, with
+   LINCS phase 1 and 2, PRISM, OP3, under the corrected estimator. (b) The
+   residual reproduces across replicates but not across compounds or contexts.
+   (c) Dose curve: rise to a peak below lethality, then collapse.
+3. **What does and does not predict the relation.** (a) Cross-validated *R*² by
+   predictor block — baseline expression, baseline protein, lineage, gene-level
+   copy number, nonsynonymous variants — on identical compounds and lines, with
    expression and copy number capped at the same 2,000 most-variable features so
-   neither block wins on capacity. Copy number beats mutations (p = 6×10⁻⁴) but
-   trails expression by 0.088 (p = 3×10⁻²¹), placing DNA-level features at the
-   bottom of the ordering. (b) The synonymous control, plotted as the
-   per-compound nonsynonymous-minus-synonymous difference, since both blocks are
-   individually negative and the claim is about their gap. (c) Power curve for
-   genotype linkage versus context count. (d) Readout decoupling: transcription
-   versus viability mechanism rankings.
+   neither wins on capacity. The copy-number advantage over mutations is
+   withdrawn (+0.005, CI [−0.000, +0.010]). (b) The synonymous control, plotted
+   as the per-compound nonsynonymous-minus-synonymous difference, since both
+   blocks are individually negative and the claim is about their gap.
+   (c) Power curve for genotype linkage versus context count. (d) Readout
+   decoupling: transcription versus viability mechanism rankings. (e) The same
+   question asked once per compound against that compound's own permutation null,
+   with FDR across the family — a count that a few strong compounds cannot carry
+   the way a median can: expression 119/120, lineage 104/120, mutations 22/120,
+   with 97 compounds expression-only and none mutation-only.
 4. **Cross-laboratory reproducibility.** (a) The ladder from repeat plates to a
-   different laboratory. (b) Rank of the identifier-matched line by response
-   similarity. (c) Reproducible fraction before and after identity verification,
-   on held-out compounds. (d) Transfer versus strength of the line-specific
-   component.
+   different laboratory, with the loss apportioned on a matched compound set
+   (assay 81%, laboratory 19%). (b) Rank of the identifier-matched line by
+   response similarity. (c) Reproducible fraction before and after identity
+   verification, each against a ceiling measured on its own lines, beside the
+   reliability-matched control that decides whether the selection is picking
+   correctly-identified lines or merely well-measured ones. (d) Transfer versus
+   strength of the line-specific component. (e) The transcriptional arm, which
+   has no cross-laboratory test: after identity validation no (line, compound)
+   pair is shared between Tahoe and LINCS.
 5. **Matching strategy, and why the divergence reading was withdrawn.**
    (a) Fingerprint similarity under random, same-tissue, identifier and best-hit
    pairing. (b) Their distributions. (c) Expression rank of the line that
-   outranked the identifier match: near chance, and sharing tissue only 7% of
-   the time, which is why best-hit failure is read as metric noise rather than
+   outranked the identifier match: near chance, and sharing tissue only 6% of the
+   time, which is why best-hit failure is read as metric noise rather than
    demonstrated culture divergence.
+6. **What the measurements imply for how models are read.** (a) Baseline quality
+   against the number of contexts it averages, with published benchmark context
+   counts marked. (b) Few-shot transfer to an unseen line, against the honest
+   floor of the additive prior plus the line's general response estimated from
+   the same probe compounds — the gap between the two curves is what the model
+   contributes beyond learning that a line responds strongly to everything.
+   (c) Apparent model gain as a function of benchmark context count.

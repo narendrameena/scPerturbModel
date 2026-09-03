@@ -97,94 +97,169 @@ def dataset_shares():
 
 # ---------------------------------------------------------------- figure 1
 def figure1():
+    """The decomposition, and the failure modes that make it necessary."""
     ev = read("methodology_evidence.csv")
     tr = read("tahoe_true_replicates.csv")
-    fig, ax = plt.subplots(1, 3, figsize=(13.5, 4.0), constrained_layout=True)
+    AP = read("variance_apportionment.csv")
+    GS = read("general_sensitivity_split.csv")
+    SIM = read("estimator_simulation.csv")
+    fig, ax = plt.subplots(2, 3, figsize=(13.8, 8.0), constrained_layout=True)
+    ax = ax.ravel()
 
-    # a: each failure mode is measured on its own dataset, so a grouped bar
+    # a: the three-way split. A measured response is a drug effect, a property
+    # of the cell, and a relation between the two; only the third is what these
+    # atlases are built to find. Plotted on a log axis because the drug effect
+    # is 25x the other two combined and a linear axis would erase them.
+    if AP is not None and len(AP):
+        lab = {"drug effect": "drug effect\n(same in every line)",
+               "cell property": "cell property\n(general sensitivity)",
+               "cell-drug relation": "cell-drug relation\n(interaction)"}
+        cols = {"drug effect": GREY, "cell property": VIOLET,
+                "cell-drug relation": ORANGE}
+        xx = np.arange(len(AP))
+        ax[0].bar(xx, AP.variance, width=0.55,
+                  color=[cols.get(c, GREY) for c in AP.component])
+        for i_, r in enumerate(AP.itertuples()):
+            ax[0].text(i_, r.variance * 1.15, f"{r.share:.1%}", ha="center",
+                       fontsize=8.5, fontweight="bold")
+        ax[0].set_yscale("log")
+        ax[0].set_xticks(xx, [lab.get(c, c) for c in AP.component], fontsize=6.8)
+        ax[0].set_ylabel("variance (log scale)")
+        ax[0].set_ylim(AP.variance.min() * 0.35, AP.variance.max() * 4)
+        ax[0].text(0.98, 0.97, "PRISM\n737 lines x 1,324 compounds",
+                   transform=ax[0].transAxes, ha="right", va="top",
+                   fontsize=6.3, color="#666")
+    panel(ax[0], "a", "A response is three things, not two")
+
+    # b: the cell property is not noise. Its estimate on one half of the
+    # compounds predicts the estimate on a disjoint half almost exactly, which
+    # is why leaving it in the residual silently inflates every interaction.
+    if GS is not None and len(GS):
+        ax[1].scatter(GS.half_A, GS.half_B, s=6, alpha=0.32, color=VIOLET,
+                      edgecolors="none")
+        r = float(np.corrcoef(GS.half_A, GS.half_B)[0, 1])
+        lo = float(min(GS.half_A.min(), GS.half_B.min()))
+        hi = float(max(GS.half_A.max(), GS.half_B.max()))
+        ax[1].plot([lo, hi], [lo, hi], ls="--", color="#555", lw=1)
+        ax[1].set_xlabel("general sensitivity, compound half A")
+        ax[1].set_ylabel("general sensitivity, compound half B")
+        ax[1].text(0.04, 0.92, f"r = {r:.3f}\nn = {len(GS)} lines",
+                   transform=ax[1].transAxes, fontsize=8, fontweight="bold",
+                   va="top")
+    panel(ax[1], "b", "It reproduces almost perfectly")
+
+    # c: and it is charged to the interaction unless removed. Truth is held at
+    # 0.20 while only the planted general response grows.
+    if SIM is not None and "sigma_ctx" in SIM.columns:
+        S = SIM[SIM.sweep == "sigma_ctx"].groupby("sigma_ctx").estimate.agg(
+            ["mean", "std"])
+        if len(S):
+            ax[2].axhline(0.20, ls="--", color="#555", lw=1.2,
+                          label="true share")
+            ax[2].errorbar(S.index, S["mean"], yerr=S["std"], fmt="o-",
+                           color=AQUA, lw=2, ms=6, capsize=3,
+                           label="general sensitivity removed")
+            ax[2].set_xlabel("planted general response (SD)")
+            ax[2].set_ylabel("interaction share reported")
+            ax[2].set_ylim(0, 0.72)
+            ax[2].legend(frameon=False, fontsize=7, loc="upper left")
+            ax[2].text(0.5, 0.06, "uncorrected: 0.170 / 0.347 / 0.595 at "
+                       "0 / 0.5 / 1.0 SD", transform=ax[2].transAxes,
+                       ha="center", fontsize=6.4, color=ORANGE,
+                       fontweight="bold")
+    panel(ax[2], "c", "Uncorrected, it is read as context-dependence")
+
+    # d: each failure mode is measured on its own dataset, so a grouped bar
     # chart would imply a common scale that does not exist. A dumbbell keeps
     # each comparison self-contained and labels the data it came from.
-    modes = [("residual variance\nvs replicate covariance", 0.000, 0.819,
-              "Tahoe, full atlas"),
-             ("pooled vs cross-batch\nreplicate pairs", 0.280, 0.410,
-              "Tahoe, dev47"),
-             ("doses vs true replicates\nas the replicate axis", 0.115, 0.207,
-              "Tahoe, plate 6 vs 14")]
+    modes = [("residual variance\nvs replicate covariance", 0.008, 0.717,
+              "simulation, true share 0.20"),
+             ("pooled vs cross-batch\nreplicate pairs", 0.202, 0.411,
+              "simulation, true share 0.20"),
+             ("doses vs true replicates\nas the replicate axis", 0.202, 0.131,
+              "simulation, true share 0.20")]
     y = np.arange(len(modes))[::-1] * 1.0
-    for yy, (lab, good, bad, src) in zip(y, modes):
-        ax[0].plot([good, bad], [yy, yy], color="#c8c8c8", lw=3, zorder=1,
+    for yy, (lab_, good, bad, src) in zip(y, modes):
+        ax[3].plot([good, bad], [yy, yy], color="#c8c8c8", lw=3, zorder=1,
                    solid_capstyle="round")
-        ax[0].scatter([good], [yy], s=80, color=AQUA, zorder=3)
-        ax[0].scatter([bad], [yy], s=80, color=ORANGE, zorder=3)
-        ax[0].annotate(f"{bad:.0%}", (bad, yy), textcoords="offset points",
-                       xytext=(0, 11), ha="center", fontsize=8,
-                       color=ORANGE, fontweight="bold")
-        ax[0].annotate(f"{good:.0%}", (good, yy), textcoords="offset points",
+        ax[3].scatter([good], [yy], s=80, color=AQUA, zorder=3)
+        ax[3].scatter([bad], [yy], s=80, color=ORANGE, zorder=3)
+        # stagger the pair vertically when the markers nearly coincide,
+        # otherwise the two percentages overprint each other
+        close = abs(bad - good) < 0.12
+        ax[3].annotate(f"{bad:.0%}", (bad, yy), textcoords="offset points",
+                       xytext=(0, -18 if close else 11), ha="center",
+                       fontsize=8, color=ORANGE, fontweight="bold")
+        ax[3].annotate(f"{good:.0%}", (good, yy), textcoords="offset points",
                        xytext=(0, 11), ha="center", fontsize=8,
                        color=AQUA, fontweight="bold")
-    ax[0].set_yticks(y, [f"{m[0]}\n({m[3]})" for m in modes], fontsize=6.4)
-    ax[0].set_xlim(-0.08, 1.0)
-    ax[0].set_ylim(-1.15, len(modes) - 0.55)
-    ax[0].set_xlabel("interaction share reported")
-    ax[0].scatter([], [], s=80, color=AQUA, label="correct estimator")
-    ax[0].scatter([], [], s=80, color=ORANGE, label="shortcut")
-    ax[0].legend(frameon=False, loc="center right", ncol=1, fontsize=7,
+    ax[3].axvline(0.20, ls="--", color="#555", lw=1.1, zorder=0)
+    ax[3].set_yticks(y, [f"{m[0]}\n({m[3]})" for m in modes], fontsize=6.4)
+    ax[3].set_xlim(-0.08, 0.85)
+    ax[3].set_ylim(-1.35, len(modes) - 0.35)
+    ax[3].set_xlabel("interaction share reported (truth 0.20, dashed)")
+    ax[3].scatter([], [], s=80, color=AQUA, label="recommended estimator")
+    ax[3].scatter([], [], s=80, color=ORANGE, label="shortcut")
+    ax[3].legend(frameon=False, loc="upper right", fontsize=7,
                  handletextpad=0.3)
-    ax[0].text(0.5, -0.92, "a fourth mode — an in-sample shared response — drives "
-               "the\ncovariance negative for 21 of 24 drugs, so it has no share "
-               "to plot", ha="center", va="center", fontsize=6.1, color="#666")
-    panel(ax[0], "a", "Ways to get it wrong, and what each reports")
+    ax[3].text(0.42, -1.12, "a fifth mode — an in-sample shared response — "
+               "reports 0.169", ha="center", va="center", fontsize=6.1,
+               color="#666")
+    panel(ax[3], "d", "Ways to get it wrong, on data with a known answer")
 
-    # b: Tahoe replicate structure, counted from the RELEASED metadata rather
+    # e: Tahoe replicate structure, counted from the RELEASED metadata rather
     # than our pseudobulk, and shown with and without the replicate plate the
     # authors withhold from training
     tot = 56877
     with14, without14 = 7691, 3045
-    ax[1].bar([0, 1], [with14 / tot, without14 / tot], width=0.5,
+    ax[4].bar([0, 1], [with14 / tot, without14 / tot], width=0.5,
               color=[ORANGE, GREY])
-    for i, (v, n) in enumerate([(with14 / tot, with14),
-                                (without14 / tot, without14)]):
-        ax[1].text(i, v + 0.004, f"{v:.1%}\n{n:,} triples", ha="center",
+    for i_, (v, n) in enumerate([(with14 / tot, with14),
+                                 (without14 / tot, without14)]):
+        ax[4].text(i_, v + 0.004, f"{v:.1%}\n{n:,} triples", ha="center",
                    fontsize=7.4, fontweight="bold")
-    ax[1].set_xticks([0, 1], ["plate 14 kept\n(as released)",
+    ax[4].set_xticks([0, 1], ["plate 14 kept\n(as released)",
                               "plate 14 dropped\n(training convention)"],
                      fontsize=7)
-    ax[1].set_ylim(0, 0.175)
-    ax[1].set_ylabel("(line, drug, dose) replicated on >1 plate")
-    ax[1].text(0.5, 0.86, "plate 14 is a designed replicate of plate 6\n"
-               "(6.2M cells, 50 lines, 95 drugs)", transform=ax[1].transAxes,
+    ax[4].set_ylim(0, 0.175)
+    ax[4].set_ylabel("(line, drug, dose) replicated on >1 plate")
+    ax[4].text(0.5, 0.86, "plate 14 is a designed replicate of plate 6\n"
+               "(6.2M cells, 50 lines, 95 drugs)", transform=ax[4].transAxes,
                ha="center", fontsize=6.3, color="#555")
-    panel(ax[1], "b", "The replication exists — if it is kept")
+    panel(ax[4], "e", "The replication exists — if it is kept")
 
-    # c: true replicate vs cross-dose against a matched null
+    # f: true replicate vs cross-dose against a matched null
     if tr is not None and len(tr):
-        lab = {"true replicate (same line, drug, dose)": "true\nreplicate",
-               "cross-dose (previous pairing)": "cross-dose",
-               "pooled": "pooled"}
-        tr = tr[tr.pairing.isin(lab)]
+        lab2 = {"true replicate (same line, drug, dose)": "true\nreplicate",
+                "cross-dose (previous pairing)": "cross-dose",
+                "pooled": "pooled"}
+        tr = tr[tr.pairing.isin(lab2)]
         xx = np.arange(len(tr))
-        ax[2].bar(xx, tr.share, width=0.55,
+        ax[5].bar(xx, tr.share, width=0.55,
                   color=[AQUA if "true" in p else ORANGE for p in tr.pairing])
-        ax[2].errorbar(xx, tr.share,
+        ax[5].errorbar(xx, tr.share,
                        yerr=[tr.share - tr.share_lo, tr.share_hi - tr.share],
                        fmt="none", ecolor="#333", capsize=3, lw=1.1)
-        for i, r in enumerate(tr.itertuples()):
-            ax[2].text(i, r.share + 0.012,
+        for i_, r in enumerate(tr.itertuples()):
+            ax[5].text(i_, r.share + 0.012,
                        f"{r.share:.0%}\nn={r.n_pairs:,}\n"
                        f"p={'0.97' if r.p_vs_null > 0.01 else f'{r.p_vs_null:.0e}'}",
                        ha="center", fontsize=6.2)
-        ax[2].set_xticks(xx, [lab[p] for p in tr.pairing], fontsize=7.5)
-        ax[2].set_ylabel("interaction share (vs matched null)")
-        ax[2].set_ylim(0, max(tr.share_hi.max() * 1.55, 0.05))
-    panel(ax[2], "c", "The pairing decides the answer")
-    fig.suptitle("Figure 1 — Estimating a context × compound interaction is "
-                 "fragile, and the replication that makes it possible is easy "
-                 "to discard", fontsize=10.5, x=0.005, ha="left",
+        ax[5].set_xticks(xx, [lab2[p] for p in tr.pairing], fontsize=7.5)
+        ax[5].set_ylabel("interaction share (vs matched null)")
+        ax[5].set_ylim(0, max(tr.share_hi.max() * 1.55, 0.05))
+    panel(ax[5], "f", "The pairing decides the answer")
+
+    fig.suptitle("Figure 1 — A measured response is a drug effect, a property "
+                 "of the cell, and a relation between them; only the third is "
+                 "context-dependence", fontsize=10.5, x=0.005, ha="left",
                  fontweight="bold")
-    return fig, {"failure_modes": pd.DataFrame(
-        modes, columns=["failure_mode", "correct_estimator", "shortcut",
-                        "dataset"]),
-        "tahoe_pairings": tr if tr is not None else pd.DataFrame()}
+    return fig, {"apportionment": AP if AP is not None else pd.DataFrame(),
+                 "general_sensitivity": GS if GS is not None else pd.DataFrame(),
+                 "failure_modes": pd.DataFrame(
+                     modes, columns=["failure_mode", "recommended", "shortcut",
+                                     "dataset"]),
+                 "tahoe_pairings": tr if tr is not None else pd.DataFrame()}
 
 
 # ---------------------------------------------------------------- figure 2
@@ -261,7 +336,9 @@ def figure3():
     ga = read("genetic_architecture_summary.csv")
     pw = read("prism_genotype_power.csv")
     tp = read("three_platform_mechanism_cdi.csv")
-    fig, ax = plt.subplots(1, 4, figsize=(17.5, 4.1), constrained_layout=True)
+    BP = read("central_claim_block_permutation.csv")
+    SP = read("state_vs_genotype_split.csv")
+    fig, ax = plt.subplots(1, 5, figsize=(21.5, 4.1), constrained_layout=True)
 
     # a: all blocks measured on the SAME compounds and lines, so the comparison
     # is fair; the synonymous control sits in panel b because it was run on a
@@ -289,8 +366,12 @@ def figure3():
         ax[0].text(0.97, 0.95, f"n = {len(EA)} compounds\nidentical lines "
                    f"per block", transform=ax[0].transAxes, ha="right",
                    va="top", fontsize=6.4, color="#666")
-        ax[0].text(0.03, 0.72, "copy number beats mutations\n(p = 6×10⁻⁴) but "
-                   "trails expression\nby 0.088 (p = 3×10⁻²¹)",
+        # The copy-number claim was withdrawn: its advantage over mutations
+        # does not survive a bootstrap that resamples whole compounds, and
+        # compound residuals correlate at about r = 0.23.
+        ax[0].text(0.03, 0.20, "copy number over mutations: +0.005,\n"
+                   "CI [−0.000, +0.010] — withdrawn.\nExpression leads by "
+                   "0.088 (p = 2×10⁻²¹)",
                    transform=ax[0].transAxes, ha="left", va="top",
                    fontsize=6.1, color="#444")
     panel(ax[0], "a", "Molecular state predicts; genotype does not")
@@ -310,8 +391,9 @@ def figure3():
         ax[1].set_xlabel("nonsynonymous − synonymous $R^2$ (over lineage)")
         ax[1].set_ylabel("compounds")
         ax[1].legend(frameon=False, fontsize=7)
-        ax[1].text(0.03, 0.95, f"{(d > 0).mean():.0%} of compounds positive\n"
-                   f"p = 0.025 — real but ≈0.3%\nof the interaction variance",
+        ax[1].text(0.03, 0.95, f"{(d > 0).mean():.0%} of compounds positive; "
+                   f"the\nexcess is real but is ≈0.3% of\nthe interaction "
+                   f"variance",
                    transform=ax[1].transAxes, va="top", fontsize=6.5,
                    color="#444")
     panel(ax[1], "b", "The synonymous control isolates mechanism")
@@ -339,11 +421,45 @@ def figure3():
         ax[3].text(0.04, 0.94, f"ρ = {rho.statistic:+.2f}\n(n.s., n={len(v)})",
                    transform=ax[3].transAxes, va="top", fontsize=8)
     panel(ax[3], "d", "Transcription and viability are decoupled")
+
+    # e: the median R2 in panel a is one number over correlated compounds. This
+    # asks the question once per compound against that compound's OWN
+    # permutation null -- cell-line labels shuffled within it -- and counts how
+    # many survive FDR across the family. A count cannot be carried by a few
+    # strong compounds the way a median can.
+    if BP is not None and len(BP):
+        labs = [("expression", VIOLET), ("lineage", AQUA), ("mutations", ORANGE)]
+        labs = [(l, c) for l, c in labs if f"q_{l}" in BP.columns]
+        fr = [float((BP[f"q_{l}"] < 0.05).mean()) for l, _ in labs]
+        xx = np.arange(len(labs))
+        ax[4].bar(xx, fr, width=0.58, color=[c for _, c in labs])
+        for i_, v in enumerate(fr):
+            n_ = int(v * len(BP) + 0.5)
+            ax[4].text(i_, v + 0.02, f"{v:.0%}\n{n_}/{len(BP)}", ha="center",
+                       fontsize=8, fontweight="bold")
+        ax[4].axhline(0.05, ls="--", color="#888", lw=1.2, label="FDR level")
+        ax[4].set_xticks(xx, [l for l, _ in labs], fontsize=7.5)
+        ax[4].set_ylim(0, 1.14)
+        ax[4].set_ylabel("compounds beating their own permutation null")
+        ax[4].legend(frameon=False, fontsize=7)
+        if {"q_expression", "q_mutations"} <= set(BP.columns):
+            only_e = int(((BP.q_expression < 0.05) &
+                          (BP.q_mutations >= 0.05)).sum())
+            only_m = int(((BP.q_expression >= 0.05) &
+                          (BP.q_mutations < 0.05)).sum())
+            ax[4].text(0.5, 0.70, f"{only_e} compounds expression-only,\n"
+                       f"{only_m} mutation-only", transform=ax[4].transAxes,
+                       ha="center", fontsize=6.6, color="#444")
+    panel(ax[4], "e", "Per compound, with FDR across the family")
+
     fig.suptitle("Figure 3 — What does and does not predict the interaction",
                  fontsize=10.5, x=0.005, ha="left", fontweight="bold")
     return fig, {"blocks_matched": EA if EA is not None else pd.DataFrame(),
                  "synonymous_control": ga if ga is not None else pd.DataFrame(),
-                 "power": pw if pw is not None else pd.DataFrame()}
+                 "power": pw if pw is not None else pd.DataFrame(),
+                 "block_permutation": BP if BP is not None else pd.DataFrame(),
+                 "property_vs_relation": SP if SP is not None
+                 else pd.DataFrame()}
 
 
 # ---------------------------------------------------------------- figure 4
@@ -358,6 +474,7 @@ def figure4():
     getv = (lambda q: float(S.set_index("quantity").value.get(q, np.nan))) \
         if S is not None else (lambda q: np.nan)
 
+    a_sh = l_sh = np.nan
     order = ["PRISM replicate split (within-lab ceiling)",
              "GDSC1 vs GDSC2 (within-lab ceiling)",
              "PRISM vs GDSC (CROSS-LAB)"]
@@ -382,7 +499,14 @@ def figure4():
             ax[0].text(0.5, 0.03, f"assay {a_sh:.0%} of the loss · "
                        f"laboratory {l_sh:.0%}", transform=ax[0].transAxes,
                        ha="center", fontsize=7.2, color="#333")
-    panel(ax[0], "a", "Laboratory, not assay, is what costs")
+    # The title states whichever term the data says dominates. It previously
+    # asserted "Laboratory, not assay" -- the opposite of what the matched
+    # compound set shows -- and that assertion also set the paper's title.
+    dom = "Assay, not laboratory, is what costs"
+    if np.isfinite(l_sh) and np.isfinite(a_sh):
+        dom = ("Laboratory, not assay, is what costs" if l_sh > a_sh
+               else "Assay, not laboratory, is what costs")
+    panel(ax[0], "a", dom)
 
     if ID is not None and len(ID):
         m = ID[ID.rank_of_id_match > 0]
@@ -396,28 +520,44 @@ def figure4():
         ax[1].set_xlabel("rank of the identifier-matched line")
         ax[1].set_ylabel("cell lines")
         ax[1].legend(frameon=False)
-        ax[1].text(0.97, 0.72, f"{m.reciprocal_best.mean():.0%} are their own\n"
+        ax[1].text(0.97, 0.50, f"{m.reciprocal_best.mean():.0%} are their own\n"
                    f"best match; median rank\n"
                    f"{m.rank_of_id_match.median():.0f} of "
                    f"{m.n_candidates.median():.0f}",
                    transform=ax[1].transAxes, ha="right", va="top", fontsize=7)
     panel(ax[1], "b", "Identifier matches are rarely the single best")
 
+    # The validated bar is divided by a ceiling measured on the SAME lines and
+    # compounds. Against the all-lines ceiling it read 110%, which a fraction of
+    # a ceiling cannot be. The third bar is the control that decides what the
+    # selection is actually doing: lines picked for measurement RELIABILITY
+    # rather than identity. If it matched the middle bar, identity would be
+    # doing nothing that measurement quality does not already do.
     fr = [getv("reproducible fraction (all)"),
-          getv("reproducible fraction (identity-validated)")]
-    ax[2].bar([0, 1], fr, width=0.55, color=[ORANGE, VIOLET])
-    for i, v in enumerate(fr):
-        if np.isfinite(v):
-            ax[2].text(i, v + 0.025, f"{v:.0%}", ha="center", fontsize=12,
-                       fontweight="bold")
+          getv("reproducible fraction (identity-validated, MATCHED ceiling)"),
+          getv("reproducible fraction (reliability-selected control)")]
+    cols = [ORANGE, VIOLET, GREY]
+    labs = ["trust the\nidentifier", "verify identity\nfrom data",
+            "reliability-matched\ncontrol"]
+    keep = [i for i, v in enumerate(fr) if np.isfinite(v)]
+    ax[2].bar(range(len(keep)), [fr[i] for i in keep], width=0.55,
+              color=[cols[i] for i in keep])
+    lo = getv("reproducible fraction (validated) CI low")
+    hi = getv("reproducible fraction (validated) CI high")
+    if np.isfinite(lo) and 1 in keep:
+        k = keep.index(1)
+        ax[2].errorbar([k], [fr[1]], yerr=[[fr[1] - lo], [hi - fr[1]]],
+                       fmt="none", ecolor="#333", capsize=4, lw=1.2)
+    for k, i in enumerate(keep):
+        ax[2].text(k, fr[i] + 0.03, f"{fr[i]:.0%}", ha="center", fontsize=11,
+                   fontweight="bold")
     ax[2].axhline(1.0, color="#888", ls="--", lw=1.2)
-    ax[2].set_xticks([0, 1], ["trust the\nidentifier",
-                              "verify identity\nfrom data"], fontsize=7.5)
-    ax[2].set_ylim(0, 1.16)
+    ax[2].set_xticks(range(len(keep)), [labs[i] for i in keep], fontsize=7)
+    ax[2].set_ylim(0, max(1.25, (hi if np.isfinite(hi) else 1.2) * 1.06))
     ax[2].set_ylabel("fraction of the within-lab ceiling")
-    ax[2].text(0.5, 1.05, "identity validated on one half of the compounds, "
-               "scored on the other", transform=ax[2].transAxes, ha="center",
-               fontsize=6.6, color="#555")
+    ax[2].set_xlabel("identity validated on one half of the compounds, scored "
+                     "on the other;\nceiling measured on the same lines",
+                     fontsize=6.2, color="#555")
     panel(ax[2], "c", "Verifying identity recovers most of the gap")
 
     if R is not None:
@@ -468,12 +608,30 @@ def figure4():
         ax[4].set_ylabel("residual-profile r")
         if len(d_[0]) and len(d_[1]):
             fr = np.median(d_[1]) / np.median(d_[0])
-            ax[4].text(0.5, 0.93, f"{fr:.0%} of ceiling\n(viability: 56%)",
-                       transform=ax[4].transAxes, ha="center", fontsize=7.2,
-                       color="#444")
-        panel(ax[4], "e", "Transcription gives the same answer")
-    fig.suptitle("Figure 4 — Cell-line identity, not protocol, limits "
-                 "cross-laboratory reproducibility", fontsize=10.5, x=0.005,
+            ax[4].text(0.5, 0.93, f"{fr:.0%} of ceiling", ha="center",
+                       transform=ax[4].transAxes, fontsize=7.2, color="#444")
+            ttl = "Transcription gives the same answer"
+        else:
+            # Say so rather than showing an empty box: after identity
+            # validation no (line, compound) pair is shared between Tahoe and
+            # LINCS, so the transcriptional arm has no cross-laboratory
+            # comparison to make and this is a limit of the data, not a result.
+            ax[4].text(0.76, 0.5, "no (line, compound) pair\nsurvives identity "
+                       "validation\nacross Tahoe and LINCS —\nthe "
+                       "transcriptional arm has\nno cross-laboratory test",
+                       transform=ax[4].transAxes, ha="center", va="center",
+                       fontsize=7.4, color=ORANGE)
+            ttl = "Transcription cannot be tested across labs"
+        panel(ax[4], "e", ttl)
+    # The title follows panel a. It previously asserted the opposite of what
+    # the matched compound set shows, and that assertion propagated into the
+    # paper's own title.
+    lead = ("Cell-line identity, and the assay rather than the laboratory, "
+            "limit cross-laboratory reproducibility"
+            if (np.isfinite(a_sh) and np.isfinite(l_sh) and a_sh > l_sh)
+            else "Cell-line identity, not protocol, limits cross-laboratory "
+                 "reproducibility")
+    fig.suptitle(f"Figure 4 — {lead}", fontsize=10.5, x=0.005,
                  ha="left", fontweight="bold")
     return fig, {"per_compound": R if R is not None else pd.DataFrame(),
                  "summary": S if S is not None else pd.DataFrame(),

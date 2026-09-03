@@ -63,12 +63,24 @@ GREY = "#9e9e9e"
 
 def simulate(true_share, n_ctx=30, n_pert=20, n_dose=3, n_rep=2, n_well=2,
              n_genes=300, sigma_total=1.0, sigma_noise=1.0, sigma_batch=0.0,
-             dose_persistence=1.0, seed=0):
-    """Return a long table of simulated responses with known components."""
+             dose_persistence=1.0, sigma_ctx=0.0, seed=0):
+    """Return a long table of simulated responses with known components.
+
+    ``sigma_ctx`` is each context's GENERAL response to being perturbed at all --
+    growth rate, stress tolerance, drug metabolism. It is the nuisance the
+    estimator must not count as interaction: like a real interaction it is
+    identical across replicate plates, so it survives every noise-cancelling
+    device and lands directly in the pair covariance. It does NOT cancel against
+    the control well, because the control is untreated and this term is a
+    response to treatment. Setting it to zero reproduces the earlier
+    simulation exactly, so the two can be compared.
+    """
     rng = np.random.default_rng(seed)
     s_i = np.sqrt(true_share) * sigma_total
     s_s = np.sqrt(1 - true_share) * sigma_total
     shared = rng.normal(0, s_s, (n_pert, n_dose, n_genes))
+    ctx_eff = rng.normal(0, sigma_ctx, (n_ctx, n_genes)) if sigma_ctx > 0 \
+        else np.zeros((n_ctx, n_genes))
     inter = rng.normal(0, s_i, (n_ctx, n_pert, n_genes))
     # a dose-specific component so that persistence < 1 is meaningful
     inter_d = rng.normal(0, s_i, (n_ctx, n_pert, n_dose, n_genes))
@@ -95,7 +107,7 @@ def simulate(true_share, n_ctx=30, n_pert=20, n_dose=3, n_rep=2, n_well=2,
     rows, mats = [], []
     for c, p, q, r, w in product(range(n_ctx), range(n_pert), range(n_dose),
                                  range(n_rep), range(n_well)):
-        v = (shared[p, q]
+        v = (shared[p, q] + ctx_eff[c]
              + a * inter[c, p] + np.sqrt(max(1 - a * a, 0)) * inter_d[c, p, q]
              + batch[r] + bres[r]
              + rng.normal(0, sigma_noise, n_genes))
@@ -106,11 +118,12 @@ def simulate(true_share, n_ctx=30, n_pert=20, n_dose=3, n_rep=2, n_well=2,
 
 def estimate(K, D, exclude_same_batch=True, in_sample=False, cross_dose=False,
              use_variance=False, subtract_null=True, split_prior=False,
+             remove_ctx=True,
              rng=None):
     """Return the estimated interaction share under one set of choices."""
     rng = rng or np.random.default_rng(0)
     if split_prior:
-        return _estimate_split(K, D, rng, cross_dose)
+        return _estimate_split(K, D, rng, cross_dose, remove_ctx)
     resid, shared_num, shared_den = {}, 0.0, 0
     for (p, q), g in K.groupby(["pert", "dose"], observed=True):
         ii = g.index.to_numpy(); cx = g.ctx.to_numpy()
@@ -172,7 +185,7 @@ def estimate(K, D, exclude_same_batch=True, in_sample=False, cross_dose=False,
 
 
 
-def _estimate_split(K, D, rng, cross_dose=False):
+def _estimate_split(K, D, rng, cross_dose=False, remove_ctx=True):
     """Split-prior estimator: two disjoint leave-one-context-out priors.
 
     Each condition gets priors from disjoint halves of the other contexts, so
@@ -199,6 +212,36 @@ def _estimate_split(K, D, rng, cross_dose=False):
     if not usable.any():
         return np.nan
     RA, RB = D - PA, D - PB
+    # remove each context's general response, estimated on disjoint halves of
+    # the OTHER perturbations so the two subtractions carry independent error
+    if remove_ctx:
+        CA = np.zeros_like(RA); CB = np.zeros_like(RB)
+        ok = np.zeros(len(D), bool)
+        # Grouped by (ctx, REPLICATE PLATE), not ctx alone. The control well is
+        # per (context, plate), so every condition in a context on a plate
+        # carries the same control noise. A correction averaged over both plates
+        # carries half of each, and the cross-terms E[RA_a CB_b] then subtract
+        # var(ctrl)/2 from the pair covariance -- which drove the estimate to
+        # zero. Estimated within a plate, the correction cancels exactly the
+        # nuisance its own residual carries, and the two members of a
+        # cross-plate pair get corrections from independent plates.
+        for _, g in K.groupby(["ctx", "rep"], observed=True):
+            ii = g.index.to_numpy(); px = g.pert.to_numpy()
+            up = np.unique(px)
+            if len(up) < 3:
+                continue
+            for i, pi in zip(ii, px):
+                op = up[up != pi]
+                perm = rng.permutation(len(op))
+                h = max(len(op) // 2, 1)
+                pa, pb = set(op[perm[:h]]), set(op[perm[h:]])
+                ja = ii[np.array([p in pa for p in px])]
+                jb = ii[np.array([p in pb for p in px])]
+                if len(ja) and len(jb):
+                    CA[i] = RA[ja].mean(0); CB[i] = RB[jb].mean(0); ok[i] = True
+        if ok.any():
+            RA, RB = RA - CA, RB - CB
+            usable = usable & ok
     shared = float(np.mean(PA[usable] * PB[usable]))
     grp = ["ctx", "pert"] if cross_dose else ["ctx", "pert", "dose"]
     cov, n = 0.0, 0
@@ -258,12 +301,30 @@ def main():
                          "noise": noise, "n_rep": 2, "n_ctx": 40})
         print(f"  noise={noise} seed={seed} done", flush=True)
 
+    # general-sensitivity sweep: the failure mode found in PRISM, where a
+    # context's response to everything reproduces across disjoint compound
+    # halves at r = 0.989. It is shared between replicate plates exactly as a
+    # real interaction is, so an estimator that does not remove it reports it as
+    # context-dependence. True share is held at 0.2 throughout: any rise with
+    # sigma_ctx is the estimator counting a context property as a relation.
+    for sc, seed in product([0.0, 0.3, 0.6, 1.0], range(args.n_seeds)):
+        K, D = simulate(0.2, n_genes=args.n_genes, sigma_noise=1.0,
+                        sigma_batch=0.5, dose_persistence=0.7, sigma_ctx=sc,
+                        seed=300 + seed)
+        est = estimate(K, D, rng=np.random.default_rng(seed),
+                       **ESTIMATORS["recommended"])
+        rows.append({"sweep": "sigma_ctx", "true_share": 0.2,
+                     "estimator": "recommended", "estimate": est, "seed": seed,
+                     "noise": 1.0, "n_rep": 2, "n_ctx": 40, "sigma_ctx": sc})
+        print(f"  sigma_ctx={sc} seed={seed} est={est:.3f}", flush=True)
+
     # context-count sweep: is the estimator stable at Tahoe's n?
     for n_ctx, seed in product([10, 20, 47, 100], range(args.n_seeds)):
         K, D = simulate(0.2, n_ctx=n_ctx, n_genes=args.n_genes,
                         sigma_noise=1.0, sigma_batch=0.5,
                         dose_persistence=0.7, seed=200 + seed)
-        est = estimate(K, D, rng=np.random.default_rng(seed))
+        est = estimate(K, D, rng=np.random.default_rng(seed),
+                       **ESTIMATORS["recommended"])
         rows.append({"sweep": "n_ctx", "true_share": 0.2,
                      "estimator": "recommended", "estimate": est, "seed": seed,
                      "noise": 1.0, "n_rep": 2, "n_ctx": n_ctx})

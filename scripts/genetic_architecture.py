@@ -117,7 +117,26 @@ def cv_r2(Xb, y, folds, alphas=ALPHAS):
     return 1 - ss_res / ss_tot if ss_tot > 0 else 0.0
 
 
-def residuals():
+def residuals(legacy=False):
+    """Per-compound interaction residuals over cell lines.
+
+    Delegates to ``perturbmodel.celldrug.prism_gamma``, which removes BOTH main
+    effects. The version below (``legacy=True``) removed only the compound main
+    effect, leaving each line's general sensitivity -- its response to
+    everything, set by growth rate, seeding and drug metabolism -- inside the
+    residual. That quantity reproduces across disjoint compound halves at
+    r = 0.989 and accounts for a third of what this project had been calling
+    interaction, so every number computed from the legacy residual was inflated
+    by about 1.5x. It is kept only so the two can be compared directly.
+    """
+    if not legacy:
+        from perturbmodel.celldrug import prism_gamma
+        g, ti, _ = prism_gamma()
+        return g, ti
+    return _residuals_legacy()
+
+
+def _residuals_legacy():
     lfc = pd.read_csv(PR / "secondary-screen-logfold-change.csv", index_col=0)
     # PRISM row names are pool_line, but 8 are pool_line_FAILED_STR. The old
     # split("_")[-1] returned the literal "STR" for all eight, and

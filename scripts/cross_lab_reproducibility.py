@@ -46,6 +46,7 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
+from perturbmodel.celldrug import remove_line_effect
 from perturbmodel.utils import save_figure
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -101,7 +102,12 @@ def prism_residuals():
             n = ok.sum()
             loo = (v[ok].sum() - v[ok]) / (n - 1)
             out[cpd] = pd.Series(v[ok] - loo, index=lines[ok])
-        return out
+        # Removing only the compound mean leaves each line's general
+        # sensitivity in the residual, and both laboratories measure the same
+        # generally-sensitive lines. Cross-laboratory agreement then partly
+        # reflects two labs agreeing about which cultures are frail, which is
+        # not what "does a drug-specific relation transfer" is asking.
+        return remove_line_effect(out)
 
     full = build(np.ones(len(ti), bool))
     half1 = build((ti.rep == "X1").to_numpy())
@@ -110,13 +116,19 @@ def prism_residuals():
 
 
 def gdsc_residuals():
-    """Z_SCORE is already the line's deviation from the drug mean. Kept per
-    screening version so GDSC1 vs GDSC2 can serve as the within-lab control."""
+    """Z_SCORE is the line's deviation from the drug mean -- compound effect
+    removed, general sensitivity still present. Kept per screening version so
+    GDSC1 vs GDSC2 can serve as the within-lab control."""
     out = {}
     for tag, f in (("GDSC1", "GDSC1_fitted_dose_response_27Oct23.csv"),
                    ("GDSC2", "GDSC2_fitted_dose_response_27Oct23.csv")):
         g = pd.read_csv(GD / f, low_memory=False)
         g["k"] = g.DRUG_NAME.map(norm)
+        # strip each line's across-compound mean so the GDSC side matches the
+        # PRISM side; without this the two are not the same quantity
+        lm = g.groupby("COSMIC_ID").Z_SCORE.transform("mean")
+        ln = g.groupby("COSMIC_ID").Z_SCORE.transform("count")
+        g["Z_SCORE"] = g.Z_SCORE - (lm * ln - g.Z_SCORE) / np.maximum(ln - 1, 1)
         out[tag] = g
     return out
 
@@ -415,9 +427,15 @@ def main():
         print(f"  same held-out compounds, ALL lines            = "
               f"{xl_ho/ceiling:.1%}  (r={xl_ho:.3f})")
     if np.isfinite(xl_val):
-        fv = xl_val / ceiling
+        # Divide by the ceiling measured on the SAME lines and compounds. The
+        # unmatched ceiling is computed over all lines, which are noisier than
+        # the validated subset, so dividing by it produced a "fraction" of
+        # 110% -- a reproducible fraction cannot exceed its own ceiling, and the
+        # excess was the mismatch, not transfer.
+        fv = xl_val / vc if np.isfinite(val_ceil_p) and np.isfinite(
+            val_ceil_g) and vc > 0 else xl_val / ceiling
         print(f"REPRODUCIBLE FRACTION, identity-validated only = {fv:.1%}  "
-              f"(r={xl_val:.3f})")
+              f"(r={xl_val:.3f}, matched ceiling {vc:.3f})")
         print("  Compare the reliability-selected control above: if the two "
               "are equal, the\n  criterion selects well-measured lines rather "
               "than correctly-identified ones.")
@@ -490,8 +508,15 @@ def main():
             continue
         ceil_b = np.sqrt(cp * cg)
         fr_all.append(cx / ceil_b)
-        if key_v and np.isfinite(d_.get(key_v[0], np.nan)):
-            fr_val.append(d_[key_v[0]] / ceil_b)
+        # the validated numerator gets the ceiling measured on the SAME lines,
+        # not the all-lines ceiling; the all-lines ceiling is lower because
+        # those lines are noisier, which is what pushed this ratio past 100%
+        cvp = d_.get("PRISM replicate split (validated lines)")
+        cvg = d_.get("GDSC1 vs GDSC2 (validated lines)")
+        if (key_v and np.isfinite(d_.get(key_v[0], np.nan))
+                and np.isfinite(cvp) and np.isfinite(cvg)
+                and cvp > 0 and cvg > 0):
+            fr_val.append(d_[key_v[0]] / np.sqrt(cvp * cvg))
         tot_b = cp - cx
         if tot_b > 0:
             lab_share.append((cg - cx) / tot_b)
@@ -507,7 +532,7 @@ def main():
           f"[{fa_lo:.1%}-{fa_hi:.1%}]")
     if np.isfinite(fv_lo):
         print(f"  reproducible fraction, validated        "
-              f"{xl_val/ceiling:.1%} [{fv_lo:.1%}-{fv_hi:.1%}]")
+              f"{fv:.1%} [{fv_lo:.1%}-{fv_hi:.1%}]")
     if np.isfinite(ls_lo):
         print(f"  share of the loss due to LABORATORY     "
               f"{step_lab/tot:.0%} [{ls_lo:.0%}-{ls_hi:.0%}]")

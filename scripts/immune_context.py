@@ -37,6 +37,7 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 
+from perturbmodel.celldrug import general_sensitivity_by_rep
 from perturbmodel.utils import save_figure
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -54,9 +55,21 @@ def decompose_subset(R, K, keep, min_lines):
     Same replicate-validated estimator used everywhere else in the project:
     leave-one-line-out shared response, interaction as the covariance of
     per-line residuals between independent detection plates at matched dose.
+
+    **General sensitivity is removed first.** A line's response to everything --
+    growth rate, seeding density, drug metabolism -- reproduces across disjoint
+    compound halves at r = 0.989, and it is shared between replicate detection
+    plates just as a genuine interaction is. Left in, it enters the covariance
+    and is counted as context-dependence, which inflated every CDI in this
+    project by roughly half. The line mean is taken leave-one-compound-out so a
+    real interaction cannot be absorbed into it.
     """
+    ALPHA, ACPD = general_sensitivity_by_rep(R, K, rows=keep)
+    apos = {c: j for j, c in enumerate(ACPD)}
+
     out = {}
     for cpd, gc in K.groupby("compound", observed=True):
+        j = apos[cpd]
         add_n, add_d, cov, npair = 0.0, 0, 0.0, 0
         for dose, gd in gc.groupby("dose", observed=True):
             cols = gd.index.to_numpy()
@@ -65,14 +78,16 @@ def decompose_subset(R, K, keep, min_lines):
             sub = R[np.ix_(keep, cols)]
             with np.errstate(invalid="ignore"):
                 lm = np.nanmean(sub, axis=1)
-            valid = np.isfinite(lm)
+            # each column's correction comes from its OWN plate
+            Acol = np.stack([ALPHA[r][:, j] for r in gd.rep.to_numpy()], axis=1)
+            valid = np.isfinite(lm) & np.isfinite(Acol).all(axis=1)
             n = int(valid.sum())
             if n < min_lines:
                 continue
             loo = (lm[valid].sum() - lm[valid]) / (n - 1)
             add_n += float(np.mean(loo ** 2)) * n; add_d += n
             res = np.full(sub.shape, np.nan, dtype=np.float32)
-            res[valid] = sub[valid] - loo[:, None]
+            res[valid] = sub[valid] - loo[:, None] - Acol[valid]
             for a in range(len(cols)):
                 for b in range(a + 1, len(cols)):
                     m = np.isfinite(res[:, a]) & np.isfinite(res[:, b])

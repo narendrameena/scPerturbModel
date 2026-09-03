@@ -72,6 +72,28 @@ def main():
                       "line": meta.cell_id.to_numpy(),
                       "dose": meta.pert_dose.to_numpy(),
                       "plate": meta.plate.to_numpy()})
+    # Each line's GENERAL transcriptional response to being perturbed at all,
+    # taken leave-one-compound-out and removed before anything below is called
+    # context-dependence. Like a genuine interaction it is shared between
+    # replicate plates, so left in it enters the covariance and is counted as
+    # context-specific. In PRISM the viability analogue reproduces across
+    # disjoint compound halves at r = 0.989.
+    # keyed by (line, PLATE): a Level 4 z-score is computed within its own
+    # plate, so every profile a line has on a plate shares that plate's
+    # normalisation. A correction pooled over plates would carry a share of each
+    # and subtract it from the wrong side of the cross-plate pair below.
+    _pc, _pk = {}, {}
+    for (ln, pl, cp), g in K.groupby(["line", "plate", "cpd"], observed=True):
+        _pc.setdefault((ln, pl), []).append(X[g.i.to_numpy()].mean(0))
+        _pk.setdefault((ln, pl), []).append(cp)
+    ALPHA = {}
+    for key, vecs in _pc.items():
+        V = np.stack(vecs)                       # compounds x genes
+        tot, m = V.sum(0), len(V)
+        if m >= 3:
+            ALPHA[key] = {c: (tot - V[j]) / (m - 1)
+                          for j, c in enumerate(_pk[key])}
+
     recs = []
     for cpd, gc in K.groupby("cpd", observed=True):
         doses = sorted(gc.dose.unique())
@@ -88,6 +110,18 @@ def main():
                 lm.append(X[gl.i.to_numpy()].mean(0)); keys.append(ln)
             Lm = np.stack(lm)
             n = len(Lm)
+            # subtract each line's general response, averaged over its plates
+            # for the per-line mean profile (zero where not estimable)
+            def _corr(ln, pl=None):
+                if pl is not None:
+                    return ALPHA.get((ln, pl), {}).get(cpd,
+                                                       np.zeros(X.shape[1]))
+                vs = [ALPHA[k][cpd] for k in ALPHA
+                      if k[0] == ln and cpd in ALPHA[k]]
+                return np.mean(vs, axis=0) if vs else np.zeros(X.shape[1])
+            A = np.stack([_corr(ln) for ln in keys])
+            A = A - A.mean(0, keepdims=True)
+            Lm = Lm - A
             loo = (Lm.sum(0) - Lm) / (n - 1)
             add = float(np.mean(loo ** 2))
             cos = float(np.median([
@@ -102,8 +136,9 @@ def main():
                 for a in range(len(ii)):
                     for b in range(a + 1, len(ii)):
                         if pl[a] != pl[b]:
-                            cov += float(np.mean((X[ii[a]] - loo[k])
-                                                 * (X[ii[b]] - loo[k])))
+                            cov += float(np.mean(
+                                (X[ii[a]] - loo[k] - _corr(ln, pl[a]))
+                                * (X[ii[b]] - loo[k] - _corr(ln, pl[b]))))
                             npair += 1
             if npair >= 3:
                 inter = max(cov / npair, 0.0)

@@ -319,6 +319,21 @@ def main():
                 probe_idx = np.where(
                     test_mask & G.drug.isin(probes).to_numpy())[0] \
                     if probes else np.array([], dtype=int)
+                # The honest floor for few-shot: the additive prior plus the
+                # line's GENERAL response, estimated from the same k probe
+                # drugs the model sees. A model that only learns "this line
+                # responds strongly to everything" matches this and adds no
+                # context-specific pharmacology, so the gap between this curve
+                # and the model curve is what the model actually contributes.
+                if strategy == "random" and len(probe_idx):
+                    shift_vec = (DELTA[probe_idx] - PRIOR[probe_idx]).mean(0)
+                    for i in eval_idx:
+                        recs.append({"line": ln, "seed": seed, "k": k,
+                                     "strategy": "additive+line",
+                                     "n_probe_drugs": len(probes),
+                                     "drug": G.drug[i], "conc": G.conc[i],
+                                     **delta_metrics(PRIOR[i] + shift_vec,
+                                                     DELTA[i], resp)})
                 model.load_state_dict(base_state)
                 if args.adapt == "embedding":
                     shift = fit_embedding(model, held_idx, mean_emb, probe_idx,

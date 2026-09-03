@@ -1,15 +1,29 @@
 # Results
 
-> ## ⚠ STATUS (2026-09-03): numbers under revision after three independent audits
+> ## ⚠ STATUS (2026-09-03): every interaction number recomputed under a three-way decomposition
 >
-> Three adversarial audits returned ~60 defects. Sections below are being
-> corrected in dependency order and **any number not yet re-run is stale**. The
-> corrections already applied, and the sections they invalidate, are listed in
-> §26. The largest are: the laboratory-versus-assay apportionment inverts on a
-> matched compound set (§18), the identity-validated fraction falls from 87% to
-> 71% (§18), the copy-number claim is withdrawn (§17), two dose-mechanism tests
-> sit at their permutation null (§22), and every variance share is being
-> recomputed under a corrected estimator (§26).
+> A fourth defect, larger than the ~60 the three audits found, was located on
+> 2026-09-03: **every residual in this project removed the compound main effect
+> but not each cell line's general sensitivity** — its response to *every*
+> compound, set by growth rate, seeding density and drug metabolism. That term
+> reproduces across disjoint compound halves at **r = 0.989** (737 lines) and is
+> shared between replicate detection plates exactly as a genuine interaction is,
+> so it entered the pair covariance and was counted as context-dependence.
+>
+> Correct apportionment (PRISM, 737 lines × 1,324 compounds): **drug effect
+> 94.1%, cell property 2.0%, cell–drug relation 3.9%.** Prior interaction
+> numbers were roughly **1.5× too large**. Ben-David et al. (Nature 2018) name
+> the same axis: their most resistant MCF7 strains are resistant *in general*,
+> through downregulated drug-metabolism pathways.
+>
+> All estimators now take both main effects out of fold — β from other lines,
+> α from other compounds and **within the same plate** — via
+> `perturbmodel.celldrug`. See §27. Any section not yet re-run is stale.
+>
+> The three earlier audits' repairs still stand: the laboratory-versus-assay
+> apportionment inverts on a matched compound set (§18), the copy-number claim
+> is withdrawn (§17), and two dose-mechanism tests sit at their permutation
+> null (§22).
 
 Modelling drug-perturbation response in **Tahoe-100M** (Zhang et al. 2025,
 [doi:10.1101/2025.02.20.639398](https://doi.org/10.1101/2025.02.20.639398)).
@@ -1554,6 +1568,105 @@ not fail. Parsed correctly from `row_name`, **10 lines carry FAILED_STR
 records**. Of the nine that appear in the identity table, none is its own best
 fingerprint match — too few to test formally, but pointing the opposite way to
 the claim it replaced.
+
+---
+
+## 27. The cell property that was being counted as a cell–drug relation
+
+Every residual in this project was built by subtracting the leave-one-line-out
+compound mean. That removes the drug's average effect and nothing else, so what
+remained was **two** things added together: the line's *general sensitivity* —
+how it responds to every compound, set by growth rate, seeding density and drug
+metabolism — and the interaction specific to the pairing. Only the second is a
+cell–drug relation.
+
+**The general term is large and almost perfectly reproducible.** A line's mean
+residual computed on one half of the compounds agrees with the value computed on
+a disjoint half at **ρ = +0.984** (permutation null 0.000 [−0.070, +0.078],
+p = 0.005), and **570 of 736 lines (77.4%)** carry a reproducible line-level
+shift at FDR < 0.05. It is not noise, and because it is identical across
+replicate detection plates it survives every noise-cancelling device in the
+estimator and lands directly in the pair covariance.
+
+Ben-David et al. (Nature 2018) name the same axis independently: their most
+resistant MCF7 strains are resistant *in general*, through downregulated
+drug-metabolism pathways, not through anything drug-specific.
+
+### The three-way decomposition
+
+    y(line, drug, dose) = β(drug, dose) + α(line) + γ(line, drug) + noise
+
+with both main effects estimated out of fold — β from **other lines**, α from
+**other compounds** — so neither can absorb the term it is meant to leave alone.
+α is additionally estimated **within a replicate plate**: a log-fold-change is
+taken against controls on its own plate, and an α pooled across plates carries a
+share of each plate's control noise and subtracts it from the wrong side of a
+cross-plate pair. In simulation that error removed var(control)/2 from the
+covariance and drove the estimate to exactly **0.000**.
+
+| component | share | variance |
+|---|---:|---:|
+| drug effect (identical in every line) | 94.1% | 1.6338 |
+| **cell property** (general sensitivity) | **2.0%** | 0.0343 |
+| **cell–drug relation** (interaction) | **3.9%** | 0.0683 |
+
+PRISM, 737 lines × 1,324 compounds. Each component is measured as a covariance
+between two independent estimates, so noise contributes zero.
+
+**Consequence: prior interaction numbers were ~1.5× too large** (0.1025 counted
+where 0.0683 belongs).
+
+### What this does to the two central claims
+
+**"A drug×cell relation rather than a cell property" — overstated, rewritten.**
+A cell property plainly exists. The relation is **2.0× larger** than it, which
+supports *"the larger of the two"* and not *"rather than."* Asking the
+line-consistency question of the corrected residual returns ρ = −0.080, which
+only confirms the subtraction ran; the claim is settled by the two variances
+above, not by that test.
+
+**"Transcriptional state rather than genotype" — survives, and strengthens.**
+Re-run on the corrected residual, with a per-compound permutation null (cell-line
+labels shuffled within compound, ridge kernel factorised once per fold and reused
+across permutations) and FDR across 120 compounds:
+
+| predictor | compounds beating their own null | median CV R² | median null |
+|---|---:|---:|---:|
+| baseline expression | **119 / 120 (99.2%)** | +0.0778 | −0.1279 |
+| lineage | 104 / 120 (86.7%) | +0.0257 | −0.0098 |
+| mutations | 22 / 120 (18.3%) | −0.0413 | −0.0754 |
+
+97 compounds are expression-significant and mutation-non-significant; **zero** go
+the other way (binomial p = 1.26 × 10⁻²⁹). Compound-cluster bootstrap over 150
+compounds: expression **+0.0814 [+0.0716, +0.0925]**, lineage +0.0175
+[+0.0135, +0.0205], mutations +0.0018 [−0.0009, +0.0041] — the mutation interval
+includes zero.
+
+Critically, expression predicts the **relation** (+0.0814) *better* than it
+predicts the **property** (+0.0679, same lines, same folds), so the result is not
+general sensitivity in disguise. Before the correction the same test gave
+107/120; the correction raised it to 119/120.
+
+### Scripts, guards and scope
+
+`src/perturbmodel/celldrug.py` holds the decomposition and a pair query
+(`--cell MCF7 --drug dabrafenib`), and `prism_gamma()` is the single cached
+source of corrected residuals for every downstream script.
+`tests/test_celldrug.py` (9 tests) plants a known general-sensitivity term and a
+per-plate control offset and asserts neither is reported as interaction — the
+per-plate case is the one that silently returned zero while looking correct in
+review. The estimator simulation now sweeps a planted general response: at 0,
+0.5 and 1.0 SD the corrected estimator returns **0.211, 0.212, 0.211** against a
+truth of 0.20, where the uncorrected one returns 0.170, 0.347, 0.595.
+
+Sixteen scripts and three library modules were changed. Two reporting defects
+surfaced during the rerun and were fixed with it: the cross-laboratory
+"reproducible fraction, identity-validated" was dividing by an all-lines ceiling
+and read **110%** — impossible for a fraction of a ceiling — and is 98.0%
+[47.0%, 116.2%] against the matched ceiling; and both the context-count and
+general-sensitivity sweeps in the simulator were labelling the default estimator
+"recommended" without passing `split_prior=True`, so neither had been testing the
+recommended estimator at all.
 
 ## Reproducing
 
