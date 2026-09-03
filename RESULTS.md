@@ -1668,6 +1668,69 @@ general-sensitivity sweeps in the simulator were labelling the default estimator
 "recommended" without passing `split_prior=True`, so neither had been testing the
 recommended estimator at all.
 
+---
+
+## 28. Does the same omission inflate other groups' published numbers? No — a negative result
+
+§27 showed our interaction shares were inflated ~1.5x by a cell property left
+inside the residual. That is a defect in our code. It becomes a *finding* only if
+the same term sits inside statistics other groups have published. It does not,
+and this section records the attempt and its failure, because the failure is
+informative and because the opposite claim would have been easy to make.
+
+Three published context-specificity statistics were recomputed on the publishing
+group's own data, under a strict rule: **reproduce the published number first, by
+the paper's own definition.** A correction applied to a statistic we cannot
+reproduce measures our reimplementation, not their result.
+
+| study | statistic | published | our replication | corrected | moved |
+|---|---|---:|---:|---:|---:|
+| Srivatsan 2020 (sci-Plex 3) | % of responsive genes that are cell-type-dependent | 48% | **74.4%** | 73.9% | 1.01x |
+| Subramanian 2017 (CMap/LINCS) | % of compounds with a panel-conserved signature | 26% | **5.0%** | 4.3% | 1.15x, wrong direction |
+| Ben-David 2018 (rule applied to PRISM) | % of active compounds inactive in ≥1 context | 87% | 94.7% | 90.4% | 1.05x |
+
+**Neither published statistic reproduced** — 74.4% against 48%, and 5.0% against
+26%. Our operationalisations are not theirs: sci-Plex used a Monocle
+likelihood-ratio DE test on cells, and Subramanian used Level 5 moderated
+z-scores and a transcriptional activity score, not Level 4 signature
+correlation. So those two arms are uninformative about those papers, and **no
+inflation claim is made for either**. The Ben-David row is their counting rule
+applied to PRISM lines, not their 27 MCF7 strains, and is labelled an analogue.
+
+**Even within our own implementations the correction barely moves anything** —
+1.01x to 1.15x, against 1.5x for our own interaction share. So the effect is not
+merely unproven for other groups; it is absent from these statistics as we
+computed them.
+
+### Why, and the diagnostic that also failed
+
+The natural explanation is that these pipelines already remove the context main
+effect — LINCS Level 4 z-scores within plate, sci-Plex takes deltas against
+vehicle in the same line. A diagnostic was added to test that: the context main
+effect as a share of the residual each pipeline constructs. It **does not predict
+the effect** — across the three it is anti-ordered with it (sci-Plex has the
+largest share, 8.3%, and the smallest movement; LINCS the smallest, 1.4%, and the
+largest).
+
+The reason it fails is the real lesson. That diagnostic measures the context term
+against *total* residual variance, which is dominated by measurement noise: in
+PRISM it returns **2.8%**, while the replicate-covariance decomposition of §27
+puts the same term at **~33% of the reproducible residual** (0.0343 of
+0.0343 + 0.0683). Our estimator compares components that noise cannot inflate,
+because each is a covariance between two independent estimates. A statistic
+computed on a raw residual is mostly measuring noise, so removing a term worth a
+few percent of it changes little.
+
+**Prediction, not demonstration:** the inflation should appear in
+*replicate-validated* context-specificity statistics and not in raw-residual
+ones. We have no other group's replicate-validated statistic to test this on —
+TRADE (Nadig et al., *Nat Genet* 2025) is the nearest and its Perturb-seq data is
+not on disk.
+
+**Consequence for the manuscript.** The defect is reported as ours, quantified,
+with the tool that prevents it and the simulation that shows what it costs. The
+claim that the field's published numbers are inflated is **not** made.
+
 ## Reproducing
 
 ```bash
