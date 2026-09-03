@@ -263,21 +263,84 @@ def main():
             out = {k: v for k, v in out.items() if k in only}
         return out
 
+    # MATCHED COMPOUND SET. The three rungs were previously computed over
+    # whatever compounds each supported -- 1,435 / 123 / 187 -- and agreement
+    # depends strongly on the compound (panel D, rho=+0.56), so those medians
+    # were not comparable and the apportionment derived from them was a ratio
+    # over three different populations.
+    common = (set(p_h1_n) & set(p_h2_n) & set(g1) & set(g2)
+              & set(p_full_n) & set(gboth))
+    print(f"\ncompounds supporting ALL THREE rungs: {len(common)} "
+          f"(previously 1435 / 123 / 187 separately)", flush=True)
+
+    def only(store):
+        return {k: v for k, v in store.items() if k in common}
+
     rows = []
-    rows += per_compound_corr(p_h1_n, p_h2_n,
+    rows += per_compound_corr(only(p_h1_n), only(p_h2_n),
                               "PRISM replicate split (within-lab ceiling)")
-    rows += per_compound_corr(g1, g2, "GDSC1 vs GDSC2 (within-lab ceiling)")
-    rows += per_compound_corr(p_full_n, gboth, "PRISM vs GDSC (CROSS-LAB)")
+    rows += per_compound_corr(only(g1), only(g2),
+                              "GDSC1 vs GDSC2 (within-lab ceiling)")
+    rows += per_compound_corr(only(p_full_n), only(gboth),
+                              "PRISM vs GDSC (CROSS-LAB)")
     if validated:
-        ev = set(eval_cpd)
+        ev = set(eval_cpd) & common
+        # The validated numerator must be divided by a ceiling measured on the
+        # SAME lines and compounds. Previously it was divided by a ceiling over
+        # all 488 lines and all compounds, which alone can produce a
+        # "reproducible fraction" above 100% -- in a simulation where every line
+        # is identical across labs the old formula returns 182%.
         rows += per_compound_corr(restrict(p_full_n, validated, ev),
                                   restrict(gboth, validated, ev),
                                   "PRISM vs GDSC (CROSS-LAB, "
                                   "identity-validated)")
+        rows += per_compound_corr(restrict(p_h1_n, validated, ev),
+                                  restrict(p_h2_n, validated, ev),
+                                  "PRISM replicate split (validated lines)")
+        rows += per_compound_corr(restrict(g1, validated, ev),
+                                  restrict(g2, validated, ev),
+                                  "GDSC1 vs GDSC2 (validated lines)")
         rows += per_compound_corr(restrict(p_full_n, None, ev),
                                   restrict(gboth, None, ev),
                                   "PRISM vs GDSC (CROSS-LAB, held-out "
                                   "compounds, all lines)")
+
+        # RELIABILITY CONTROL. Reciprocal-best-match selects lines with a high
+        # per-line signal-to-noise ratio, and splitting compounds does not break
+        # that because reliability is a property of the LINE. Selecting the same
+        # number of lines purely on WITHIN-PRISM replicate agreement uses no
+        # cross-laboratory information at all; if it reproduces the gain, the
+        # identity criterion is not demonstrably doing anything identity-specific.
+        rel = {}
+        for cpd in sel_cpd:
+            a, b = p_h1_n.get(cpd), p_h2_n.get(cpd)
+            if a is None or b is None:
+                continue
+            j = a.index.intersection(b.index)
+            for ln in j:
+                rel.setdefault(ln, []).append((float(a[ln]), float(b[ln])))
+        rel_r = {}
+        for ln, prs in rel.items():
+            if len(prs) < 25:
+                continue
+            u = np.array([x[0] for x in prs]); v = np.array([x[1] for x in prs])
+            if np.std(u) > 0 and np.std(v) > 0:
+                rel_r[ln] = float(stats.spearmanr(u, v).statistic)
+        # Rank only among the ID-matched lines, otherwise the most reliable
+        # PRISM lines are largely ones GDSC never screened and the control
+        # yields no cross-laboratory pairs at all.
+        id_matched = set(FA) & set(FB)
+        rel_r = {k: v for k, v in rel_r.items() if k in id_matched}
+        top_rel = set(pd.Series(rel_r).nlargest(len(validated)).index)
+        print(f"  reliability control: {len(top_rel)} lines chosen by "
+              f"within-PRISM replicate agreement alone", flush=True)
+        rows += per_compound_corr(restrict(p_full_n, top_rel, ev),
+                                  restrict(gboth, top_rel, ev),
+                                  "PRISM vs GDSC (CROSS-LAB, "
+                                  "reliability-selected)")
+        rows += per_compound_corr(restrict(p_h1_n, top_rel, ev),
+                                  restrict(p_h2_n, top_rel, ev),
+                                  "PRISM replicate split (reliability lines)")
     R = pd.DataFrame(rows)
     # persist the strength measure so downstream figures use the same
     # definition rather than re-deriving a similar-looking one
@@ -326,6 +389,28 @@ def main():
           f"(geometric mean {ceiling:.3f})")
     print(f"cross-lab PRISM vs GDSC: {cross:.3f}")
     print(f"REPRODUCIBLE FRACTION, all ID-matched lines   = {frac:.1%}")
+    def med(name):
+        s = R[R.comparison == name].rho
+        return float(s.median()) if len(s) else np.nan
+
+    val_ceil_p = med("PRISM replicate split (validated lines)")
+    val_ceil_g = med("GDSC1 vs GDSC2 (validated lines)")
+    rel_num = med("PRISM vs GDSC (CROSS-LAB, reliability-selected)")
+    rel_ceil = med("PRISM replicate split (reliability lines)")
+    if np.isfinite(val_ceil_p) and np.isfinite(val_ceil_g):
+        vc = float(np.sqrt(max(val_ceil_p, 1e-9) * max(val_ceil_g, 1e-9)))
+        print(f"\nMATCHED-CEILING comparison (same lines, same compounds):")
+        print(f"  validated numerator {xl_val:.3f} / matched ceiling {vc:.3f} "
+              f"= {xl_val/vc:.1%}")
+        print(f"  (the unmatched form divided by {ceiling:.3f}, giving "
+              f"{xl_val/ceiling:.1%})")
+    if np.isfinite(rel_num) and np.isfinite(rel_ceil) and rel_ceil > 0:
+        print(f"  reliability-selected lines: {rel_num:.3f} / {rel_ceil:.3f} "
+              f"= {rel_num/rel_ceil:.1%}")
+        print("  If reliability selection matches identity selection, the "
+              "criterion is\n  selecting well-measured lines rather than "
+              "correctly-identified ones.")
+
     if np.isfinite(xl_ho):
         print(f"  same held-out compounds, ALL lines            = "
               f"{xl_ho/ceiling:.1%}  (r={xl_ho:.3f})")
@@ -333,11 +418,9 @@ def main():
         fv = xl_val / ceiling
         print(f"REPRODUCIBLE FRACTION, identity-validated only = {fv:.1%}  "
               f"(r={xl_val:.3f})")
-        print("  The gap between these two is the cost of trusting an "
-              "identifier. Most of\n  the apparent cross-laboratory "
-              "irreproducibility is cell-line divergence,\n  not assay or "
-              "protocol difference — restricting to lines whose response\n  "
-              "fingerprint confirms their identity recovers most of it.")
+        print("  Compare the reliability-selected control above: if the two "
+              "are equal, the\n  criterion selects well-measured lines rather "
+              "than correctly-identified ones.")
     print("  i.e. of the line-specific response an assay can reproduce with "
           "itself,\n  this much survives moving to another laboratory and assay.")
 
@@ -357,9 +440,15 @@ def main():
     print(f"  different lab AND assay                  r={cross:.3f}  "
           f"({-step_lab:+.3f})")
     if tot > 0:
+        dom = "assay" if step_assay > step_lab else "laboratory"
         print(f"  -> changing assay within a lab costs {step_assay/tot:.0%} of "
               f"the total drop;\n     changing laboratory costs the remaining "
-              f"{step_lab/tot:.0%}. Laboratory dominates.")
+              f"{step_lab/tot:.0%}. {dom.capitalize()} dominates.")
+        print("     NOTE: on unmatched compound sets this apportionment read "
+              "84/16 the other\n     way. GDSC1 vs GDSC2 changes screening "
+              "version, concentration range and\n     assay chemistry at once, "
+              "so 'assay' here means a substantial protocol\n     change, not a "
+              "detector swap.")
 
     # does agreement depend on how strong the compound is?
     xl = R[R.comparison.str.contains("CROSS-LAB")].copy()
@@ -433,8 +522,12 @@ def main():
         {"quantity": "cross-lab PRISM vs GDSC (identity-validated)",
          "value": xl_val},
         {"quantity": "reproducible fraction (all)", "value": frac},
-        {"quantity": "reproducible fraction (identity-validated)",
-         "value": xl_val / ceiling if ceiling > 0 else np.nan},
+        {"quantity": "reproducible fraction (identity-validated, MATCHED "
+         "ceiling)",
+         "value": xl_val / vc if 'vc' in dir() and vc > 0 else np.nan},
+        {"quantity": "reproducible fraction (reliability-selected control)",
+         "value": rel_num / rel_ceil if np.isfinite(rel_ceil) and rel_ceil > 0
+         else np.nan},
         {"quantity": "share of loss from changing assay within a lab",
          "value": step_assay / tot if tot > 0 else np.nan},
         {"quantity": "share of loss from changing laboratory",
