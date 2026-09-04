@@ -1856,6 +1856,13 @@ independently of it.
 | OP3 | — | 33.1% |
 | sci-Plex 3 | — | 30.2% |
 
+> **Superseded in part by §36.** The 0.5% figure below stands as what an
+> atlas-wide index returns, but it is *not* evidence that Tahoe lacks
+> context-dependence: a biologically specified contrast (MEK inhibitors,
+> BRAF/RAS-driven versus wild-type lines, on the Pratilas ERK-output signature)
+> is significant at *P* = 0.0005 and survives lineage control. The null was
+> dilution.
+
 **The Tahoe result is the consequential one.** `tahoe_true_replicates.py` carried
 its own inline estimator and never imported the corrected library, so the paper's
 headline empirical claim was still computed from a residual containing each
@@ -2206,6 +2213,83 @@ to unreplicated data.
   finish; vectorised through the Gram identity.
 
 All three are covered by regression tests.
+
+---
+
+## 36. The headline null was dilution: Tahoe does resolve a drug × genotype interaction
+
+§31 reported that Tahoe shows no detectable context × compound interaction at
+matched dose (0.5%, CI [0.0–1.5%]), and that was the paper's central empirical
+claim. §35 then showed how such a null can be manufactured: in Spear-ATAC a
+global statistic over 2,174 motifs found nothing while six transcription-factor
+knockouts were plainly moving their own motif. **The Tahoe null came from the
+same kind of instrument, and it fails the same way.**
+
+The check is not another statistic. It is prior pharmacology, which specifies the
+drug, the lines, the genes and the direction before anything is computed.
+
+### Two main-effect controls: the atlas measures drug response
+
+MEK inhibitors suppress ERK-dependent transcription. The readout genes are not
+chosen here — they are the MEK-dependent output signature of Pratilas et al.
+(*PNAS* 2009), used clinically as a pharmacodynamic marker (DUSP4, DUSP6, SPRY2,
+SPRY4, ETV4, ETV5, PHLDA1, EPHA2, SPRED1, SPRED2, CCND1, FOSL1, MYC).
+
+| MEK inhibitor dose | median Δ signature | conditions down | *P* |
+|---|---:|---:|---:|
+| 0.05 µM | −0.138 | 87% | 2×10⁻³⁹ |
+| 0.5 µM | −0.291 | 92% | 6×10⁻⁴⁴ |
+| 5 µM | −0.384 | 98% | 6×10⁻⁴⁵ |
+
+Dose-ordered, in the predicted direction, across 802 conditions and 4 compounds.
+A second, independent control: proteasome inhibitors induce the heat-shock
+response (median Δ = +1.017, 74% of conditions up), as predicted for a shared
+proteotoxic effect.
+
+### The interaction, predicted in advance and confirmed
+
+Lines driven by BRAF or RAS mutation depend on MAPK signalling and carry high
+baseline ERK output; MAPK-wild-type lines do not. The prediction is that ERK
+output falls **further** in mutant lines. 35 of 48 Tahoe lines are BRAF/KRAS/NRAS
+driven.
+
+| dose | mutant | wild-type | Δ | *P* | *P* within organ |
+|---|---:|---:|---:|---:|---:|
+| 0.05 µM | −0.163 (n=197) | −0.098 (n=71) | **−0.065** | 0.0010 | 0.035 |
+| 0.5 µM | −0.316 (n=198) | −0.194 (n=72) | **−0.122** | 0.0005 | 0.007 |
+| 5 µM | −0.406 (n=192) | −0.305 (n=72) | **−0.101** | 0.0010 | 0.016 |
+
+Confirmed at all three doses. Because BRAF/RAS mutation concentrates in
+colorectal, melanoma and lung lines, the genotype label was also permuted **within
+organ**, holding lineage fixed; it survives (best *P* = 0.007). At 0.5 µM the
+suppression is **63% larger** in mutant lines.
+
+### What this changes
+
+**The 0.5% figure is not wrong, and it is not a measurement of context-dependence
+either.** It is what an index computed over ~2,000 genes and 11,492 (line, drug,
+dose) pairs returns when almost none of those genes and pairs carry the
+interaction. Here the interaction lives in 13 pathway genes and one genotype
+contrast, and it is large, dose-ordered, lineage-controlled and highly
+significant.
+
+So §31's headline is restated. Tahoe **does** contain resolvable context ×
+compound interaction. What it does not contain is interaction that is visible to
+an atlas-wide average — and that is the finding, because atlas-wide averages are
+how these indices are reported, including in this project.
+
+This is now demonstrated twice, in two modalities, by two routes: in chromatin
+(§35) the same index moves from 0.3% to 91.6% between all features and responsive
+ones, and in transcription the same index reads 0.5% globally while a
+biologically specified contrast is significant at *P* = 0.0005.
+
+### The rule this establishes
+
+A null from an atlas-wide context-dependence index is uninterpretable without a
+positive control that the instrument can detect a known effect on the same data.
+Both nulls in this project failed that test once it was applied. The three
+earlier versions of §35, and the original §31 headline, were all produced by
+omitting it.
 
 ## Reproducing
 
