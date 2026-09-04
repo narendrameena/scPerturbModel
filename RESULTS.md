@@ -2291,6 +2291,148 @@ Both nulls in this project failed that test once it was applied. The three
 earlier versions of §35, and the original §31 headline, were all produced by
 omitting it.
 
+---
+
+## 37. The genotype null is dilution too: one marker beats a ridge over 11,809 genes
+
+§36 established the rule and applied it to the interaction null. The paper's
+*other* headline had never faced it: **"genome-wide mutation status has no
+cross-validated predictive power for the interaction"** (§17, §32; median CV
+*R*² ≈ 0 across 120 compounds). That is an atlas-wide index too — a ridge over
+11,809 mutated genes — and the dilution argument applies to it with full force.
+
+### The panel: what PRISM can detect
+
+Six established pharmacogenomic relationships, each with the marker, the drugs
+and the direction fixed in advance from the founding literature, tested as one
+pre-specified contrast with a permutation null over the genotype label:
+
+| control | reference | carriers | others | Δ | *P* | |
+|---|---|---:|---:|---:|---:|---|
+| MDM2 inhibitor → *TP53* wild-type | Vassilev 2004 | −0.769 (n=190) | +0.029 | **−0.798** | 0.0005 | ✅ |
+| MEK inhibitor → *BRAF/RAS* mutant | §36 | −0.802 (n=277) | −0.470 | **−0.332** | 0.0005 | ✅ |
+| BRAF inhibitor → *BRAF* mutant | Bollag 2010 | −0.266 (n=104) | −0.084 | **−0.182** | 0.0005 | ✅ |
+| EGFR inhibitor → *EGFR* mutant | Lynch 2004 | −0.363 (n=70) | −0.314 | −0.049 | 0.040 | ✅ |
+| ERBB2 inhibitor → *ERBB2* | Slamon 2001 | −0.205 (n=39) | −0.181 | −0.024 | 0.21 | ✗ |
+| ABL inhibitor → BCR-ABL | Druker 2001 | — | — | — | — | ✗ |
+
+**Four of six recovered**, and the two failures are mine rather than the
+instrument's: ERBB2 dependency is driven by **amplification**, which a mutation
+call does not capture, and the BCR-ABL contrast found zero carriers because the
+lineage string used to define CML was wrong. Both are panel-design errors, and
+copy-number data for the first is already on disk.
+
+The nutlin result is the one to note: MDM2 inhibitors kill *TP53*-wild-type lines
+and spare mutants by **0.80 log₂ units**, which is among the largest effects
+anywhere in this project. PRISM sees it clearly.
+
+### The same drugs through the paper's own index
+
+| | median CV *R*² |
+|---|---:|
+| ridge over 11,809 mutated genes (§17, §32) | **−0.019** |
+| the **one** known marker, as a single column | **+0.080** |
+
+The single marker beats the genome-wide ridge for **15 of 19** panel drugs.
+
+A one-column model of the right gene outperforms an eleven-thousand-gene ridge on
+identical data, folds and residuals. So **"genotype does not predict drug
+response" is a statement about the index, not about the biology.** What is true
+is narrower and much less interesting: *a genome-wide ridge over all mutated
+genes does not generalise*, because the signal is sparse and ridge regularisation
+spreads it across every gene that happens to co-occur.
+
+### Three nulls, one mechanism
+
+| null | as reported | once the instrument was checked |
+|---|---|---|
+| chromatin interaction (§35) | 0.3% | 91.6% on responsive features |
+| Tahoe interaction (§31, §36) | 0.5% [0.0–1.5%] | MEK × MAPK at *P* = 0.0005, lineage-controlled |
+| genotype prediction (§17, §32) | CV *R*² ≈ 0 | +0.080 for one marker vs −0.019 genome-wide |
+
+Every one is an atlas-wide average over features and pairs that mostly carry no
+signal, and every one reverses when the averaging stops. That is now the paper's
+central finding, and it is a finding about method rather than about any one
+atlas.
+
+**The remaining problem**, and what §38 addresses: all three diagnoses used prior
+biology to say where to look. A method that requires knowing the answer is not a
+method. What is needed is an estimator that finds the concentration by itself.
+
+---
+
+## 38. A proposed replacement estimator, tested against the current one — and rejected
+
+§35–37 showed three nulls in this project reversing once the instrument was
+checked, each diagnosed with prior biology. A method that needs to know the
+answer is not a method, so the obvious next step was an estimator that finds
+concentrated interaction by itself.
+
+**The proposal.** Every index here, including this project's, is the *trace* of
+the cross-replicate covariance `M = ΓᴬᵀΓᴮ/(np)`. A trace is a sum of eigenvalues,
+so decompose `M`, keep the components above a permuted-pairing null edge, and
+report their sum. The eigenvectors say *where* the interaction lives, which a
+trace cannot.
+
+**The test.** A constant amount of true reproducible interaction placed in *r*
+orthogonal directions out of 2,000, with *r* swept from 2,000 down to 2. The
+truth is identical at every point; only its arrangement changes. Plus a true
+null, and the published alternatives on identical data.
+
+| estimator | mean \|error\| | worst | at the true null (truth = 0) |
+|---|---:|---:|---:|
+| **trace / replicate covariance (current)** | **0.2%** | **0.5%** | −0.0005 |
+| ANOVA variance components (published) | 0.6% | 2.6% | +0.023 |
+| spectrum (proposed replacement) | 29.9% | 71.8% | 0.000 |
+| naive residual variance | — | — | **+0.500** |
+
+**The proposal is worse and is rejected.** The premise behind it — that the trace
+collapses when the interaction concentrates — is simply false: the trace recovers
+the truth to within 0.5% at every rank from 2,000 down to 2. Thresholding
+eigenvalues throws away the many weak directions that carry most of a spread
+signal, which is why the spectrum errs by 30% on average. The current estimator
+stays.
+
+Two things are worth keeping from the exercise.
+
+**The naive variance index reports 0.500 from data containing no interaction at
+all.** That is a 50-percentage-point error, and it is the estimator that a
+residual-variance decomposition without replicates amounts to — which is how a
+large part of this literature computes context-dependence. It is far worse than
+anything else tested here.
+
+**The spectrum is a good concentration diagnostic even though it is a bad
+estimator.** Its component count recovers the true rank exactly once the signal
+is concentrated — 10 components at rank 10, 4 at rank 4, 2 at rank 2 — and its
+value is accurate there too (0.217 vs 0.201, 0.211 vs 0.205, 0.197 vs 0.193). It
+answers "is this small number small because there is nothing, or because it is
+focused?", which is precisely the question the trace cannot answer and which
+produced three false nulls. It is retained as a diagnostic in
+`perturbmodel.spectrum`, not as a replacement.
+
+### What the real fix is
+
+The paper's error was never in the estimator. The variance fraction was correct;
+the **inference** drawn from it was not. "Interaction is 0.5% of reproducible
+variance" and "there is no detectable interaction" are different statements, and
+only the first is supported. A small fraction of a large total is entirely
+compatible with a large, highly significant, biologically specific effect — which
+is exactly what MEK × MAPK turned out to be (*P* = 0.0005, §36) and what one
+marker versus a genome-wide ridge turned out to be (+0.080 vs −0.019, §37).
+
+So the methodological recommendation is not a new estimator. It is:
+
+1. **Report the fraction, but never test it against zero** — that test has no
+   power to detect concentrated effects and will keep producing false nulls.
+2. **Pair every fraction with a positive control** on the same data, showing the
+   instrument recovers a known effect.
+3. **Test specific contrasts** — per pair, per pathway, per marker, with FDR —
+   when the question is "does context-dependence exist" rather than "how much of
+   the total is it".
+4. Use the spectrum's component count to report whether the fraction is spread or
+   focused, since the two have completely different consequences for anyone
+   trying to model it.
+
 ## Reproducing
 
 ```bash

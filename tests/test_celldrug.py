@@ -188,3 +188,39 @@ def test_edistance_is_zero_for_identical_distributions():
     assert edistance(X, Y) > 5 * abs(edistance(X, Z))
     _, p_null = etest(X, Z, n_perm=60)
     assert p_null > 0.05
+
+
+def test_trace_estimator_is_unbiased_under_concentration():
+    """The replicate-covariance trace must not depend on how concentrated the
+    interaction is.
+
+    This guards a claim that was ASSERTED and then refuted by simulation: that
+    the published-style index collapses when the interaction occupies few
+    directions. It does not, and a proposed spectral replacement was rejected on
+    this evidence (RESULTS.md sec.38). If a future change makes the trace
+    concentration-dependent, that is a regression.
+    """
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
+    from spectrum_benchmark import simulate, trace_index
+    for rank in (2000, 100, 4):
+        A, B, truth = simulate(rank=rank, seed=0)
+        assert trace_index(A, B) == pytest.approx(truth, rel=0.05)
+
+
+def test_naive_variance_index_is_badly_wrong_at_the_null():
+    """Residual variance reports a large interaction from data containing none.
+
+    Kept as an executable statement of why replicate covariance is required:
+    the variance-based alternative returns ~0.5 where the truth is 0.
+    """
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
+    from spectrum_benchmark import variance_index, trace_index
+    rng = np.random.default_rng(0)
+    A = rng.normal(0, 1.0, (300, 500))
+    B = rng.normal(0, 1.0, (300, 500))
+    assert variance_index(A, B) > 0.4
+    assert abs(trace_index(A, B)) < 0.02
