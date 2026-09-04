@@ -2094,6 +2094,88 @@ in normalisation and in how the shared term is constructed — §31 divides by a
 squared prior carrying its own estimation noise, §33 by a noise-free covariance —
 and that remains the open question.
 
+---
+
+## 35. A third layer, and the same answer from a published estimator
+
+Two objections remained open. First, everything measured so far was
+transcription or viability — two readouts of the same cell state, so their
+agreement is weaker evidence than it looks. Second, every number came from an
+estimator built here; a bespoke estimator validated by its author's own
+simulation is weaker evidence than the same conclusion reached by a method the
+field already accepts. Both are addressed on one dataset.
+
+### The dataset that removes most excuses
+
+Spear-ATAC (Pierce, Greenleaf et al. 2021, via scPerturb) is **fully crossed**:
+all 41 CRISPR perturbations are present in all three cell lines (K562, GM12878,
+MCF7), with 4–6 independent replicate samples each, 73,344 cells. Nothing has to
+be imputed or dropped, the perturbations are genetic rather than chemical, and
+ChromVar TF-motif deviations are the same 2,174 features in every line, so no
+gene-set intersection is needed. It is a different molecular layer —
+**chromatin accessibility** — from anything else in this project.
+
+### Both estimators agree, and both find nothing
+
+| | interaction share |
+|---|---:|
+| replicate-covariance estimator (this project) | 54.2% |
+| **its label-permutation null** | **61.1% [55.3–67.4%]**, *P* = 0.99 |
+| ANOVA variance components (published) | 30.7% of reproducible variance |
+
+The point estimates differ, as ratios of small numbers do. What matters is that
+**neither is distinguishable from its own null.** The permutation test puts the
+observed interaction *below* the null mean. And in the ANOVA decomposition
+**44% of motifs return a negative interaction variance** — the method of moments
+does that when the true component is zero — alongside 44% for the perturbation
+term and 32% for the cell line.
+
+The full ANOVA split explains why: **91.7% of the variance is within-replicate
+residual**, leaving cell line 1.0%, perturbation 0.8% and interaction 1.4%. Only
+8.3% of this dataset is reproducible at all, so every share computed on it is a
+ratio between small, noisy quantities. Reporting 30.7% or 54.2% without the null
+would be reporting the noise floor.
+
+**So: no detectable context × perturbation interaction in chromatin**, in a fully
+crossed replicated design — the same answer Tahoe gives for transcription at
+matched dose (0.5%, CI [0.0–1.5%], §31), reached in a different layer, a
+different perturbation modality, and by a published estimator.
+
+### Why the published estimator was used, and what it cost
+
+`variancePartition` (Hoffman & Schadt, *BMC Bioinformatics* 2016) is the standard
+variance-component method in genomics, and its model is exactly this project's
+split: `y ~ (1|context) + (1|perturbation) + (1|context:perturbation)`. The
+interaction term is identifiable **only because the design is replicated** —
+without replicates it and the residual are the same stratum, which is this
+paper's central methodological point arriving from an independent direction.
+
+The REML route was attempted first and abandoned: statsmodels' crossed
+random-effects idiom fails to build a design matrix for this layout (a 561-versus-
+547 row mismatch), and zero of 250 features converged. What is reported instead is
+Henderson's ANOVA method of moments (Searle, Casella & McCulloch, *Variance
+Components*, 1992), which is what variancePartition's REML reduces to on a
+balanced design; the design was balanced by taking exactly two replicate samples
+per cell, two being the minimum any cell has, so nothing is imputed.
+
+Two errors were caught in that implementation before it was used. statsmodels
+returns variance components in **alphabetical** order (`ctx, inter, pert`), not
+the order of the formula dictionary — zipping against the dictionary keys silently
+reports the perturbation main effect as the interaction. And the ANOVA estimator
+is validated against a synthetic design with known components before being
+applied: it recovers interaction/reproducible at **0.049 against a truth of
+0.048**, and that check is now a regression test. The context term, estimated
+from three levels, recovers 0.127 against 0.187 and is not relied on.
+
+### Standing caveat
+
+A cell property was not detected in chromatin either (1.0% of variance;
+reproducing across disjoint perturbation halves at r = +0.63, on three lines).
+With three contexts this is a weak test, and it is reported because a negative
+result would have mattered — the correction introduced in §27 would then be
+specific to viability and transcription — not because a positive one is
+conclusive.
+
 ## Reproducing
 
 ```bash

@@ -135,3 +135,32 @@ def test_per_plate_control_noise_does_not_destroy_the_interaction(s_plate):
     v = apportion(decompose(R, K, lines, min_lines=10, min_cpds=5))
     assert v["var_cell_drug_relation"] > 0.5 * gamma.var()
     assert v["var_cell_drug_relation"] == pytest.approx(gamma.var(), rel=0.35)
+
+
+def test_anova_components_recovers_known_variance():
+    """The published estimator must recover components it was given.
+
+    Henderson/ANOVA method of moments on a balanced two-way crossed random
+    design (Searle, Casella & McCulloch 1992) -- the balanced-design limit of
+    variancePartition, used to check this project's bespoke covariance
+    estimator against an independent published route. A context term estimated
+    from only 3 levels is poorly determined and is not asserted here; the
+    interaction, which is the quantity in question, is.
+    """
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
+    from published_methods_check import anova_components
+    rng = np.random.default_rng(0)
+    a, b, n, F = 3, 41, 2, 400
+    va, vb, vab, ve = 1.0, 4.0, 0.25, 0.09
+    Y = (rng.normal(0, np.sqrt(va), (a, 1, 1, F))
+         + rng.normal(0, np.sqrt(vb), (1, b, 1, F))
+         + rng.normal(0, np.sqrt(vab), (a, b, 1, F))
+         + rng.normal(0, np.sqrt(ve), (a, b, n, F)))
+    VP, neg = anova_components(Y, a, b, n)
+    tot = va + vb + vab + ve
+    assert VP["inter"].median() == pytest.approx(vab / tot, abs=0.02)
+    assert VP["resid"].median() == pytest.approx(ve / tot, abs=0.02)
+    r = VP["inter"] / (VP["ctx"] + VP["pert"] + VP["inter"])
+    assert float(r.median()) == pytest.approx(vab / (va + vb + vab), abs=0.02)
