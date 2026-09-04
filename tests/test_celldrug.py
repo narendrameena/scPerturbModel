@@ -224,3 +224,44 @@ def test_naive_variance_index_is_badly_wrong_at_the_null():
     B = rng.normal(0, 1.0, (300, 500))
     assert variance_index(A, B) > 0.4
     assert abs(trace_index(A, B)) < 0.02
+
+
+def test_sparse_detection_beats_pooled_when_concentrated():
+    """Higher Criticism must find sparse interaction the pooled test misses.
+
+    The claim of RESULTS.md sec.39, as an executable check. It is a statement
+    about POWER RATES, so it is checked across seeds: the pooled test retains
+    about 12% power in this regime rather than 0%, and a first version of this
+    test asserted that it must fail on one particular seed -- which is asserting
+    the outcome of a coin flip and duly failed on seed 1.
+    """
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
+    from sparse_benchmark import simulate_sparse
+    from perturbmodel.sparse_interaction import detect
+    hc, pooled, localised = 0, 0, 0
+    seeds = range(4)
+    for seed in seeds:
+        A, B, truth = simulate_sparse(k=4, seed=seed)
+        r = detect(A, B, n_perm=200, seed=seed)
+        hc += r.hc_p < 0.05
+        pooled += r.trace_p < 0.05
+        hits = set(np.where((r.table.q < 0.05).to_numpy())[0])
+        localised += len(hits & truth) >= 1
+    assert hc == len(list(seeds))        # sparse test fires every time
+    assert pooled < hc                   # pooled test does not keep up
+    assert localised == len(list(seeds))  # and every run localises a true pair
+
+
+def test_sparse_detection_is_clean_at_the_null():
+    """Neither selection procedure may fire when there is nothing there."""
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
+    from sparse_benchmark import simulate_sparse
+    from perturbmodel.sparse_interaction import detect
+    A, B, _ = simulate_sparse(k=0, total=0.0, seed=7)
+    r = detect(A, B, n_perm=200, seed=7)
+    assert r.hc_p > 0.05
+    assert r.n_sig == 0

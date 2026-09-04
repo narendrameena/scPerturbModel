@@ -2433,6 +2433,102 @@ So the methodological recommendation is not a new estimator. It is:
    focused, since the two have completely different consequences for anyone
    trying to model it.
 
+---
+
+## 39. A method that works: replace the test, not the estimator
+
+§38 rejected a proposed replacement *estimator* — the trace recovers planted
+interaction to within 0.5% at every concentration, so nothing is wrong with it as
+a measure of magnitude. What failed three times in this project was the **test**:
+asking whether a pooled variance fraction differs from zero, when the alternative
+is a few strongly interacting pairs among thousands of null ones.
+
+That is the classical sparse-detection problem, and it has a known answer. A sum
+has vanishing power against sparse alternatives (Donoho & Jin, *Ann. Statist.*
+2004). So the fix is not a better estimate of the total; it is a statistic
+matched to the structure.
+
+### The method
+
+Three pieces, all resting on the replicate structure this project already uses:
+
+1. **Per-pair reproducibility.** For each (context, perturbation, dose), the
+   cosine between its interaction residual on two independent plates. Two
+   independent noise vectors in *p* dimensions have cosine ≈ N(0, 1/*p*), so only
+   a real interaction produces agreement. The null pairs each replicate A with a
+   replicate B from a *different* condition.
+2. **Higher Criticism** over those p-values for global detection — asymptotically
+   optimal for sparse alternatives, sensitive exactly where a sum is blind.
+3. **LAS biclustering** (Shabalin et al., *Ann. Appl. Statist.* 2009) on the
+   context × perturbation score matrix, because a drug class acting on a genotype
+   group is a *submatrix*, not scattered cells.
+
+### It works on planted signal
+
+Total interaction held constant, spread over *k* of 400 conditions:
+
+| *k* | pooled test | Higher Criticism | per-pair FDR |
+|---:|---:|---:|---|
+| 400 (dense) | 12% | 0% | — |
+| 100 | 12% | 12% | — |
+| 16 | 12% | 25% | recall 2% |
+| 8 | 12% | 50% | recall 9% |
+| **4 (sparse)** | **12%** | **100%** | **recall 53%, precision 98%** |
+
+The pooled test is flat at 12% throughout — exactly as an unbiased sum should be,
+since its power depends only on total signal. Higher Criticism goes from 0% to
+100% as the effect concentrates. **At a true null all three report 0%**, which
+matters because per-pair testing and a maximum statistic are both selection
+procedures.
+
+### And it works blind on Tahoe
+
+Run on 6,939 (line, drug, dose) conditions with **no gene set, no pathway, no
+drug class and no genotype**:
+
+| | |
+|---|---|
+| pooled trace | −0.0015, permutation **P = 0.13** — finds nothing |
+| Higher Criticism | 1320, permutation **P = 0.0025** — finds it |
+| pairs at FDR < 0.05 | **360 of 6,939 (5.2%)** |
+
+Scoring those 360 calls against the pharmacology **afterwards**:
+
+- MEK-inhibitor conditions: **73 of 360** flagged, against 283 of 6,939
+  background — *P* = 9 × 10⁻³³
+- MEK × MAPK-driven specifically: **64 of 360**, against 207 of 6,939 —
+  *P* = 9 × 10⁻³⁴
+- median cross-replicate agreement: MEK × MAPK-driven **+0.065**, MEK ×
+  wild-type +0.008, all other pairs −0.028
+
+**The detector recovers §36's drug × genotype relationship from the atlas alone.**
+That relationship was found originally by supplying the drug class, the genotype,
+the gene signature and the direction; here nothing was supplied.
+
+### Two honest qualifications
+
+The single highest-scoring *block* is not the MEK one — LAS returns
+Homoharringtonine and Idarubicin in two lines, which reach cross-replicate
+agreement of +0.71 and +0.58 against MEK's +0.065. Those are simply the most
+reproducibly context-specific compounds in the atlas, and there is no reason the
+largest interaction should be the one pharmacology happens to have named. Scoring
+only the top block was the first version of this analysis and it was the wrong
+question.
+
+Per-pair recall is modest — 53% at the sparsest simulated setting, and only 5.2%
+of Tahoe pairs reach FDR — so this detects and localises concentrated interaction
+but does not claim to find all of it.
+
+### What to report
+
+| quantity | statistic |
+|---|---|
+| how much interaction is there | the trace — unchanged, it was always right |
+| **does any interaction exist** | **Higher Criticism, not the trace against zero** |
+| **which pairs carry it** | **per-pair reproducibility with FDR** |
+| is it spread or focused | the spectrum's component count (§38) |
+| can the instrument see anything | a positive control on the same data (§36–37) |
+
 ## Reproducing
 
 ```bash
