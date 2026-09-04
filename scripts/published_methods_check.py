@@ -127,11 +127,33 @@ def edistance(X, Y, max_n=400, seed=0):
     if len(X) < 5 or len(Y) < 5:
         return np.nan
 
-    def md(A, B):
-        d = np.sqrt(np.maximum(
-            ((A[:, None, :] - B[None, :, :]) ** 2).sum(-1), 0))
+    # ||a-b||^2 = ||a||^2 + ||b||^2 - 2 a.b, so the pairwise distances come from
+    # one matrix product. Materialising (n, m, d) instead -- 400 x 400 x 2174
+    # floats per call, times three calls, times every permutation -- is what made
+    # a first version of this test too slow to finish.
+    def md(A, B, within=False):
+        """Mean pairwise distance; over DISTINCT pairs when A is B.
+
+        E||x - x'|| is defined over distinct pairs. Averaging the full n x n
+        matrix includes n zeros on the diagonal and so underestimates the
+        within-group term by mean_offdiag / n. In 2,174 motif dimensions the
+        mean pairwise distance is about 66, so at n = 400 that bias is ~0.17 per
+        within-group term and both are subtracted -- inflating the energy
+        distance by ~0.33 for two identical distributions, which is what a
+        first version of this function returned for a case whose true value is
+        zero.
+        """
+        aa = (A * A).sum(1)[:, None]
+        bb = (B * B).sum(1)[None, :]
+        d2 = np.maximum(aa + bb - 2.0 * (A @ B.T), 0.0)
+        d = np.sqrt(d2, out=d2)
+        if within:
+            n = len(A)
+            if n < 2:
+                return 0.0
+            return float((d.sum() - np.trace(d)) / (n * (n - 1)))
         return float(d.mean())
-    return 2 * md(X, Y) - md(X, X) - md(Y, Y)
+    return (2 * md(X, Y) - md(X, X, within=True) - md(Y, Y, within=True))
 
 
 def etest(X, Y, n_perm=200, seed=0):

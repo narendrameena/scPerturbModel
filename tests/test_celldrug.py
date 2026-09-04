@@ -164,3 +164,27 @@ def test_anova_components_recovers_known_variance():
     assert VP["resid"].median() == pytest.approx(ve / tot, abs=0.02)
     r = VP["inter"] / (VP["ctx"] + VP["pert"] + VP["inter"])
     assert float(r.median()) == pytest.approx(vab / (va + vb + vab), abs=0.02)
+
+
+def test_edistance_is_zero_for_identical_distributions():
+    """E-distance (Peidli et al. 2024) must vanish when the two samples match.
+
+    The within-group term E||x - x'|| is over DISTINCT pairs; averaging the full
+    n x n distance matrix includes the zero diagonal and biases that term low,
+    inflating the statistic. In 2,174 dimensions at n = 400 that bias is ~0.33 --
+    larger than most real effects here, so it would have made every perturbation
+    look significant.
+    """
+    import sys
+    from pathlib import Path
+    sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "scripts"))
+    from published_methods_check import edistance, etest
+    rng = np.random.default_rng(0)
+    X = rng.normal(0, 1, (300, 500))
+    Z = rng.normal(0, 1, (300, 500))
+    assert abs(edistance(X, Z)) < 0.05
+    # and it must grow with a real shift, and its test must be calibrated
+    Y = rng.normal(0.15, 1, (300, 500))
+    assert edistance(X, Y) > 5 * abs(edistance(X, Z))
+    _, p_null = etest(X, Z, n_perm=60)
+    assert p_null > 0.05

@@ -953,10 +953,10 @@ def figure8():
 
 # ---------------------------------------------------------------- figure 9
 def figure9():
-    """Chromatin, fully crossed, and a published estimator on the same data."""
+    """A third layer attempted, and the E-test that says it cannot answer."""
     A = read("atac_decomposition.csv")
-    P = read("published_methods_check.csv")
     VP = read("variance_partition.csv", sub="published_methods")
+    ET = read("published_methods_etest.csv")
     fig, ax = plt.subplots(1, 3, figsize=(14, 4.2), constrained_layout=True)
     if A is None or not len(A):
         for a_ in ax:
@@ -966,26 +966,23 @@ def figure9():
 
     # a: the ANOVA split. The residual bar is the point -- only 8.3% of this
     # dataset is reproducible at all, so every share is a ratio of small numbers.
-    if VP is not None and len(VP):
-        med = [VP.ctx.median(), VP.pert.median(), VP.inter.median(),
-               VP.resid.median()]
-    else:
-        med = [0.010, 0.008, 0.014, 0.917]
+    med = ([VP.ctx.median(), VP.pert.median(), VP.inter.median(),
+            VP.resid.median()] if VP is not None and len(VP)
+           else [0.010, 0.008, 0.014, 0.917])
     ax[0].bar(range(4), med, width=0.6, color=[GREY, BLUE, ORANGE, "#d8d8d8"])
     for i_, v in enumerate(med):
         ax[0].text(i_, v + 0.012, f"{v:.1%}", ha="center", fontsize=9,
                    fontweight="bold")
     ax[0].set_xticks(range(4), ["cell line", "perturbation",
-                                "line ×\nperturbation", "residual\n(noise)"],
-                     fontsize=7)
+                                "line \u00d7\nperturbation",
+                                "residual\n(noise)"], fontsize=7)
     ax[0].set_ylabel("variance fraction")
     ax[0].set_ylim(0, 1.05)
     ax[0].text(0.5, 0.55, "only 8.3% of this dataset is\nreproducible at all",
-               transform=ax[0].transAxes, ha="center", fontsize=7,
-               color="#444")
+               transform=ax[0].transAxes, ha="center", fontsize=7, color="#444")
     panel(ax[0], "a", "ANOVA variance components (published)")
 
-    # b: observed against its own permutation null -- the number that decides it
+    # b: observed against its own permutation null
     obs, nm = float(a0.interaction), float(a0.null_mean)
     ax[1].bar([0, 1], [obs, nm], width=0.5, color=[ORANGE, GREY])
     for i_, v in enumerate([obs, nm]):
@@ -1000,42 +997,38 @@ def figure9():
                ha="center", fontsize=8.5, color=ORANGE, fontweight="bold")
     panel(ax[1], "b", "Not distinguishable from chance")
 
-    # c: the two estimators side by side, both against the null
-    vals, labs, cols = [], [], []
-    if P is not None and len(P):
-        for r_ in P.itertuples():
-            vals.append(float(r_.interaction_of_reproducible))
-            labs.append(r_.method.split(" (")[0].replace(" ", "\n", 1))
-            cols.append(VIOLET if "variance" in r_.method else ORANGE)
-    if not vals:
-        # say the comparison has not been computed rather than showing an
-        # empty axis, which reads as a measured zero
-        ax[2].text(0.5, 0.5, "published-estimator comparison\nnot yet computed",
+    # c: the E-test, which decides how a and b should be read. Where the
+    # perturbation main effect is undetectable no interaction can be measured,
+    # so a null interaction is not evidence for a null interaction.
+    if ET is not None and len(ET):
+        thr = 0.05 / len(ET)
+        ax[2].hist(ET.edist, bins=28, color=AQUA, alpha=0.85)
+        ax[2].axvline(float(ET.edist.median()), color=ORANGE, lw=2.2,
+                      label=f"median E = {ET.edist.median():.4f}")
+        n_sig = int((ET.p < thr).sum())
+        ax[2].set_xlabel("energy distance, perturbed vs control cells")
+        ax[2].set_ylabel("(line, perturbation) pairs")
+        ax[2].legend(frameon=False, fontsize=7.5)
+        ax[2].text(0.5, 0.70, f"{n_sig} of {len(ET)} reject at\n"
+                   f"Bonferroni q < 0.05", transform=ax[2].transAxes,
+                   ha="center", fontsize=9.5, color=ORANGE, fontweight="bold")
+        ax[2].text(0.5, 0.50, "no perturbation moves the population,\nso no "
+                   "interaction is measurable here",
+                   transform=ax[2].transAxes, ha="center", fontsize=7,
+                   color="#444")
+    else:
+        ax[2].text(0.5, 0.5, "E-test not yet computed",
                    transform=ax[2].transAxes, ha="center", va="center",
                    fontsize=8.5, color=ORANGE)
         ax[2].set_xticks([]); ax[2].set_yticks([])
-        panel(ax[2], "c", "Bespoke vs published estimator")
-        fig.suptitle("Figure 9 — Chromatin accessibility, fully crossed: no "
-                     "detectable context × perturbation interaction",
-                     fontsize=10.5, x=0.005, ha="left", fontweight="bold")
-        return fig, {"atac": A}
-    ax[2].bar(range(len(vals)), vals, width=0.5, color=cols)
-    for i_, v in enumerate(vals):
-        ax[2].text(i_, v + 0.015, f"{v:.1%}", ha="center", fontsize=10,
-                   fontweight="bold")
-    ax[2].axhline(nm, ls="--", color="#555", lw=1.4, label="permutation null")
-    ax[2].set_xticks(range(len(vals)), labs, fontsize=7)
-    ax[2].set_ylabel("interaction / reproducible variance")
-    ax[2].legend(frameon=False, fontsize=7.5)
-    ax[2].text(0.5, 0.06, "two routes, same conclusion:\nboth below the null",
-               transform=ax[2].transAxes, ha="center", fontsize=7,
-               color="#444")
-    panel(ax[2], "c", "Bespoke and published estimators agree")
-    fig.suptitle("Figure 9 — Chromatin accessibility, fully crossed: no "
-                 "detectable context × perturbation interaction, by either "
-                 "estimator", fontsize=10.5, x=0.005, ha="left",
+    panel(ax[2], "c", "E-test (Peidli et al. 2024): nothing moved")
+
+    fig.suptitle("Figure 9 \u2014 A third layer attempted: the perturbations "
+                 "produce no detectable effect, so the interaction is not "
+                 "measurable here", fontsize=10.5, x=0.005, ha="left",
                  fontweight="bold")
-    return fig, {"atac": A, "methods": P if P is not None else pd.DataFrame()}
+    return fig, {"atac": A, "etest": ET if ET is not None else pd.DataFrame(),
+                 "variance_components": VP if VP is not None else pd.DataFrame()}
 
 
 def main():
