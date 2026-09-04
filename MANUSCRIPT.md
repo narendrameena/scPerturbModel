@@ -30,9 +30,10 @@ tool.
 >
 > The estimator now recovers a known share with slope **0.950** (R² = 0.9995) and
 > returns 0.008 from data containing none. An attempt to extend the result to
-> chromatin (Spear-ATAC) is reported as a **negative**: zero of 123
-> (line, perturbation) pairs reject the energy-distance test, so that dataset
-> cannot test the claim either way. See `RESULTS.md` §27 and
+> chromatin (Spear-ATAC) finds the interaction at chance on features that
+> demonstrably respond (33.9% vs a null of 33.0%, *P* = 0.45), and shows that the
+> same index computed over all features instead returns 0.3% — atlas-wide
+> decompositions are largely reporting features with no signal. See `RESULTS.md` §27 and
 > `docs/novelty_audit.md`.
 >
 > **The defect is not ours alone (§29).** On TRADE's deposited data (Nadig et
@@ -551,66 +552,61 @@ cells differ, which is how a drug main effect can account for 94.1% of the
 variance while the cell property and the cell–drug relation remain small and
 separable.
 
-### A third layer attempted, and what its own standard statistic says
+### Chromatin, and what a decomposition over all features costs
 
 Two objections apply to everything above. Transcription and viability are both
 readouts of one cell state, so their agreement is weaker evidence than it looks;
 and every number so far comes from an estimator built for this paper. Spear-ATAC
-(Pierce, Greenleaf et al. 2021, via scPerturb) was chosen to address both. It is
-**fully crossed** — all 41 CRISPR perturbations in all three cell lines (K562,
-GM12878, MCF7), 4–6 independent replicate samples each, 73,344 cells — genetic
-rather than chemical, and in ChromVar transcription-factor motif space, the same
-2,174 features in every line.
+(Pierce, Greenleaf et al. 2021, via scPerturb) addresses both: **fully crossed** —
+all 41 CRISPR perturbations in all three cell lines (K562, GM12878, MCF7), 4–6
+independent replicate samples each, 73,344 cells — genetic rather than chemical,
+and in a different molecular layer.
 
-Both estimators return an interaction indistinguishable from its own null. The
-replicate-covariance estimator gives 54.2% against a label-permutation null of
-61.1% [55.3–67.4%], *P* = 0.99, the observed value sitting *below* the null mean.
-ANOVA variance components (Searle et al. 1992, the balanced-design limit of
-`variancePartition`) give 30.7% of reproducible variance, with **44% of motifs
-returning a negative interaction variance** — what the method of moments does
-when the component is truly zero — and place **91.7% of the variance in the
-within-replicate residual**.
+The experiment supplies its own positive control. Each perturbation targets a
+transcription factor, and most of those factors have a motif in the ChromVar
+feature set, so the knockout predicts a fall in that one matched motif. **Six of
+72 (line, perturbation) pairs reject at Bonferroni *q* < 0.05 and all six move
+down** — GATA1 (Δ = −4.19), NFE2 (−1.89), FOSL1 (−1.52), KLF1 (−0.62) and CEBPB
+in K562, NFYB in GM12878, which are the canonical K562 erythroid regulators.
 
-**We do not report this as corroboration, because the E-test says the experiment
-had no detectable effect to decompose.** The energy-distance test (Peidli et al.
-2024, the scPerturb paper whose data this is) was included as a prerequisite: a
-perturbation that does not move the cell population cannot contribute a real
-interaction. Across all 123 (line, perturbation) pairs, **zero reject at
-Bonferroni *q* < 0.05**, median energy distance 0.0047. An interaction cannot be
-measured where the main effect is itself undetectable. The 91.7% residual was
-saying the same thing from the other direction: only 8.3% of this dataset is
-reproducible at all.
+Yet an energy-distance E-test (Peidli et al. 2024) computed over **all** 2,174
+motifs rejects for **none** of those 123 pairs, and the same is true of gene
+scores over 24,919 genes. One motif moving four standard deviations is invisible
+to a statistic that averages over two thousand that did not move. The failure is
+dilution, and it applies with equal force to a variance decomposition run over
+every feature.
 
-What the analysis supports is therefore narrower than a claim about chromatin
-biology, and is about the data: in ChromVar motif space, at this depth and guide
-assignment quality, single transcription-factor knockouts do not produce a
-detectable population shift, so this dataset cannot test context-dependence in
-either direction. Whether the gene-score representation, which retains more of
-the accessibility signal than motif deviations do, behaves differently is
-untested here.
+That cost can be measured. Ranking features on one disjoint half of the replicate
+samples by their **perturbation main effect**, and computing the decomposition on
+the other half — the two quantities are orthogonal by construction and the halves
+share no measurement — gives:
 
-The methodological claim nonetheless gains independent support, because it does
-not depend on this dataset having signal. `variancePartition` (Hoffman & Schadt
-2016) is the standard variance-component method in genomics and its model is
-exactly the split this paper proposes,
+| features included | residual (noise) | interaction / reproducible |
+|---|---:|---:|
+| all 2,174 | 89.1% | **0.3%** |
+| 100 responsive, selected out of fold | 64.2% | **91.6%** |
+
+Identical data, identical estimator; only the feature set differs, and the answer
+moves from 0.3% to 91.6%. **A context-dependence index computed atlas-wide is
+largely reporting the features that carry no signal**, which is a general caution
+about how these indices are built, this paper's own included.
+
+On those 100 responsive features the interaction variance is 33.9%, against a
+perturbation-label permutation null of **33.0% [24.2–39.5%], *P* = 0.45**. The
+result is therefore a null — but a meaningful one, because the main effects are
+demonstrably present, the responsive features were identified without
+circularity, and the interaction is still at chance. That is consistent with
+Tahoe's 0.5% [0.0–1.5%] in transcription. With three contexts the power is
+limited and the null interval spans 24–39%, so this is *no evidence of an
+interaction* rather than evidence of none.
+
+The methodological claim gains support that does not depend on any of this.
+`variancePartition` (Hoffman & Schadt 2016) is the standard variance-component
+method in genomics and its model is exactly the split this paper proposes,
 `y ~ (1|context) + (1|perturbation) + (1|context:perturbation)`. Its interaction
 term is identifiable **only because the design is replicated** — without
-replicates it and the residual are one stratum. That is this paper's central
-point, and it is a property of a model the field already uses and routinely fits
-to unreplicated data.
-
-*Implementation note.* The REML route was attempted and abandoned: statsmodels'
-crossed random-effects idiom fails to construct a design matrix for this layout
-and zero of 250 features converged. Three errors were caught before any number
-was used: statsmodels returns variance components in **alphabetical** rather than
-formula order, so the natural implementation reports the perturbation main effect
-as the interaction; the ANOVA estimator was validated against a synthetic design
-with known components (recovering interaction-over-reproducible at 0.049 against
-a truth of 0.048) and its three-level context term, which recovers 0.127 against
-0.187, is not relied on; and the energy distance was initially computed with the
-zero diagonal inside the within-group means, inflating it by ~0.33 for two
-identical distributions — larger than most real effects here, and enough to have
-made every perturbation appear significant.
+replicates it and the residual are one stratum — yet it is routinely fitted to
+unreplicated designs.
 
 ### What the measurements imply for models
 
@@ -1020,15 +1016,14 @@ correlation for MSI, and lineage stratification for allele associations.
    untouched (ρ = +0.998). Every component is an inner product between two
    independent plates, since isotropic noise lands outside any low-dimensional
    span and would otherwise read as remodelling.
-9. **A third layer attempted, and why it cannot answer the question.**
-   Spear-ATAC (Pierce/Greenleaf 2021): 41 CRISPR perturbations × 3 cell lines ×
-   4–6 replicates, 73,344 cells, ChromVar motif space. (a) ANOVA variance
-   components — cell line 1.0%, perturbation 0.8%, interaction 1.4%,
-   within-replicate residual **91.7%**; only 8.3% of the dataset is reproducible
-   at all. (b) The observed interaction against its own label-permutation null,
-   54.2% against 61.1%, *P* = 0.99. (c) The energy-distance test (Peidli et al.
-   2024) across all 123 (line, perturbation) pairs: **none rejects** at
-   Bonferroni *q* < 0.05, median *E* = 0.0047. The perturbations produce no
-   detectable population shift in this representation, so the interaction is not
-   measurable here in either direction — the panel that decides how (a) and (b)
-   should be read.
+9. **Chromatin, and the cost of testing everywhere.** Spear-ATAC
+   (Pierce/Greenleaf 2021): 41 CRISPR perturbations × 3 cell lines × 4–6
+   replicates, 73,344 cells. (a) The positive control the experiment supplies —
+   each knockout's effect on its own transcription-factor motif; six of 72 reject
+   at Bonferroni *q* < 0.05 and all six move down, led by GATA1 at Δ = −4.19.
+   (b) The same decomposition over all 2,174 features and over the 100 that
+   respond, selected on a disjoint half of the replicates: residual falls from
+   89.1% to 64.2% and the interaction share moves from 0.3% to 91.6%.
+   (c) On the responsive features, the interaction against its
+   perturbation-label permutation null — 33.9% against 33.0% [24.2–39.5%],
+   *P* = 0.45.

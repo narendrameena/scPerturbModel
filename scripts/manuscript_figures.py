@@ -953,82 +953,75 @@ def figure8():
 
 # ---------------------------------------------------------------- figure 9
 def figure9():
-    """A third layer attempted, and the E-test that says it cannot answer."""
-    A = read("atac_decomposition.csv")
-    VP = read("variance_partition.csv", sub="published_methods")
-    ET = read("published_methods_etest.csv")
-    fig, ax = plt.subplots(1, 3, figsize=(14, 4.2), constrained_layout=True)
-    if A is None or not len(A):
+    """Chromatin: the positive control, the cost of dilution, and the null."""
+    T = read("atac_responsive.csv")
+    PC = read("atac_positive_control.csv")
+    fig, ax = plt.subplots(1, 3, figsize=(14.5, 4.3), constrained_layout=True)
+    if T is None or len(T) < 2 or PC is None or not len(PC):
         for a_ in ax:
             a_.axis("off")
         return fig, {}
-    a0 = A.iloc[0]
+    resp = T[T.features.str.startswith("responsive")].iloc[0]
+    alln = T[T.features == "all"].iloc[0]
 
-    # a: the ANOVA split. The residual bar is the point -- only 8.3% of this
-    # dataset is reproducible at all, so every share is a ratio of small numbers.
-    med = ([VP.ctx.median(), VP.pert.median(), VP.inter.median(),
-            VP.resid.median()] if VP is not None and len(VP)
-           else [0.010, 0.008, 0.014, 0.917])
-    ax[0].bar(range(4), med, width=0.6, color=[GREY, BLUE, ORANGE, "#d8d8d8"])
-    for i_, v in enumerate(med):
-        ax[0].text(i_, v + 0.012, f"{v:.1%}", ha="center", fontsize=9,
+    # a: the control the experiment supplies -- a knockout should lower its own
+    # motif, and if it does not, no global statistic can be trusted either
+    top = PC.sort_values("p").head(10)
+    yy = np.arange(len(top))[::-1]
+    ax[0].barh(yy, top.delta,
+               color=[ORANGE if q < 0.05 else GREY for q in top.q], height=0.7)
+    ax[0].axvline(0, color="#444", lw=0.9)
+    ax[0].set_yticks(yy, [f"{r.pert} ({r.line})" for r in top.itertuples()],
+                     fontsize=6.6)
+    ax[0].set_xlabel("Δ ChromVar deviation, the knockout's own motif")
+    n_sig = int((PC.q < 0.05).sum())
+    ax[0].text(0.04, 0.10, f"{n_sig} of {len(PC)} reject;\nall six move down",
+               transform=ax[0].transAxes, fontsize=8, color=ORANGE,
+               fontweight="bold")
+    panel(ax[0], "a", "The experiment worked")
+
+    # b: identical data and estimator, only the feature set differs
+    xx = np.arange(2)
+    w = 0.36
+    ax[1].bar(xx - w / 2, [alln.resid, alln.interaction_of_reproducible], w,
+              color=GREY, label=f"all {int(alln.n):,} features")
+    ax[1].bar(xx + w / 2, [resp.resid, resp.interaction_of_reproducible], w,
+              color=VIOLET, label=f"{int(resp.n)} responsive (out of fold)")
+    for i_, (a_, b_) in enumerate([(alln.resid, resp.resid),
+                                   (alln.interaction_of_reproducible,
+                                    resp.interaction_of_reproducible)]):
+        ax[1].text(i_ - w / 2, a_ + .015, f"{a_:.0%}", ha="center", fontsize=8.5)
+        ax[1].text(i_ + w / 2, b_ + .015, f"{b_:.0%}", ha="center", fontsize=8.5,
                    fontweight="bold")
-    ax[0].set_xticks(range(4), ["cell line", "perturbation",
-                                "line \u00d7\nperturbation",
-                                "residual\n(noise)"], fontsize=7)
-    ax[0].set_ylabel("variance fraction")
-    ax[0].set_ylim(0, 1.05)
-    ax[0].text(0.5, 0.55, "only 8.3% of this dataset is\nreproducible at all",
-               transform=ax[0].transAxes, ha="center", fontsize=7, color="#444")
-    panel(ax[0], "a", "ANOVA variance components (published)")
+    ax[1].set_xticks(xx, ["residual\n(noise)", "interaction /\nreproducible"],
+                     fontsize=7.5)
+    ax[1].set_ylim(0, 1.1)
+    ax[1].legend(frameon=False, fontsize=7)
+    ax[1].text(0.5, 0.44, "same data, same estimator —\nonly the feature set "
+               "differs", transform=ax[1].transAxes, ha="center", fontsize=7,
+               color="#444")
+    panel(ax[1], "b", "What testing everywhere costs")
 
-    # b: observed against its own permutation null
-    obs, nm = float(a0.interaction), float(a0.null_mean)
-    ax[1].bar([0, 1], [obs, nm], width=0.5, color=[ORANGE, GREY])
+    # c: and even where the signal is, the interaction is at chance
+    obs, nm = float(resp.inter), float(resp.null_mean)
+    ax[2].bar([0, 1], [obs, nm], width=0.5, color=[ORANGE, GREY])
     for i_, v in enumerate([obs, nm]):
-        ax[1].text(i_, v + 0.015, f"{v:.1%}", ha="center", fontsize=11,
+        ax[2].text(i_, v + 0.008, f"{v:.1%}", ha="center", fontsize=11,
                    fontweight="bold")
-    ax[1].set_xticks([0, 1], ["observed", "label-permutation\nnull"],
-                     fontsize=8)
-    ax[1].set_ylabel("interaction share")
-    ax[1].set_ylim(0, max(obs, nm) * 1.3)
-    ax[1].text(0.5, 0.90, f"observed sits BELOW its null,  P = "
-               f"{float(a0.p_vs_null):.2f}", transform=ax[1].transAxes,
-               ha="center", fontsize=8.5, color=ORANGE, fontweight="bold")
-    panel(ax[1], "b", "Not distinguishable from chance")
+    ax[2].set_xticks([0, 1], ["observed", "permutation\nnull"], fontsize=8)
+    ax[2].set_ylabel("interaction variance fraction")
+    ax[2].set_ylim(0, max(obs, nm) * 1.45)
+    ax[2].text(0.5, 0.86, f"P = {float(resp.p_vs_null):.2f}\n"
+               f"at chance on features that\ndemonstrably respond",
+               transform=ax[2].transAxes, ha="center", fontsize=8,
+               color=ORANGE, fontweight="bold")
+    panel(ax[2], "c", "Still no interaction, now meaningfully")
 
-    # c: the E-test, which decides how a and b should be read. Where the
-    # perturbation main effect is undetectable no interaction can be measured,
-    # so a null interaction is not evidence for a null interaction.
-    if ET is not None and len(ET):
-        thr = 0.05 / len(ET)
-        ax[2].hist(ET.edist, bins=28, color=AQUA, alpha=0.85)
-        ax[2].axvline(float(ET.edist.median()), color=ORANGE, lw=2.2,
-                      label=f"median E = {ET.edist.median():.4f}")
-        n_sig = int((ET.p < thr).sum())
-        ax[2].set_xlabel("energy distance, perturbed vs control cells")
-        ax[2].set_ylabel("(line, perturbation) pairs")
-        ax[2].legend(frameon=False, fontsize=7.5)
-        ax[2].text(0.5, 0.70, f"{n_sig} of {len(ET)} reject at\n"
-                   f"Bonferroni q < 0.05", transform=ax[2].transAxes,
-                   ha="center", fontsize=9.5, color=ORANGE, fontweight="bold")
-        ax[2].text(0.5, 0.50, "no perturbation moves the population,\nso no "
-                   "interaction is measurable here",
-                   transform=ax[2].transAxes, ha="center", fontsize=7,
-                   color="#444")
-    else:
-        ax[2].text(0.5, 0.5, "E-test not yet computed",
-                   transform=ax[2].transAxes, ha="center", va="center",
-                   fontsize=8.5, color=ORANGE)
-        ax[2].set_xticks([]); ax[2].set_yticks([])
-    panel(ax[2], "c", "E-test (Peidli et al. 2024): nothing moved")
-
-    fig.suptitle("Figure 9 \u2014 A third layer attempted: the perturbations "
-                 "produce no detectable effect, so the interaction is not "
-                 "measurable here", fontsize=10.5, x=0.005, ha="left",
+    fig.suptitle("Figure 9 \u2014 Chromatin: the perturbations work, an "
+                 "atlas-wide index cannot see them, and the interaction is "
+                 "still at chance", fontsize=10.5, x=0.005, ha="left",
                  fontweight="bold")
-    return fig, {"atac": A, "etest": ET if ET is not None else pd.DataFrame(),
-                 "variance_components": VP if VP is not None else pd.DataFrame()}
+    return fig, {"summary": T, "positive_control": PC}
 
 
 def main():
