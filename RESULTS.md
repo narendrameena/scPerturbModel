@@ -2029,24 +2029,70 @@ explained. Two candidate explanations were tested and both failed:
   this split to the same genes gives 30.9%, against 38.0% on the remaining
   11,359. The gene set accounts for a few points, not sixty-fold.
 
-A third candidate remains untested: the two use different estimators for the
-line effect, and §31's may be over-aggressive in a way that removes genuine
-interaction — the same concern raised about the §31 null itself, that a
-leave-one-drug-out mean over ~95 drugs will absorb interaction that is
-correlated across compounds within a line (PRISM compound residuals correlate at
-r̄ = +0.23).
+* *The line-effect estimator.* Tested in §34 and also refuted: excluding a
+  drug's entire mechanism class from its own correction, or estimating the
+  correction on compounds that are never measured, leaves §31's interaction at
+  0.4–1.4% instead of 0.5%. The correction is not absorbing a class-structured
+  interaction.
 
-**Until this resolves, neither number should be quoted as Tahoe's interaction
-share**, and §31's 0.5% carries the same caveat as this section's 34%. The
-decisive experiment is the one already identified for §31: estimate the line
-effect leaving out an entire drug *class*, and from a random half of drugs, then
-re-measure. If both analyses move toward each other, the line-effect estimator
-was the difference.
+All three candidate explanations have now been tested and all three fail.
+
+**Until this resolves, this section's 34% should not be quoted as Tahoe's
+interaction share.** §31's 0.5% now has independent support (§34) and the
+remaining structural differences between the two analyses are in normalisation
+and in how the shared term is formed — §31 divides by a squared prior that
+includes its own estimation noise, this section by a noise-free covariance — and
+neither has yet been shown to produce a sixty-fold gap. The open item is real and
+is the largest one in this project.
 
 The parts of this section that do not depend on that split — the common
 programme's content, its enrichment, its orthogonality to baseline variation, and
 the per-drug signature reproducibility — are unaffected, because none of them is
 a ratio between the four terms.
+
+---
+
+## 34. Is the line-effect correction removing a cell property, or eating the interaction?
+
+The strongest objection to §31's null is that the correction might be too
+aggressive. It subtracts each line's mean response across the OTHER drugs, which
+is right for general sensitivity but wrong if the interaction is itself
+**correlated across drugs** within a line — a line unusually sensitive to kinase
+inhibitors but not to DNA-damaging agents has a genuine context × compound
+interaction, and a mean over all ~95 drugs would partly absorb it. PRISM compound
+residuals correlate at r̄ = +0.23, so the concern is not hypothetical: the
+correction removes the rank-1 line component, and whatever share of a real
+interaction is rank-1 in drug space goes with it.
+
+Four estimators of the line effect on identical data and identical replicate
+pairs (Tahoe, 11,492 same-dose cross-plate pairs, 2,000 response-variable genes):
+
+| line-effect estimator | interaction share |
+|---|---:|
+| none (the pre-correction convention) | 10.65% [9.75–11.72%] |
+| **leave-one-drug** (the correction in §31) | **0.43% [0.00–1.61%]** |
+| leave-one-**class** (whole mechanism held out) | 0.51% [0.00–1.68%] |
+| half-split (no compound shared between estimate and measurement) | 1.39% (0.00–4.00% across 4 repeats) |
+
+**The correction is not over-aggressive.** Holding out a drug's entire annotated
+mechanism class — so a class-structured interaction cannot be absorbed by its own
+class-mates — moves the interaction from 0.43% to 0.51%. Estimating the line
+effect on a random half of the compound set and measuring the interaction only on
+the *other* half, so the two share no compound at all, gives 1.39%, with
+repeat-to-repeat spread from 0.00% to 4.00% that reflects the halved sample size
+rather than a systematic shift.
+
+All three corrections agree, and all three are an order of magnitude below the
+10.65% that leaving the term in produces. What the correction removes behaves as
+a property of the cell line, not as a class-structured interaction, so **§31's
+null stands as an estimate rather than a lower bound.**
+
+This also closes the third of three candidate explanations for the §31 versus §33
+discrepancy (§33). Dose pooling, gene set and now the line-effect estimator have
+each been tested and each fails to account for it. The two analyses still differ
+in normalisation and in how the shared term is constructed — §31 divides by a
+squared prior carrying its own estimation noise, §33 by a noise-free covariance —
+and that remains the open question.
 
 ## Reproducing
 
