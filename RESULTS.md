@@ -1957,6 +1957,97 @@ mean over probe wells recovers better, and the credit grows with *k* precisely
 because the scalar is estimated better — which looks exactly like a model
 learning more from more data.
 
+---
+
+## 33. What changes in the transcriptome, specifically
+
+§30 established the geometry of the drug response — a new axis, orthogonal to
+baseline variation — without saying what that axis contains. This section names
+it, and reports one result that does not yet hold together.
+
+### The programme every drug runs
+
+Averaged over 111 drugs and 48 lines, with each term measured as a plate-6 ×
+plate-14 inner product so noise contributes zero, the common response
+reproduces across plates at **r = 0.788** and is coherent:
+
+**Up** — PPP1R15A (GADD34, the integrated stress response feedback arm), HSPA8,
+NFE2L1, NEAT1, and a large block of ribosomal proteins and translation factors
+(RPL3, RPS12, EEF1A1, EEF2, RPS18, RPS3, NPM1).
+**Down** — the mitochondrial transcripts almost as a block (MT-CO1, MT-CO3,
+MT-ND1, MT-ATP6, MT-ATP8, MT-CYB, MT-RNR1), plus EGR1, HSPA5 and CCND1.
+
+Enrichment against a background of expressed genes, not the genome:
+
+| library | direction | sets at q<0.05 | leading |
+|---|---|---:|---|
+| Hallmark | up | 15 | TNF-α signalling via NF-κB; Hypoxia; Apoptosis |
+| Hallmark | down | 6 | Interferon-γ response; Interferon-α response |
+| Reactome | up | 128 | Cap-dependent translation initiation; 60S joining |
+| GO BP | up | 208 | Cytoplasmic translation; peptide biosynthesis |
+
+So the shared answer to "what does a drug do to a cell" is: **stress signalling up,
+mitochondrial transcription down, translation machinery up, interferon tone
+down, CCND1 down**. That is a growth-arrest-with-stress programme, not anything
+compound-specific.
+
+**It is the new axis of §30.** Only **3.1%** of the common programme lies inside
+the top 10 directions of untreated line-to-line variation, and 5.0% inside the
+top 20. The direction cells move under treatment is not one on which untreated
+lines differ — which is the same conclusion §30 reached geometrically, now with
+gene identities attached.
+
+### Drug signatures are reproducible; mechanism grouping is not established
+
+Per-drug signatures (the response after removing the common programme)
+reproduce across plates at **median r = +0.588, 93% of drugs positive**. So
+compounds do leave distinguishable transcriptional marks.
+
+Whether *annotated mechanisms* group is a separate question, and the answer here
+is **no, at this power**. Only 30 drugs fall into 6 mechanism classes with ≥3
+members. Within-MOA minus between-MOA signature similarity is +0.020 against a
+label-permutation null of +0.001 [−0.039, +0.052], **p = 0.18**. Individual
+classes look convincing — cyclooxygenase inhibitors +0.072, JAK/STAT inhibitors
++0.070, DNA synthesis/repair inhibitors +0.035 — but EGFR/ERBB (−0.068) and
+adrenoceptor agonists (−0.090) run the other way, and with 6 classes the overall
+test excludes nothing. Reported as suggestive and underpowered, not as a result.
+
+### An unresolved discrepancy, flagged rather than smoothed
+
+This analysis also produces a four-way variance split — common 15.7%, drug
+signature 38.4%, cell property 18.2%, interaction 27.8%. On §31's denominator
+(shared + interaction, cell property excluded) the interaction is **34.0%**,
+against **0.5% [0.0–1.5%]** from the scalar analysis of the same plates.
+
+That is a sixty-fold disagreement about the same atlas, and it is not yet
+explained. Two candidate explanations were tested and both failed:
+
+* *Dose pooling.* Estimating the drug signature per (drug, dose) rather than per
+  drug moved the interaction from 24.7% to 27.8% — the wrong direction and far
+  too small.
+* *Gene set.* §31 works on the 2,000 most response-variable genes; restricting
+  this split to the same genes gives 30.9%, against 38.0% on the remaining
+  11,359. The gene set accounts for a few points, not sixty-fold.
+
+A third candidate remains untested: the two use different estimators for the
+line effect, and §31's may be over-aggressive in a way that removes genuine
+interaction — the same concern raised about the §31 null itself, that a
+leave-one-drug-out mean over ~95 drugs will absorb interaction that is
+correlated across compounds within a line (PRISM compound residuals correlate at
+r̄ = +0.23).
+
+**Until this resolves, neither number should be quoted as Tahoe's interaction
+share**, and §31's 0.5% carries the same caveat as this section's 34%. The
+decisive experiment is the one already identified for §31: estimate the line
+effect leaving out an entire drug *class*, and from a random half of drugs, then
+re-measure. If both analyses move toward each other, the line-effect estimator
+was the difference.
+
+The parts of this section that do not depend on that split — the common
+programme's content, its enrichment, its orthogonality to baseline variation, and
+the per-drug signature reproducibility — are unaffected, because none of them is
+a ratio between the four terms.
+
 ## Reproducing
 
 ```bash
