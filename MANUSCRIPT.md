@@ -29,7 +29,9 @@ tool.
 > | dose peak-coincidence tests | 14% / 81% cited as support | **at or barely above their own permutation nulls** |
 >
 > The estimator now recovers a known share with slope **0.950** (R² = 0.9995) and
-> returns 0.008 from data containing none. See `RESULTS.md` §27 and
+> returns 0.008 from data containing none, and an **independent published
+> estimator** (ANOVA variance components / `variancePartition`) reaches the same
+> conclusion on fully crossed chromatin data. See `RESULTS.md` §27 and
 > `docs/novelty_audit.md`.
 >
 > **The defect is not ours alone (§29).** On TRADE's deposited data (Nadig et
@@ -131,6 +133,18 @@ rather than assumed from an identifier — against a reliability-matched control
 49%, so the effect is specific to identity rather than to measurement quality.
 Apportioned on a matched compound set, the **assay accounts for 81% of the loss
 and the laboratory 19%**, the opposite of what the unmatched comparison reports.
+The conclusion is not confined to one layer or to our estimator. Spear-ATAC
+(Pierce, Greenleaf et al. 2021) is fully crossed — all 41 CRISPR perturbations in
+all three cell lines, 4–6 replicates each — and there the interaction is likewise
+**not distinguishable from its own null** (54.2% observed against a permutation
+null of 61.1%; *P* = 0.99). An independent published estimator agrees: ANOVA
+variance components (Searle et al. 1992, the balanced-design limit of
+`variancePartition`, Hoffman & Schadt 2016) place **91.7% of the variance in the
+within-replicate residual** and return a *negative* interaction variance for 44%
+of motifs, which is what the method of moments does when the component is zero.
+That model's interaction term is identifiable only because the design is
+replicated — this paper's central claim, reached by a method that predates it.
+
 Separately, we ask what drug exposure does to the transcriptome geometrically.
 Against a held-out untreated cell line as the reference — a signal that is a pure
 shift by construction — drug responses are captured **two to five times less** by
@@ -535,6 +549,74 @@ cells differ, which is how a drug main effect can account for 94.1% of the
 variance while the cell property and the cell–drug relation remain small and
 separable.
 
+### The same answer in chromatin, from an estimator we did not build
+
+Two objections apply to everything above. Transcription and viability are both
+readouts of one cell state, so their agreement is weaker evidence than it looks;
+and every number so far comes from an estimator built for this paper, validated
+against its own simulation. Both are addressed on one dataset.
+
+Spear-ATAC (Pierce, Greenleaf et al. 2021, via scPerturb) is **fully crossed**:
+all 41 CRISPR perturbations are present in all three cell lines (K562, GM12878,
+MCF7), with 4–6 independent replicate samples each and 73,344 cells. Nothing is
+imputed or dropped, the perturbations are genetic rather than chemical, and
+ChromVar transcription-factor motif deviations are the same 2,174 features in
+every line, so no feature intersection is needed. It measures **chromatin
+accessibility** — a different molecular layer from anything else here.
+
+`variancePartition` (Hoffman & Schadt 2016) is the standard variance-component
+method in genomics, and its model is precisely the split this paper proposes:
+`y ~ (1|context) + (1|perturbation) + (1|context:perturbation)`. Its interaction
+term is identifiable **only because the design is replicated** — without
+replicates it and the residual are one stratum. That is this paper's central
+methodological claim, arriving from a method that predates it and makes none of
+its choices.
+
+| | interaction share |
+|---|---:|
+| replicate-covariance estimator (this paper) | 54.2% |
+| **its label-permutation null** | **61.1% [55.3–67.4%]**, *P* = 0.99 |
+| ANOVA variance components (published) | 30.7% of reproducible variance |
+
+The point estimates differ, as ratios of small numbers do. What matters is that
+**neither is distinguishable from its own null.** The permutation test places the
+observed interaction *below* the null mean, and in the variance-component
+decomposition **44% of motifs return a negative interaction variance** — what the
+method of moments does when the true component is zero — alongside 44% for the
+perturbation term and 32% for the cell line.
+
+The full decomposition explains why: **91.7% of the variance is within-replicate
+residual**, leaving cell line 1.0%, perturbation 0.8% and interaction 1.4%. Only
+8.3% of this dataset is reproducible at all, so any share computed on it is a
+ratio between small, noisy quantities, and reporting one without its null would
+be reporting the noise floor.
+
+So there is **no detectable context × perturbation interaction in chromatin**, in
+a fully crossed replicated design — the same answer Tahoe gives for transcription
+at matched dose (0.5%, CI [0.0–1.5%]), reached in a different layer, a different
+perturbation modality, and by an estimator we did not build.
+
+*Implementation note, because it changes what the number means.* The REML route
+was attempted first and abandoned: statsmodels' crossed random-effects idiom
+fails to construct a design matrix for this layout and zero of 250 features
+converged. What is reported is Henderson's ANOVA method of moments (Searle,
+Casella & McCulloch 1992), which is what `variancePartition`'s REML reduces to on
+a balanced design; the design was balanced by taking exactly two replicate
+samples per cell, two being the minimum any cell has. The estimator is validated
+against a synthetic design with known components before use — it recovers
+interaction-over-reproducible at 0.049 against a truth of 0.048 — and that check
+is a regression test. Its context term, estimated from three levels, recovers
+0.127 against 0.187 and is not relied on. Separately, statsmodels returns
+variance components in **alphabetical** order rather than formula order, so the
+natural implementation silently reports the perturbation main effect as the
+interaction; this was caught by the synthetic check.
+
+A cell property was likewise not detected in chromatin (1.0% of variance,
+reproducing across disjoint perturbation halves at r = +0.63). With three
+contexts that is a weak test, and it is reported because a negative result would
+have mattered — the correction this paper introduces would then be specific to
+viability and transcription — not because a positive one is conclusive.
+
 ### What the measurements imply for models
 
 The results above are measurements, but the audience for them is building
@@ -669,10 +751,44 @@ relation remain small, separable and individually measurable. Had exposure
 instead rotated cells onto their own baseline axes, the three terms would be
 confounded and no amount of estimator care would separate them.
 
+A third result decides how far the first two travel. In chromatin accessibility
+— a different molecular layer, genetic rather than chemical perturbation, and a
+fully crossed replicated design that requires no imputation — the interaction is
+again not distinguishable from its own null, and an independent published
+estimator agrees. That matters more than a second confirmation in transcription
+would, because `variancePartition`'s model contains this paper's split as its own
+structure, and its interaction term is identifiable only under replication. The
+central methodological claim is therefore not a construction of ours: it is a
+property of the model the field already uses, which the field has been fitting to
+unreplicated data where the interaction and the residual cannot be separated.
+
+The ATAC dataset also shows why the null matters more than the point estimate.
+Its interaction share reads 54.2% by one estimator and 30.7% by another, and both
+are meaningless: 91.7% of that dataset's variance is within-replicate residual, so
+these are ratios between small noisy quantities, and 44% of motifs return a
+negative interaction variance under the method of moments — the signature of a
+component that is truly zero. A context-dependence index quoted without its null
+is not a weak result; it is not a result.
+
 ### Limitations
 
 *Design.* These are computational analyses of existing data, with no new
 experiments and no prospective validation.
+
+*Chromatin is one dataset with three contexts.* The Spear-ATAC result is fully
+crossed and replicated, which is rare and valuable, but three cell lines cannot
+estimate a context variance component well — the same estimator recovers a known
+context term at 0.127 against a truth of 0.187 — and the absence of a detectable
+cell property there is correspondingly weak evidence. What the dataset supports
+is the interaction null, which rests on 123 cells with two replicates each.
+
+*The published-method comparison is a method-of-moments fit, not REML.*
+statsmodels' crossed random-effects implementation would not construct a design
+matrix for this layout, so the comparison uses Henderson's ANOVA estimator, which
+equals `variancePartition`'s REML only on a balanced design. The design was
+balanced by subsampling to two replicates per cell, which discards data that a
+REML fit could have used.
+
 
 *The mechanism comparison is underpowered.* Only 11–12 mechanism classes clear
 the minimum class size on both a transcriptional and a viability platform, so the
@@ -909,3 +1025,13 @@ correlation for MSI, and lineage stratification for allele associations.
    untouched (ρ = +0.998). Every component is an inner product between two
    independent plates, since isotropic noise lands outside any low-dimensional
    span and would otherwise read as remodelling.
+9. **Chromatin accessibility, fully crossed, by two estimators.** Spear-ATAC
+   (Pierce/Greenleaf 2021): 41 CRISPR perturbations × 3 cell lines × 4–6
+   replicates, 73,344 cells, ChromVar motif space. (a) ANOVA variance components
+   — cell line 1.0%, perturbation 0.8%, interaction 1.4%, within-replicate
+   residual 91.7%; only 8.3% of the dataset is reproducible at all, so every
+   share is a ratio of small numbers. (b) The observed interaction against its
+   own label-permutation null: 54.2% against 61.1%, *P* = 0.99, the observed
+   sitting *below* the null. (c) The replicate-covariance estimator and the
+   published variance-component estimator side by side, both below that null —
+   two routes to the same conclusion.

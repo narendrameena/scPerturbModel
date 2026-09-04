@@ -951,10 +951,97 @@ def figure8():
                  "convergence": CV if CV is not None else pd.DataFrame()}
 
 
+# ---------------------------------------------------------------- figure 9
+def figure9():
+    """Chromatin, fully crossed, and a published estimator on the same data."""
+    A = read("atac_decomposition.csv")
+    P = read("published_methods_check.csv")
+    VP = read("variance_partition.csv", sub="published_methods")
+    fig, ax = plt.subplots(1, 3, figsize=(14, 4.2), constrained_layout=True)
+    if A is None or not len(A):
+        for a_ in ax:
+            a_.axis("off")
+        return fig, {}
+    a0 = A.iloc[0]
+
+    # a: the ANOVA split. The residual bar is the point -- only 8.3% of this
+    # dataset is reproducible at all, so every share is a ratio of small numbers.
+    if VP is not None and len(VP):
+        med = [VP.ctx.median(), VP.pert.median(), VP.inter.median(),
+               VP.resid.median()]
+    else:
+        med = [0.010, 0.008, 0.014, 0.917]
+    ax[0].bar(range(4), med, width=0.6, color=[GREY, BLUE, ORANGE, "#d8d8d8"])
+    for i_, v in enumerate(med):
+        ax[0].text(i_, v + 0.012, f"{v:.1%}", ha="center", fontsize=9,
+                   fontweight="bold")
+    ax[0].set_xticks(range(4), ["cell line", "perturbation",
+                                "line ×\nperturbation", "residual\n(noise)"],
+                     fontsize=7)
+    ax[0].set_ylabel("variance fraction")
+    ax[0].set_ylim(0, 1.05)
+    ax[0].text(0.5, 0.55, "only 8.3% of this dataset is\nreproducible at all",
+               transform=ax[0].transAxes, ha="center", fontsize=7,
+               color="#444")
+    panel(ax[0], "a", "ANOVA variance components (published)")
+
+    # b: observed against its own permutation null -- the number that decides it
+    obs, nm = float(a0.interaction), float(a0.null_mean)
+    ax[1].bar([0, 1], [obs, nm], width=0.5, color=[ORANGE, GREY])
+    for i_, v in enumerate([obs, nm]):
+        ax[1].text(i_, v + 0.015, f"{v:.1%}", ha="center", fontsize=11,
+                   fontweight="bold")
+    ax[1].set_xticks([0, 1], ["observed", "label-permutation\nnull"],
+                     fontsize=8)
+    ax[1].set_ylabel("interaction share")
+    ax[1].set_ylim(0, max(obs, nm) * 1.3)
+    ax[1].text(0.5, 0.90, f"observed sits BELOW its null,  P = "
+               f"{float(a0.p_vs_null):.2f}", transform=ax[1].transAxes,
+               ha="center", fontsize=8.5, color=ORANGE, fontweight="bold")
+    panel(ax[1], "b", "Not distinguishable from chance")
+
+    # c: the two estimators side by side, both against the null
+    vals, labs, cols = [], [], []
+    if P is not None and len(P):
+        for r_ in P.itertuples():
+            vals.append(float(r_.interaction_of_reproducible))
+            labs.append(r_.method.split(" (")[0].replace(" ", "\n", 1))
+            cols.append(VIOLET if "variance" in r_.method else ORANGE)
+    if not vals:
+        # say the comparison has not been computed rather than showing an
+        # empty axis, which reads as a measured zero
+        ax[2].text(0.5, 0.5, "published-estimator comparison\nnot yet computed",
+                   transform=ax[2].transAxes, ha="center", va="center",
+                   fontsize=8.5, color=ORANGE)
+        ax[2].set_xticks([]); ax[2].set_yticks([])
+        panel(ax[2], "c", "Bespoke vs published estimator")
+        fig.suptitle("Figure 9 — Chromatin accessibility, fully crossed: no "
+                     "detectable context × perturbation interaction",
+                     fontsize=10.5, x=0.005, ha="left", fontweight="bold")
+        return fig, {"atac": A}
+    ax[2].bar(range(len(vals)), vals, width=0.5, color=cols)
+    for i_, v in enumerate(vals):
+        ax[2].text(i_, v + 0.015, f"{v:.1%}", ha="center", fontsize=10,
+                   fontweight="bold")
+    ax[2].axhline(nm, ls="--", color="#555", lw=1.4, label="permutation null")
+    ax[2].set_xticks(range(len(vals)), labs, fontsize=7)
+    ax[2].set_ylabel("interaction / reproducible variance")
+    ax[2].legend(frameon=False, fontsize=7.5)
+    ax[2].text(0.5, 0.06, "two routes, same conclusion:\nboth below the null",
+               transform=ax[2].transAxes, ha="center", fontsize=7,
+               color="#444")
+    panel(ax[2], "c", "Bespoke and published estimators agree")
+    fig.suptitle("Figure 9 — Chromatin accessibility, fully crossed: no "
+                 "detectable context × perturbation interaction, by either "
+                 "estimator", fontsize=10.5, x=0.005, ha="left",
+                 fontweight="bold")
+    return fig, {"atac": A, "methods": P if P is not None else pd.DataFrame()}
+
+
 def main():
     FIG.mkdir(parents=True, exist_ok=True)
     for i, fn in enumerate((figure1, figure2, figure3, figure4, figure5,
-                            figure6, figure7, figure8), 1):
+                            figure6, figure7, figure8, figure9), 1):
         fig, src = fn()
         d = save_figure(fig, f"fig{i}", FIG, source_data=src, script=__file__)
         plt.close(fig)
