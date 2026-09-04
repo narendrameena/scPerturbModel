@@ -82,8 +82,12 @@ differentially expressed genes.
    (glucocorticoid 0.363), metabolic and RAF inhibitors the most conserved
    (0.087–0.119). Chemistry alone predicts it only weakly (r = 0.19) (§5).
 8. For a **new cell line**, genotype, organ and baseline expression all fail —
-   but measuring ~20 **arbitrary** compounds and fine-tuning recovers 98% of the
-   achievable gain. Probe-panel design does not help (§4, §6).
+   but measuring ~20 **arbitrary** compounds and fine-tuning recovers 94% of the
+   achievable gain. Probe-panel design does not help (§4, §6). **That gain is
+   not context-specific pharmacology:** adding the line's mean residual over the
+   same probes to the additive prior — one arithmetic step, no model — recovers
+   145% of the headroom and beats the fine-tuned model by 0.023 *r* [0.018,
+   0.029] (§32).
 
 **Clinical.**
 9. In 10,921 TCGA tumours the programs track driver genotype (2,128 associations
@@ -1890,13 +1894,68 @@ laboratory CI [−6%, 38%] including zero.
 all 738 screened lines are authenticated. Ten carry `FAILED_STR` and the count is
 737.
 
-### Still outstanding
+### Resolved since
 
-The few-shot evaluation is being re-run with the honest floor added in §27 — the
-additive prior plus the line's general response estimated from the same probe
-compounds. Until it completes, the claim that fine-tuning on ~20 compounds
-"recovers 98% of the achievable gain" is measured against a baseline that does
-not know a line's general sensitivity, and so credits the model for learning it.
+The few-shot re-run with the honest floor completed; see §32. The floor **beats**
+the fine-tuned model at k = 5 and k = 20 and beats the oracle at k = 20, so the
+few-shot gain is the line's general response rather than a learned interaction.
+The LINCS decompositions also re-ran: phase 1 74% → 70%, phase 2 63% → 61%, the
+same direction as PRISM and Tahoe.
+
+---
+
+## 32. The few-shot gain is the line's general response, not a learned interaction
+
+§27 added an honest floor to the few-shot evaluation: the additive prior plus the
+held-out line's **mean residual over the same *k* probe compounds** the model
+sees. It is one arithmetic step with no fitting, and the probe compounds are
+disjoint from the evaluation compounds, so nothing leaks. It changes what the
+few-shot result means.
+
+Metric *r*<sub>de100</sub>, 47 held-out lines, 5,615 evaluation conditions:
+
+| | k = 1 | k = 5 | k = 20 |
+|---|---:|---:|---:|
+| fine-tuned model | 0.6650 | 0.6869 | 0.7093 |
+| **additive + line's general response** | 0.6388 | **0.7104** | **0.7323** |
+| model − floor | +0.026 | **−0.024** | **−0.023** |
+| 95% CI (bootstrap over held-out lines) | [+0.017, +0.037] | [−0.030, −0.018] | [−0.029, −0.018] |
+| model share of headroom | −3% | 45% | 94% |
+| **floor share of headroom** | −61% | **97%** | **145%** |
+
+Additive baseline 0.6665; oracle (all probes, fitted) 0.7120, so the headroom is
++0.0454.
+
+**The floor beats the fine-tuned model at k = 5 and k = 20** (*P* = 6×10⁻²⁰⁵ and
+1×10⁻²⁴⁵, paired over identical evaluation rows; the bootstrap resamples whole
+held-out lines, the unit of generalisation). At k = 20 it also beats the
+**oracle** — a model fitted on every available probe — recovering 145% of the
+nominal headroom.
+
+At k = 1 the ordering reverses: one compound estimates a line's general response
+too noisily to help, and the floor falls below the additive baseline. That is the
+control that matters, because it shows the floor is not winning by construction —
+it wins only once it has enough probes to estimate the scalar it represents.
+
+**What this changes.** The few-shot result stands as an empirical recipe: measure
+about 20 arbitrary compounds in a new line and prediction improves substantially.
+What does not stand is the interpretation. The improvement is almost entirely the
+model discovering **how strongly the new line responds to everything** — a single
+scalar shift — and not which drugs it responds to specifically. A mean over probe
+wells captures that scalar better than fine-tuning does.
+
+This is the same conclusion §31 reaches from measurement rather than modelling:
+at matched dose Tahoe shows no detectable context × compound interaction
+(0.5%, CI [0.0–1.5%]). If there is no interaction to learn, a model given probe
+data can only learn the context main effect — and the floor learns it more
+efficiently. Three independent lines of evidence now agree: the decomposition,
+the replicate analysis, and the few-shot benchmark.
+
+**Recommendation.** Any benchmark for context generalisation should report this
+floor. Without it, an architecture is credited for recovering a quantity that a
+mean over probe wells recovers better, and the credit grows with *k* precisely
+because the scalar is estimated better — which looks exactly like a model
+learning more from more data.
 
 ## Reproducing
 

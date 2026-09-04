@@ -767,17 +767,34 @@ def figure6():
         ax[2].axhline(full, color=AQUA, ls=":", lw=1.6,
                       label="all compounds (ceiling)")
         ax[2].plot(g2.index, g2.to_numpy(), "o-", color=VIOLET, lw=2, ms=6,
-                   label="random probe compounds")
-        gain = (g2 - base) / (full - base) * 100
-        for x_, v in zip(g2.index, gain):
-            if np.isfinite(v):
-                ax[2].annotate(f"{v:.0f}% of achievable", (x_, g2[x_]),
-                               fontsize=6.3, xytext=(4, -14),
-                               textcoords="offset points")
+                   label="fine-tuned model")
+        # The floor that decides what the few-shot gain means: the additive
+        # prior plus the line's mean residual over the SAME probe compounds.
+        # One arithmetic step, no fitting. A model is only learning
+        # context-specific pharmacology to the extent it beats this.
+        fl = FS[FS.strategy == "additive+line"]
+        if len(fl):
+            g3 = fl.groupby("k").r_de100.mean()
+            ax[2].plot(g3.index, g3.to_numpy(), "o--", color=ORANGE, lw=2,
+                       ms=6, label="additive + line's general response")
+            k_top = int(g3.index.max())
+            ax[2].annotate("the floor beats the model,\nand beats the oracle,\n"
+                           "wherever it is estimable",
+                           (k_top, float(g3.loc[k_top])),
+                           textcoords="offset points", xytext=(-8, -34),
+                           ha="right", fontsize=6.6, color=ORANGE,
+                           fontweight="bold")
+        ax[2].set_xscale("log")
+        for x_ in g2.index:
+            if int(x_) in (5, 20):
+                v = 100 * (g2[x_] - base) / max(full - base, 1e-9)
+                ax[2].annotate(f"{v:.0f}%", (x_, g2[x_]),
+                               textcoords="offset points", xytext=(4, 7),
+                               fontsize=6.6, color=VIOLET)
         ax[2].set_xlabel("probe compounds measured in the new context")
         ax[2].set_ylabel("$r_{de100}$")
-        ax[2].legend(frameon=False, fontsize=7)
-        panel(ax[2], "c", "Measurement, not description, transfers")
+        ax[2].legend(frameon=False, fontsize=6.6, loc="lower right")
+        panel(ax[2], "c", "And what transfers is a scalar, not a model")
     fig.suptitle("Figure 6 — How benchmark design shapes apparent model "
                  "performance", fontsize=10.5, x=0.005, ha="left",
                  fontweight="bold")

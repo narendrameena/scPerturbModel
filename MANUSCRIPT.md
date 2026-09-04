@@ -20,7 +20,7 @@ tool.
 > | claim | was | now |
 > |---|---|---|
 > | the interaction is a **pair** property, not a cell property | our top-ranked novel result; contradicted Lim & Pavlidis (*Sci Rep* 2021) | **withdrawn.** A cell-line responsiveness factor exists as published. The relation is **2.0× the property** (3.9% vs 2.0%) — a measurement, not a refutation |
-> | interaction shares | e.g. Tahoe 11.5%, LINCS-1 57% | **Tahoe falls to 0.5% [0.0–1.5%], *P* = 0.10 — not detectable at same dose.** OP3 33.1%, sciPlex3 30.2%. PRISM: drug 94.1% / cell property 2.0% / relation 3.9% |
+> | interaction shares | e.g. Tahoe 11.5%, LINCS-1 57% | **Tahoe falls to 0.5% [0.0–1.5%], *P* = 0.10 — not detectable at same dose.** LINCS-1 70%, LINCS-2 61%, OP3 33.1%, sciPlex3 30.2%. PRISM: drug 94.1% / cell property 2.0% / relation 3.9% |
 > | title / apportionment | laboratory 84% of the loss | **assay 81%, laboratory 19%** on the 75 compounds all three rungs share |
 > | identity-validated transfer | 87% | **98%** against a ceiling on the same lines; a reliability-matched control gives 49%, so the effect is identity-specific |
 > | expression over genotype | 92.5% of compounds | **119/120 (99.2%)** beat their own permutation null; mutations 22/120, zero compounds mutation-only (p = 1×10⁻²⁹) |
@@ -247,7 +247,7 @@ because the mean subtracted from replicate A still contains replicate B. Only
 removing the whole context eliminates the coupling. We additionally report the
 interaction against a **matched cross-context null**, which removes the residual
 construction offset without assuming its magnitude; where the signal is strong
-this changes nothing (LINCS phase 2: 45% → 63%), and where it is weak it was the
+this changes nothing (LINCS phase 2: 45% → 61%), and where it is weak it was the
 entire result. These guards are released as `pertdecomp`. Against a standard mixed-model
 decomposition on the same simulated data, the two agree to 0.051 where both are
 identifiable — ours is not a reinvention — but without replicates the mixed model
@@ -296,10 +296,14 @@ cannot resolve the quantity it is quoted for once the cell's own general respons
 is removed. What was previously reported as an 11.5% interaction was
 predominantly that general response.
 
-LINCS phase 1, with 6.1 million same-dose cross-plate pairs across 2,834
-compounds and 70 lines, gives **43% shared / 57% interaction** — a different
-platform with plate-wise z-scoring rather than log-CPM deltas, so the magnitudes
-are not directly comparable, but the estimator is the same.
+LINCS phase 1, with 2.05 million same-dose cross-plate pairs across 2,836
+compounds and 70 lines, gives **30% shared / 70% interaction** [58.2–76.2%], and
+phase 2 gives 39% / 61% [56.9–65.7%] — a different platform with plate-wise
+z-scoring rather than log-CPM deltas, so the magnitudes are not comparable to
+Tahoe's, but the estimator is the same. Removing the context main effect lowers
+these too, from 74% and 63%; the direction is the same as in PRISM and Tahoe, and
+only the size differs, because Level 4's within-plate z-scoring has already
+removed part of the term.
 
 ### The interaction is dose-dependent and peaks just below lethality
 
@@ -556,18 +560,37 @@ the baseline is not. The narrower and still useful conclusion is that gains are
 comparable across benchmarks only at matched context counts, and that benchmarks
 should report the number of contexts behind their mean baseline.
 
-**Prediction for an unseen context cannot come from a context descriptor.** No
-line-level feature we tested recovers a new line's interaction — driver
-mutations, tissue, baseline transcriptome, DNA methylation — and the decomposition above explains
-why the search was ill-posed rather than merely underpowered: the interaction is
-a property of a *pairing*, and the best available descriptor, baseline
-expression, reaches only ≈10% of it. What does work is measurement: profiling
-roughly **20 arbitrary compounds** in the new line and fine-tuning recovers 98%
-of the achievable gain, and designing that probe panel does not beat choosing it
-at random. State reaches the same conclusion from the opposite direction — its
-headline context-generalisation setting supplies each model with 30% of the
-perturbations in the test context, making it an *underrepresented* rather than
-unseen context — so the two results corroborate each other.
+**Prediction for an unseen context cannot come from a context descriptor, and
+what replaces it is arithmetic rather than a model.** No line-level feature we
+tested recovers a new line's interaction — driver mutations, tissue, baseline
+transcriptome, DNA methylation — and the decomposition above explains why the
+search was ill-posed rather than merely underpowered: the interaction is a
+property of a *pairing*, and the best available descriptor, baseline expression,
+reaches only ≈10% of it. What does work is measurement: profiling roughly **20
+arbitrary compounds** in the new line and fine-tuning recovers 94% of the
+achievable gain, and designing that probe panel does not beat choosing it at
+random.
+
+But almost none of that gain is context-specific pharmacology. Given the same *k*
+probe compounds, simply adding the line's **mean residual across them** to the
+additive prior — one arithmetic step, no model, no fitting — recovers **97% of
+the headroom at k = 5 and 145% at k = 20**, exceeding the fine-tuned model by
+0.023 *r*<sub>de100</sub> [0.018, 0.029] under a bootstrap over held-out lines,
+and exceeding the oracle that sees every probe. The model is *worse than its own
+trivial floor* wherever the floor is estimable (*P* < 10⁻²⁰⁰ at k = 5 and 20). At
+k = 1 the ordering reverses — a single compound estimates the line's general
+response too noisily to help — which is what confirms the floor is not winning by
+construction.
+
+The few-shot result is therefore real but has been misattributed. Fine-tuning on
+20 compounds works because those compounds reveal **how strongly the new line
+responds to everything**, which is a scalar shift, not because the model learns
+which drugs that line responds to specifically. This is the same conclusion the
+Tahoe replicate analysis reaches from measurement rather than modelling: at
+matched dose there is no detectable context × compound interaction to learn.
+Benchmarks for context generalisation should include this floor, or they will
+credit architectures for recovering a quantity that a mean over probe wells
+recovers better.
 
 **The ceiling on cross-atlas training is 58–98% of an assay's own
 reproducibility.** A model trained on one atlas and applied to another is
