@@ -2997,6 +2997,78 @@ known relationships. **This project has not produced a novel drug × genotype
 discovery**, and the honest reading is that 737 lines with ~9,700 testable genes
 is underpowered for anything that is not already large enough to have been found.
 
+---
+
+## 46. A design calculation: replicates, not cells, decide what an atlas can measure
+
+Five atlases were analysed here and they disagree about whether a context ×
+perturbation interaction is resolvable at all. Those outcomes have been treated
+as properties of the biology. They are mostly properties of the **design**, and
+the design can be evaluated before the experiment is run.
+
+The interaction is estimated as a covariance between independent replicates, so
+its precision is set by the number of replicate **pairs** —
+`n_ctx × n_pert × n_rep(n_rep−1)/2` — and by the per-observation noise. **Cells
+do not enter.** A condition measured once contributes no pair however deeply it
+is sequenced.
+
+### The calculator predicts five of five atlas outcomes, blind
+
+Each atlas's real context, perturbation and replicate counts go in; the
+calculator is never told what any of them found.
+
+| atlas | replicate pairs | smallest detectable share | observed | predicted | actual |
+|---|---:|---:|---:|---|---|
+| Tahoe-100M | 4,560 | 0.0079 | 0.005 | **not resolvable** | not resolvable (§31) |
+| LINCS phase 1 | 177,003 | 0.0010 | 0.70 | resolvable | resolvable (§43) |
+| OP3 | 2,646 | 0.0062 | 0.331 | resolvable | resolvable (§35) |
+| sci-Plex 3 | 567 | 0.0109 | 0.302 | resolvable | resolvable (§35) |
+| Spear-ATAC | 1,230 | 0.0880 | 0.014 | **not resolvable** | not resolvable (§35) |
+
+**Five of five.** Tahoe's headline null (§31) and Spear-ATAC's failure (§35) — two
+results that cost this project weeks and three withdrawn interpretations — are
+both predicted from three integers each, before any data is touched.
+
+### What would have fixed the two failures
+
+* **Tahoe-100M**: two replicates give a floor of 0.008, above its true 0.005.
+  **Three replicates per condition** would have brought its interaction into
+  range. The atlas spent 95.6 million cells and replicated 13.5% of conditions;
+  the same budget with one more replicate and fewer cells per condition would
+  have answered the question it was built for.
+* **Spear-ATAC**: five replicates give a floor of 0.088 against a true 0.014.
+  It would need **more than twelve** replicates per condition at its scale —
+  or many more contexts. With three cell lines it was not a recoverable design.
+
+### A concrete rule for context models
+
+Because effective dimensionality grows at about 0.05 directions per context
+(§43), a model with a fixed *d*-dimensional context embedding represents a
+falling fraction as atlases grow:
+
+| *d* | at 20 contexts | at 200 contexts |
+|---:|---:|---:|
+| 5 | 100% | **47%** |
+| 10 | 100% | 93% |
+| 20 | 100% | 100% |
+
+The practical form is a design rule: **choose *d* ≥ 0.05 × n_contexts.** At 200
+contexts that is 10; at 1,000 it is 50. This is a limit of the model class rather
+than of training, so it is not removed by more data — but it is also not
+catastrophic, and the earlier framing that fixed-dimension models are simply
+mis-specified was too strong. They are mis-specified only when *d* is chosen
+below this line.
+
+### Calibration, and its limits
+
+Against simulation with a known interaction, power above the predicted threshold
+is 83–100% and the false-positive rate is 0–8% on the larger designs. On the
+smallest design tested (10 contexts × 20 perturbations) the false-positive rate
+reaches 17% and power below the threshold reaches 75%. **The minimum detectable
+share should therefore be read as an order-of-magnitude guide, not an exact
+bound** — which is enough for the use it is put to here, since the five atlases
+differ by two orders of magnitude in what they can resolve.
+
 ## Reproducing
 
 ```bash

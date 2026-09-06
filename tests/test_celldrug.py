@@ -282,3 +282,35 @@ def test_permutation_null_crosses_blocks():
     idx = _derangement(n, rng, block)
     assert (idx == np.arange(n)).sum() == 0        # no fixed points
     assert (block == block[idx]).mean() < 0.02     # and it crosses blocks
+
+
+def test_design_calculator_ranks_atlases_correctly():
+    """The design calculation must reproduce which atlases resolved anything.
+
+    RESULTS.md sec.46: fed only each atlas's context, perturbation and replicate
+    counts, the calculator must call Tahoe and Spear-ATAC unresolvable and LINCS,
+    OP3 and sci-Plex resolvable -- the outcomes this project spent weeks
+    establishing empirically.
+    """
+    from perturbmodel.design import audit_design, n_pairs
+    cases = [("Tahoe-100M", 48, 95, 2, 0.30, 0.005, False),
+             ("LINCS phase 1", 71, 831, 3, 0.35, 0.70, True),
+             ("OP3", 6, 147, 3, 0.40, 0.331, True),
+             ("sci-Plex 3", 3, 189, 2, 0.45, 0.302, True),
+             ("Spear-ATAC", 3, 41, 5, 0.12, 0.014, False)]
+    for name, c, p_, r, s, obs, truth in cases:
+        a = audit_design(name, c, p_, r, s, observed_share=obs)
+        assert a["resolvable"] is truth, name
+    # cells are absent by construction: only replicate pairs enter
+    assert n_pairs(10, 10, 1) == 0
+    assert n_pairs(10, 10, 3) == 3 * n_pairs(10, 10, 2)
+
+
+def test_context_embedding_rule():
+    """d >= 0.05 * n_contexts should capture essentially all the interaction."""
+    from perturbmodel.design import captured_fraction
+    for n_ctx in (20, 100, 200, 1000):
+        d = int(np.ceil(0.05 * n_ctx)) + 1
+        assert captured_fraction(d, n_ctx) > 0.95
+    # and a d chosen well below the line does not
+    assert captured_fraction(5, 1000) < 0.2
