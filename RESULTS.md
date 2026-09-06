@@ -2701,6 +2701,85 @@ both "most potency-like" and "most rewiring-like", because `head(6)` and
 `tail(6)` of a six-row table are the same table. The two lists were identical and
 the output was read past without noticing until the numbers were checked.
 
+---
+
+## 42. A mechanism, not just a residual: interaction sits in the drug's own pathway
+
+Every argument so far that the interaction is real has been a statistical
+property of a residual — it reproduces across plates (§39), survives magnitude
+matching (§41), occupies many directions (§41). None says what it *is*.
+
+Pharmacology supplies a mechanism that can be stated in advance and can fail: a
+drug acts through a target pathway, and lines differ in how much they depend on
+it. Two predictions follow, both directional, tested on all classes at once with
+the pathway fixed by the drug's annotated target and gene sets taken from MSigDB
+Hallmark as published. Baseline activity comes from the atlas's **own DMSO
+wells**, so no cross-dataset join sits between prediction and test.
+
+### Prediction 1: the interaction lives in the target pathway — 10 of 10
+
+| drug class | target pathway | *n* lines | localisation *P* |
+|---|---|---:|---:|
+| MEK inhibitor | KRAS Signaling Up | 47 | <0.001 |
+| RAS inhibitor | KRAS Signaling Up | 45 | <0.001 |
+| RAF inhibitor | KRAS Signaling Up | 44 | <0.001 |
+| mTOR inhibitor | mTORC1 Signaling | 46 | <0.001 |
+| proteasome inhibitor | Unfolded Protein Response | 45 | <0.001 |
+| CDK inhibitor | E2F Targets | 45 | <0.001 |
+| microtubule inhibitor | G2-M Checkpoint | 47 | <0.001 |
+| glucocorticoid agonist | TNF-α via NF-κB | 45 | <0.001 |
+| JAK/STAT inhibitor | IL-6/JAK/STAT3 | 47 | <0.001 |
+| DNA synthesis/repair inhibitor | DNA Repair | 47 | 0.002 |
+
+**Every class**, against size-matched random gene sets, at Bonferroni q < 0.05.
+The line-to-line differences a drug produces are concentrated in the pathway that
+drug targets. That is independent evidence of a kind none of the earlier
+arguments provided: the interaction is not an unstructured residual, it is the
+drug's own biology varying between lines.
+
+### Prediction 2: it tracks baseline dependence — 7 of 10 in direction, and the failures are interpretable
+
+| class | ρ (projection vs baseline activity) | *P* |
+|---|---:|---:|
+| RAS inhibitor | **−0.56** | <0.001 |
+| glucocorticoid agonist | **−0.56** | <0.001 |
+| JAK/STAT inhibitor | **−0.54** | <0.001 |
+| CDK inhibitor | −0.39 | 0.007 |
+| MEK inhibitor | −0.35 | 0.017 |
+| mTOR inhibitor | −0.32 | 0.032 |
+| proteasome inhibitor | −0.32 | 0.033 |
+| DNA synthesis/repair | +0.10 | 0.50 |
+| **RAF inhibitor** | **+0.38** | 0.012 |
+| **microtubule inhibitor** | **+0.38** | 0.009 |
+
+Seven of ten run in the predicted direction — the more a line runs the pathway at
+baseline, the more it loses when that pathway is inhibited — but the sign test
+across classes is **not significant (*P* = 0.34)**, and three classes reach
+Bonferroni significance individually.
+
+**Two classes reverse significantly, and both reversals have published
+explanations.** RAF inhibitors cause *paradoxical activation* of MAPK signalling
+in cells with wild-type BRAF and active RAS (Poulikakos et al. 2010;
+Hatzivassiliou et al. 2010), so lines with high baseline MAPK should gain rather
+than lose output — a positive ρ is what that pharmacology predicts. Microtubule
+inhibitors do not inhibit the G2-M programme; they *trap* cells in it, so a
+fast-cycling line accumulates more mitotic signature, not less.
+
+**This reading is post hoc and is labelled as such.** Prediction 2 was written as
+if every drug reduces its target pathway, which is true of signalling-output
+inhibitors and false of drugs that trap cells in a state or activate
+paradoxically. A version registered in advance would have split the classes on
+that distinction and would have been a sharper test. As it stands, prediction 2
+is supported for signalling inhibitors and refuted as a universal rule.
+
+### What this adds
+
+The claim that context-dependence is real now rests on evidence of four
+different kinds: cross-plate reproducibility, survival of magnitude matching,
+high dimensionality, and — new here — **pathway localisation with a mechanism**.
+The last is the only one that could have been contradicted by biology rather than
+by statistics, and it was not.
+
 ## Reproducing
 
 ```bash
