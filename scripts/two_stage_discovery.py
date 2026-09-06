@@ -172,7 +172,13 @@ def main():
     for r_, i in enumerate(order[:n_ok][::-1]):
         prev = min(prev, p[i] * n_ok / (n_ok - r_))
         q[i] = prev
+    # The signed interaction is the PHENOTYPE a marker can predict: how much
+    # more (or less) than average this line responds, averaged over doses and
+    # over the two replicate halves. `cos` says only whether that response
+    # reproduces, and belongs in the filter -- a first version used `cos` as the
+    # phenotype, which asked a question no marker can answer and found nothing.
     M["cos"], M["p"], M["q"] = cos, p, q
+    M["effect"] = 0.5 * (A.mean(1) + B.mean(1))
     flagged = M.q < 0.05
     print(f"   {int(flagged.sum())} of {n_ok} pairs reproduce at FDR<0.05 "
           f"({flagged.sum()/n_ok:.1%})", flush=True)
@@ -195,31 +201,81 @@ def main():
     print(f"   {len(genes):,} genes mutated in >=25 sequenced lines", flush=True)
 
     # ---------- STAGE 2: associate, filtered vs unfiltered ----------
+    # Indicator matrix once: lines x genes, 1 where that line carries a
+    # non-silent mutation in that gene.
+    called_l = sorted(called)
+    lpos = {l: i for i, l in enumerate(called_l)}
+    MUT = np.zeros((len(called_l), len(genes)), dtype=np.float32)
+    for j, g in enumerate(genes):
+        for l in gsets[g]:
+            if l in lpos:
+                MUT[lpos[l], j] = 1.0
+
     def scan(sub, tag):
+        """Rank-sum test of every gene against every compound, vectorised.
+
+        The per-gene loop with scipy.stats.mannwhitneyu costs about 14 million
+        Python-level calls for the unfiltered scan and did not finish in an
+        hour. The Mann-Whitney U is a function of the sum of ranks in one group,
+        so ranking the phenotype once per compound and multiplying by the
+        mutation indicator gives every gene's U in a single matrix product.
+        Ties are corrected exactly as the scipy version does; the normal
+        approximation is used, which is appropriate at the >=25 lines required
+        here.
+        """
         rows = []
         for cpd, g in sub.groupby("compound", observed=True):
-            ls = [l for l in g.line if l in called]
+            ls = [l for l in g.line if l in lpos]
             if len(ls) < args.min_lines:
                 continue
-            y = g.set_index("line").cos.reindex(ls).to_numpy()
-            for gene in genes:
-                m = np.array([l in gsets[gene] for l in ls])
-                if m.sum() < 5 or (~m).sum() < 10:
-                    continue
-                u = stats.mannwhitneyu(y[m], y[~m], alternative="two-sided")
-                rows.append({"compound": cpd, "gene": gene, "n_mut": int(m.sum()),
-                             "n_wt": int((~m).sum()),
-                             "delta": float(np.median(y[m]) - np.median(y[~m])),
-                             "p": float(u.pvalue), "scan": tag})
-        R = pd.DataFrame(rows)
-        if len(R):
-            R = R.sort_values("p")
-            R["q"] = np.minimum(R.p * len(R) / np.arange(1, len(R) + 1), 1)
-            R["q"] = R.q[::-1].cummin()[::-1]
-        return R
+            ii = np.array([lpos[l] for l in ls])
+            y = g.set_index("line").effect.reindex(ls).to_numpy()
+            R = stats.rankdata(y)
+            Msub = MUT[ii]                       # lines x genes
+            n1 = Msub.sum(0)
+            n2 = len(ls) - n1
+            use = (n1 >= 5) & (n2 >= 10)
+            if not use.any():
+                continue
+            S = R @ Msub                          # rank sum in the mutant group
+            U = S - n1 * (n1 + 1) / 2.0
+            mu = n1 * n2 / 2.0
+            # tie correction, as in the exact statistic
+            _, cnt = np.unique(y, return_counts=True)
+            tie = float((cnt ** 3 - cnt).sum())
+            n = len(ls)
+            sd = np.sqrt(np.maximum(
+                n1 * n2 / 12.0 * ((n + 1) - tie / (n * (n - 1))), 1e-12))
+            z = (U - mu) / sd
+            pv = 2 * stats.norm.sf(np.abs(z))
+            med_m = (R @ Msub) / np.maximum(n1, 1)
+            med_w = (R.sum() - S) / np.maximum(n2, 1)
+            for j in np.where(use)[0]:
+                rows.append({"compound": cpd, "gene": genes[j],
+                             "n_mut": int(n1[j]), "n_wt": int(n2[j]),
+                             "delta": float(med_m[j] - med_w[j]),
+                             "p": float(pv[j]), "scan": tag})
+        R_ = pd.DataFrame(rows)
+        if len(R_):
+            R_ = R_.sort_values("p").reset_index(drop=True)
+            R_["q"] = np.minimum(
+                R_.p * len(R_) / np.arange(1, len(R_) + 1), 1)
+            R_["q"] = R_.q[::-1].cummin()[::-1]
+        return R_
 
     print("\nstage 2: marker scan, filtered vs unfiltered", flush=True)
-    F = scan(M[flagged], "filtered")
+    # Selection is at the COMPOUND level. Filtering individual lines by their own
+    # reproducibility would condition on the outcome -- reproducibility rises
+    # with |effect|, so dropping unreproducible lines would preferentially drop
+    # non-responders and bias exactly the contrast being tested. Choosing which
+    # COMPOUNDS to test uses no line-level information about any marker.
+    rate = M.groupby("compound").apply(
+        lambda g: float((g.q < 0.05).mean()), include_groups=False)
+    hot = set(rate[rate >= 0.02].index)
+    print(f"   {len(hot)} of {M.compound.nunique()} compounds have >=2% of "
+          f"their lines reproducing; the scan is restricted to those, using "
+          f"ALL their lines")
+    F = scan(M[M.compound.isin(hot)], "filtered")
     U = scan(M, "unfiltered")
     print(f"   filtered   {len(F):,} tests, "
           f"{int((F.q < 0.05).sum()) if len(F) else 0} at FDR<0.05")

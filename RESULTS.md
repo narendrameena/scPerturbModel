@@ -2923,6 +2923,80 @@ else's number:
 All four are self-contained. None depends on reproducing a published statistic,
 which is now the right way to frame the claim.
 
+---
+
+## 45. A two-stage discovery method, tested and rejected
+
+§37 showed that a genome-wide marker scan fails by dilution, and §39 built a
+detector that finds which (line, drug) pairs carry reproducible interaction. The
+obvious combination is to detect first and associate only where something was
+found — spending the multiple-testing budget where there is an effect to find.
+
+It does not work, and the benchmark says so plainly.
+
+### The design
+
+**Stage 1**, on PRISM: for each of 477,857 (line, compound) pairs, the
+dose-response residual is measured on replicate plate X1 and again on X2/X3, and
+their agreement scored against a block-crossing permutation null. 3,698 pairs
+(0.8%) reproduce at FDR < 0.05. No marker or genotype is used.
+
+**Stage 2**: a marker scan over 9,694 mutated genes, restricted to the 143
+compounds whose lines reproduce at ≥2%, against the same scan over all 1,303
+compounds. Selection is at the **compound** level deliberately — filtering
+individual lines by their own reproducibility would condition on the outcome,
+since reproducibility rises with |effect| and would preferentially drop
+non-responders.
+
+### The benchmark rejects it
+
+| | tests | hits at FDR<0.05 | known relationships testable | median relative rank |
+|---|---:|---:|---:|---:|
+| filtered | 1.32 M | 3 | **7 of 15** | 0.34% |
+| unfiltered | 12.2 M | 8 | 15 of 15 | **0.28%** |
+
+Filtering cuts the test count ninefold, but the established relationships rank
+*relatively worse* — 0 of 7 improve — and **the filter discards eight of the
+fifteen known relationships entirely**, because their compounds do not clear the
+reproducibility threshold. Removing real biology to save multiple-testing budget
+is a bad trade, and the numbers say it is one.
+
+**This is the second method proposed and rejected in this project**, after the
+spectral estimator of §38. Both were rejected on benchmarks built to test them.
+
+### What the scan does recover
+
+The unfiltered scan with the corrected phenotype — the *signed* interaction,
+averaged over doses and replicate halves — finds 8 associations at FDR < 0.05,
+including two that were never supplied to it:
+
+| compound | gene | *n* mutant | effect | *q* |
+|---|---|---:|---:|---:|
+| copanlisib | *PIK3CA* | 100 | −145 | <10⁻⁴ |
+| cobimetinib | *BRAF* | 80 | −92 | 0.030 |
+
+Copanlisib is a PI3K inhibitor and *PIK3CA* mutation is its licensed biomarker;
+cobimetinib is a MEK inhibitor and *BRAF* mutation drives MAPK dependence.
+Neither pair was in the benchmark list. **These are real pharmacology recovered
+blind — and neither is new.** No association survived that is not already known,
+so this attempt produced no discovery.
+
+### One design error worth recording
+
+The first version used the reproducibility statistic itself as the stage-2
+phenotype and found nothing anywhere. Reproducibility says whether a pair's
+interaction is real; it carries no direction and no magnitude, so no marker can
+predict it. The phenotype has to be the signed interaction and the
+reproducibility belongs in the filter. The corrected version is what is reported
+above.
+
+### Where this leaves the discovery question
+
+The method does not beat the standard scan, and the standard scan recovers only
+known relationships. **This project has not produced a novel drug × genotype
+discovery**, and the honest reading is that 737 lines with ~9,700 testable genes
+is underpowered for anything that is not already large enough to have been found.
+
 ## Reproducing
 
 ```bash
