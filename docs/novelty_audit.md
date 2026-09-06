@@ -1,5 +1,55 @@
 # Novelty audit: what is already published, claim by claim
 
+> ## ⚠ 2026-09-06: both unresolved scooping risks CHECKED, and both are real
+>
+> The two items this audit flagged as unverified have now been retrieved and
+> read. Neither is fatal, but both take material novelty.
+>
+> **Svensson et al., "Back to basics: Observed statistics are sufficient to
+> predict drug responses"** (bioRxiv 10.64898/2026.06.09.731197, 12 June 2026;
+> Tahoe Therapeutics — the atlas's own authors). Introduces *Rhaister*, a
+> predictor operating on screen-level summary statistics: "By measuring just a
+> few perturbations in a new biological context, Rhaister predicts the unmeasured
+> perturbations", and it "matches or exceeds substantially more expensive
+> virtual-cell models … while training in seconds".
+>
+> **This anticipates RESULTS.md §32.** Our finding that a one-line arithmetic
+> floor beats a fine-tuned model at *k* = 5 and 20, and beats the oracle at
+> *k* = 20, is the same claim: cheap summary statistics match or exceed deep
+> perturbation models in the few-shot context-transfer setting. They built a
+> method around it and published it three months earlier. Our version retains a
+> narrower contribution — the specific floor, and the demonstration that the
+> gain is a *scalar shift* rather than learned pharmacology — but the headline is
+> theirs.
+>
+> **Shen et al., "Two axes of drug transcriptional response, and a mechanistic
+> correlate that organizes them: a conservation–divergence audit of Tahoe-100M"**
+> (Research Square 10.21203/rs.3.rs-10448056/v1, 23 July 2026). Same atlas, same
+> scope: 50 lines, 379 drugs, 3 concentrations. Defines **context-robustness**,
+> "the fraction of a drug's response that is a background-independent conserved
+> 'core' rather than a cell-line-specific 'periphery'" — which is the
+> shared/interaction split. Reports that "inhibitors of broad signalling hubs are
+> robust, agents that depend on a specific target or lineage are labile" (our
+> mechanism-class ordering), a dose-emergence axis (our dose analyses), and
+> "response strength recovers a clinical rule with no biological priors supplied:
+> KRAS-mutant lines respond more weakly to the EGFR inhibitor Simotinib
+> (FDR = 0.001)" — which is the same *blind recovery of known pharmacology* our
+> §39 demonstrates with MEK × MAPK. They also report pre-registered negatives in
+> full, the same stance this project takes.
+>
+> **What survives both.** The three-way decomposition separating the cell
+> property from the interaction (§27) — Shen's core/periphery is the two-way
+> split our work shows to be conflated; the positive-control discipline and the
+> three reversals (§35–37); the sparse detection method with its benchmark and
+> blind validation (§39–40); the dimensionality result and its replication on
+> LINCS (§41, §43); and cross-atlas validation in PRISM and GDSC.
+>
+> **What does not.** "Simple baselines match deep models" (§32) and "a
+> descriptive audit of context-dependence in Tahoe" as a framing are both taken.
+> The paper must be positioned as a methods paper about *how the quantity is
+> measured and tested*, not as an audit of Tahoe's response structure.
+
+
 > ## ⚠ 2026-09-03: claim 2 — the audit's top-ranked novelty — is WITHDRAWN
 >
 > This audit ranked "the interaction is a **pair** property, not a cell
