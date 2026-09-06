@@ -2610,6 +2610,97 @@ among the most cytotoxic compounds in the atlas, and separating "large effect" a
 from "specific effect" for them would need the within-drug contrast applied class
 by class, which the current class sizes do not support.
 
+---
+
+## 41. Fixing the magnitude confound, and a biological hypothesis that failed
+
+§40 reported mechanism classes enriched among the sparse detector's calls and
+flagged the ranking as partly a magnitude artefact. Two things were needed: a
+control that holds magnitude fixed, and an account of what the interaction
+actually is.
+
+### The confound is real, and the result survives it
+
+Flagged rate rises steadily with the magnitude of the interaction residual —
+**1.4% in the lowest decile to 10.2% in the highest** — so the confound is not
+hypothetical.
+
+Controlling for it by drawing, for each mechanism class, control conditions from
+the **same magnitude deciles in the same proportions** but from other classes:
+
+| mechanism | raw rate | magnitude-matched control | *P* |
+|---|---:|---:|---:|
+| protein synthesis inhibitor | 100% | 5% | 0.0025 |
+| HDAC inhibitor | 81% | 7% | 0.0025 |
+| RAS inhibitor | 27% | 5% | 0.0025 |
+| MEK inhibitor | 26% | 6% | 0.0025 |
+| microtubule inhibitor | 24% | 5% | 0.0025 |
+| JAK/STAT inhibitor | 16% | 4% | 0.0025 |
+| DNA synthesis/repair inhibitor | 8% | 6% | 0.008 |
+| other TK inhibitor | 7% | 5% | 0.13 |
+| glucocorticoid receptor agonist | 4% | 6% | 0.73 |
+
+**The enrichment is not magnitude.** Conditions matched on effect size are
+flagged at 4–7%, near the 5.2% background, while the top classes reach 24–100%.
+The §40 ordering stands, and the two classes at the bottom are now correctly
+identified as unenriched.
+
+### The biological hypothesis, and why it is wrong
+
+The natural explanation for cytotoxic classes topping the list was **potency**:
+lines die at different rates, so a shared stress-and-arrest programme is engaged
+to different degrees. That is a real interaction statistically, but it would be
+the general-sensitivity axis returning through the dose–response curve rather
+than anything drug-specific.
+
+It is testable without prior knowledge. If every line runs the same programme at
+a different amplitude, the lines × genes interaction matrix is **rank one**;
+rewiring needs more directions. Estimating rank from the cross-replicate
+covariance between plates 6 and 14, so that full-rank noise contributes nothing:
+
+| | |
+|---|---:|
+| median share of the interaction in the leading direction | **16.8%** |
+| median effective number of directions | **13.5** |
+
+Across 146 (drug, dose) combinations with ≥12 replicated lines. **The interaction
+is not rank one and the potency explanation fails.** Lines are not running one
+programme at different amplitudes; they are running substantially different
+programmes, spanning about 13 effective directions out of 48 lines.
+
+This has a direct consequence for modelling: a low-rank or single-latent-factor
+model of context effects — the usual architecture — cannot represent a 13-
+dimensional interaction, however much data it is given.
+
+### Which mechanisms rewire most
+
+| mechanism | *n* (drug, dose) | leading-direction share | effective dimensions |
+|---|---:|---:|---:|
+| HDAC inhibitor | 1 | 0.120 | 22.6 |
+| **MEK inhibitor** | **6** | **0.112** | **20.8** |
+| microtubule inhibitor | 2 | 0.136 | 17.7 |
+| mTOR inhibitor | 2 | 0.135 | 15.6 |
+| JAK/STAT inhibitor | 4 | 0.182 | 14.8 |
+| DNA synthesis/repair inhibitor | 16 | 0.181 | 12.5 |
+| EGFR/ERBB inhibitor | 8 | 0.214 | 10.2 |
+
+MEK inhibitors are the most rewiring-like class with usable *n*, which is what a
+pathway-dependency drug should look like: a MAPK-driven line and a
+MAPK-independent line are not running the same programme at different volumes.
+EGFR/ERBB inhibitors sit at the other end, closest to a single shared direction.
+
+**Most classes are badly underpowered on this axis.** Only six have ≥4
+(drug, dose) combinations with enough replicated lines, and protein synthesis
+inhibitors — the class with the highest raw flagged rate — have exactly one, so
+the class that motivated the potency hypothesis cannot be placed on the axis that
+would test it. The overall conclusion rests on the pooled 146 combinations, not
+on the per-class ordering.
+
+A reporting bug is worth recording: the first version printed the six classes as
+both "most potency-like" and "most rewiring-like", because `head(6)` and
+`tail(6)` of a six-row table are the same table. The two lists were identical and
+the output was read past without noticing until the numbers were checked.
+
 ## Reproducing
 
 ```bash
