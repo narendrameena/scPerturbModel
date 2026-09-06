@@ -2856,6 +2856,73 @@ on a DataFrame is not a safe way to read a column whose name might collide with
 pandas' own API, and every such access in these scripts has been changed to
 bracket indexing.
 
+---
+
+## 44. Third attempt at reproducing two published statistics — still failing, and why
+
+§28's generalisation claim has been blocked from the start by a simple fact: we
+could not reproduce the published statistics we were trying to correct. This is
+the third attempt, using each paper's own method rather than a proxy, and it does
+not succeed either.
+
+| statistic | published | §28 proxy | their method | closer? |
+|---|---:|---:|---:|---|
+| sci-Plex, % of responsive genes cell-type-dependent | 48% | 74.4% | **16.1%** | no |
+| CMap, % of compounds panel-conserved | 26% | 5.0% | **6.2%** | marginally |
+
+**sci-Plex.** §28 compared pseudobulk profiles; Srivatsan et al. fit a per-gene
+regression on single cells. That was fixed here — a Poisson GLM with
+`expression ~ log(dose) × cell_line + offset(log size)` fitted on the 799,317
+individual cells, with the interaction tested by likelihood ratio. The estimate
+moved from 74.4% to 16.1%, overshooting the published value in the opposite
+direction.
+
+**The likely cause is identified and is a denominator.** Their sentence is "of
+4,308 **differentially expressed** genes, 48% responded in a cell-type-dependent
+manner". The denominator is genes already established as responding; ours is
+every gene expressed in ≥5% of cells, which includes many that respond to
+nothing. Applying their DE pre-filter would raise 16.1% substantially, but the
+gene list itself is not in the paper, so the filter cannot be reconstructed —
+only approximated, which is how this attempt started.
+
+**CMap.** §28 used individual Level 4 profiles; Subramanian et al. work on Level
+5, replicate profiles aggregated by a weighted average whose weights come from
+inter-replicate agreement. That was implemented here using CMap's own weighting,
+and it moved the estimate the predicted direction — 5.0% to 6.2% — by far too
+little. Their conserved fraction also depends on signature-strength filters and a
+transcriptional activity score that the paper describes but does not fully
+specify.
+
+### What this settles
+
+**§28's generalisation claim stays withdrawn, permanently for this project.** We
+cannot demonstrate that the dilution problem affects these specific published
+numbers, because we cannot reproduce the numbers. Three attempts with three
+different implementations have failed, and the residual differences trace to
+filters and gene lists that the papers describe but do not pin down.
+
+That is a reproducibility observation, not a criticism of either result. Neither
+paper is shown to be wrong; what is shown is that their headline fractions are
+not recomputable from the deposited data plus the published description, and
+therefore cannot serve as a substrate for the correction this project proposes.
+
+### The consequence for the paper
+
+The generalisation must rest on evidence that does not require reproducing anyone
+else's number:
+
+* §36 — the same dilution demonstrated **inside Tahoe** with a biologically
+  specified contrast (MEK × MAPK, *P* = 0.0005);
+* §35 — inside Spear-ATAC, where the index moves from 0.3% to 91.6% on
+  responsive features;
+* §37 — inside PRISM, where one marker beats a genome-wide ridge (+0.080 vs
+  −0.019) on identical data and folds;
+* §29 — on TRADE's deposited data, as an internal raw-versus-corrected contrast
+  that never claims to restate their published 56%.
+
+All four are self-contained. None depends on reproducing a published statistic,
+which is now the right way to frame the claim.
+
 ## Reproducing
 
 ```bash
