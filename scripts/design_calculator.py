@@ -55,14 +55,44 @@ GREY = "#9e9e9e"
 
 # Each atlas as it was actually built, with the interaction share this project
 # measured on it. The calculator never sees `observed`.
+#
+# A SINGLE shared signal-to-noise constant is used for all five rather than a
+# per-atlas value. The first version set snr by hand per atlas, which makes a
+# 5/5 result uninterpretable -- five free parameters can fit five binary
+# outcomes. With one shared constant there is nothing to tune, and the sweep in
+# `snr_sensitivity` shows 5/5 holds across 0.10-0.30, a threefold range.
+SNR = 0.20
 ATLASES = [
-    # name,            contexts, perturbations, replicates, snr, observed share
-    ("Tahoe-100M",           48,  95,  2, 0.30, 0.005),   # §31, same-dose
-    ("LINCS phase 1",        71, 831,  3, 0.35, 0.70),    # §43
-    ("OP3",                   6, 147,  3, 0.40, 0.331),   # §35 rerun
-    ("sci-Plex 3",            3, 189,  2, 0.45, 0.302),
-    ("Spear-ATAC",            3,  41,  5, 0.12, 0.014),   # §35, ANOVA
+    # name,            contexts, perturbations, replicates, observed share
+    ("Tahoe-100M",           48,  95,  2, 0.005),   # §31, same-dose
+    ("LINCS phase 1",        71, 831,  3, 0.70),    # §43
+    ("OP3",                   6, 147,  3, 0.331),   # §35 rerun
+    ("sci-Plex 3",            3, 189,  2, 0.302),
+    ("Spear-ATAC",            3,  41,  5, 0.014),   # §35, ANOVA
 ]
+TRUTH = {"Tahoe-100M": False, "LINCS phase 1": True, "OP3": True,
+         "sci-Plex 3": True, "Spear-ATAC": False}
+
+
+def snr_sensitivity():
+    """How much of the 5/5 is the choice of snr?"""
+    print("\n0. SENSITIVITY — one shared snr, swept", flush=True)
+    rows = []
+    for snr in (0.05, 0.10, 0.15, 0.20, 0.25, 0.30, 0.35, 0.40, 0.50, 0.70,
+                1.00):
+        k = sum(bool(audit_design(n, c, p_, r, snr,
+                                  observed_share=o)["resolvable"]) == TRUTH[n]
+                for n, c, p_, r, o in ATLASES)
+        rows.append({"snr": snr, "correct": k})
+        print(f"   snr {snr:4.2f}: {k}/5 correct", flush=True)
+    S = pd.DataFrame(rows)
+    good = S[S.correct == len(ATLASES)].snr
+    if len(good):
+        print(f"   5/5 for a single shared snr across "
+              f"{good.min():.2f}-{good.max():.2f} — a "
+              f"{good.max()/good.min():.0f}-fold range, so the result is not a "
+              f"fitted parameter")
+    return S
 
 
 def calibrate(args):
@@ -123,12 +153,13 @@ def main():
     ap.add_argument("--n-seeds", type=int, default=12)
     args = ap.parse_args()
     FIG.mkdir(parents=True, exist_ok=True)
+    S = snr_sensitivity()
     C = calibrate(args)
 
     print("\n2. RETROSPECTIVE AUDIT — five atlases, calculator blind to the "
           "outcome", flush=True)
-    rows = [audit_design(n, c, p, r, s, observed_share=o)
-            for n, c, p, r, s, o in ATLASES]
+    rows = [audit_design(n, c, p_, r, SNR, observed_share=o)
+            for n, c, p_, r, o in ATLASES]
     A = pd.DataFrame(rows)
     print(f"   {'atlas':16s} {'pairs':>9s} {'min detectable':>15s} "
           f"{'observed':>9s}  verdict")
@@ -143,9 +174,7 @@ def main():
     print("     OP3          resolved (§35)")
     print("     sci-Plex 3   resolved (§35)")
     print("     Spear-ATAC   not resolvable; E-test rejects nothing (§35)")
-    truth = {"Tahoe-100M": False, "LINCS phase 1": True, "OP3": True,
-             "sci-Plex 3": True, "Spear-ATAC": False}
-    acc = sum(bool(r.resolvable) == truth[r.atlas] for r in A.itertuples())
+    acc = sum(bool(r.resolvable) == TRUTH[r.atlas] for r in A.itertuples())
     print(f"   the calculator calls {int(A.resolvable.sum())} of {len(A)} "
           f"resolvable, and agrees with the observed outcome for "
           f"{acc}/{len(A)} atlases")
@@ -225,7 +254,8 @@ def main():
                  "not cells, decide what is measurable", fontsize=10.5,
                  x=0.005, ha="left", fontweight="bold")
     d = save_figure(fig, "design_calculator", FIG,
-                    source_data={"audit": A, "calibration": C},
+                    source_data={"audit": A, "calibration": C,
+                                 "snr_sensitivity": S},
                     script=__file__)
     print(f"figure bundle -> {d}")
 

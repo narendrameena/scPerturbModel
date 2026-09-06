@@ -3015,7 +3015,12 @@ is sequenced.
 ### The calculator predicts five of five atlas outcomes, blind
 
 Each atlas's real context, perturbation and replicate counts go in; the
-calculator is never told what any of them found.
+calculator is never told what any of them found. **One shared noise constant is
+used for all five, not a per-atlas value** — five free parameters cannot be
+allowed to fit five binary outcomes. Sweeping that single constant, 5/5 holds
+across **0.10 to 0.30, a threefold range**, degrading to 4/5 at 0.35 and 3/5
+outside 0.05–0.40. The result is therefore a property of the design arithmetic
+rather than of a fitted parameter.
 
 | atlas | replicate pairs | smallest detectable share | observed | predicted | actual |
 |---|---:|---:|---:|---|---|

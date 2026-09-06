@@ -293,14 +293,17 @@ def test_design_calculator_ranks_atlases_correctly():
     establishing empirically.
     """
     from perturbmodel.design import audit_design, n_pairs
-    cases = [("Tahoe-100M", 48, 95, 2, 0.30, 0.005, False),
-             ("LINCS phase 1", 71, 831, 3, 0.35, 0.70, True),
-             ("OP3", 6, 147, 3, 0.40, 0.331, True),
-             ("sci-Plex 3", 3, 189, 2, 0.45, 0.302, True),
-             ("Spear-ATAC", 3, 41, 5, 0.12, 0.014, False)]
-    for name, c, p_, r, s, obs, truth in cases:
-        a = audit_design(name, c, p_, r, s, observed_share=obs)
-        assert a["resolvable"] is truth, name
+    # ONE shared noise constant for all five -- a per-atlas value would let
+    # five free parameters fit five binary outcomes.
+    cases = [("Tahoe-100M", 48, 95, 2, 0.005, False),
+             ("LINCS phase 1", 71, 831, 3, 0.70, True),
+             ("OP3", 6, 147, 3, 0.331, True),
+             ("sci-Plex 3", 3, 189, 2, 0.302, True),
+             ("Spear-ATAC", 3, 41, 5, 0.014, False)]
+    for snr in (0.10, 0.20, 0.30):        # 5/5 must hold across the range
+        for name, c, p_, r, obs, truth in cases:
+            a = audit_design(name, c, p_, r, snr, observed_share=obs)
+            assert a["resolvable"] is truth, f"{name} at snr={snr}"
     # cells are absent by construction: only replicate pairs enter
     assert n_pairs(10, 10, 1) == 0
     assert n_pairs(10, 10, 3) == 3 * n_pairs(10, 10, 2)
