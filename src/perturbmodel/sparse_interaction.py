@@ -89,13 +89,42 @@ class SparseResult:
         return "\n".join(L)
 
 
-def pair_reproducibility(A, B, n_perm=500, seed=0):
+def _derangement(n, rng, block=None, tries=20):
+    """A random pairing with no fixed points, optionally crossing blocks.
+
+    A cyclic shift is NOT an acceptable substitute. Conditions in these analyses
+    arrive sorted by context, so shifting by a small amount pairs a context with
+    itself: measured on the Tahoe run, a shift of 1 gives 99.3% of null pairs
+    sharing a cell line against 2.1% at chance. Any residual context structure
+    then contaminates the null. This was a real bug in the first version of this
+    module and it invalidated the p-values computed with it.
+
+    When ``block`` is given (a label per row, e.g. the cell line), the pairing is
+    additionally forced to cross blocks, so no null pair can share whatever
+    structure that label carries.
+    """
+    idx = rng.permutation(n)
+    for _ in range(tries):
+        bad = np.where(idx == np.arange(n))[0]
+        if block is not None:
+            bad = np.union1d(bad, np.where(block == block[idx])[0])
+        if not len(bad):
+            break
+        idx[bad] = idx[rng.permutation(bad)]
+    return idx
+
+
+def pair_reproducibility(A, B, n_perm=500, seed=0, block=None):
     """Cross-replicate agreement per condition, with a permuted-pairing null.
 
     ``A`` and ``B`` are (n_conditions, n_features) interaction residuals from two
     INDEPENDENT replicates, rows aligned. Cosine similarity is used rather than
     the raw inner product so that conditions with large responses do not
     dominate: the question is whether a pair reproduces, not how big it is.
+
+    ``block`` optionally forces every null pairing to cross a grouping (the cell
+    line, say), which removes any possibility that leftover context structure
+    inflates the null.
     """
     A = np.asarray(A, float)
     B = np.asarray(B, float)
@@ -106,14 +135,11 @@ def pair_reproducibility(A, B, n_perm=500, seed=0):
     obs[ok] = (A[ok] * B[ok]).sum(1) / (na[ok] * nb[ok])
 
     rng = np.random.default_rng(seed)
-    n = len(A)
     null = np.empty((n_perm, int(ok.sum())))
     Ao, Bo, nao, nbo = A[ok], B[ok], na[ok], nb[ok]
+    blk = np.asarray(block)[ok] if block is not None else None
     for i in range(n_perm):
-        # pair each A with a B from a DIFFERENT condition; the derangement is
-        # approximated by a shift, which cannot accidentally re-pair a row
-        sh = 1 + rng.integers(0, len(Ao) - 1)
-        idx = (np.arange(len(Ao)) + sh) % len(Ao)
+        idx = _derangement(len(Ao), rng, blk)
         null[i] = (Ao * Bo[idx]).sum(1) / (nao * nbo[idx])
     flat = null.ravel()
     # one-sided: a real interaction makes replicates agree, not disagree
@@ -144,13 +170,14 @@ def higher_criticism(p, alpha0=0.5):
     return float(np.max(np.sqrt(n) * (i / n - pk) / den))
 
 
-def detect(A, B, n_perm=500, seed=0):
+def detect(A, B, n_perm=500, seed=0, block=None):
     """Full sparse-detection pass: per-pair, FDR count, HC, and the pooled test.
 
     The pooled permutation test is computed on identical data so the two
     inferences can be compared directly rather than argued about.
     """
-    obs, p, null = pair_reproducibility(A, B, n_perm=n_perm, seed=seed)
+    obs, p, null = pair_reproducibility(A, B, n_perm=n_perm, seed=seed,
+                                       block=block)
     q = np.full(len(p), np.nan)
     fin = np.isfinite(p)
     q[fin] = _bh(p[fin])
@@ -167,9 +194,11 @@ def detect(A, B, n_perm=500, seed=0):
 
     # the pooled statistic, tested the way the field tests it
     tr = float(np.nanmean((A * B).sum(1)) / A.shape[1])
+    rng2 = np.random.default_rng(seed + 1)
+    blk_all = np.asarray(block) if block is not None else None
     tr_null = np.array([float(np.nanmean(
-        (A * B[(np.arange(len(B)) + 1 + i) % len(B)]).sum(1)) / A.shape[1])
-        for i in range(min(n_perm, len(B) - 1))])
+        (A * B[_derangement(len(B), rng2, blk_all)]).sum(1)) / A.shape[1])
+        for _ in range(n_perm)])
     tr_p = float(((tr_null >= tr).sum() + 1) / (len(tr_null) + 1))
 
     T = pd.DataFrame({"cosine": obs, "p": p, "q": q})

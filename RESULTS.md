@@ -2489,15 +2489,15 @@ drug class and no genotype**:
 | | |
 |---|---|
 | pooled trace | −0.0015, permutation **P = 0.13** — finds nothing |
-| Higher Criticism | 1320, permutation **P = 0.0025** — finds it |
-| pairs at FDR < 0.05 | **360 of 6,939 (5.2%)** |
+| Higher Criticism | 742, permutation **P = 0.0025** — finds it |
+| pairs at FDR < 0.05 | **361 of 6,939 (5.2%)** |
 
 Scoring those 360 calls against the pharmacology **afterwards**:
 
-- MEK-inhibitor conditions: **73 of 360** flagged, against 283 of 6,939
-  background — *P* = 9 × 10⁻³³
-- MEK × MAPK-driven specifically: **64 of 360**, against 207 of 6,939 —
-  *P* = 9 × 10⁻³⁴
+- MEK-inhibitor conditions: **73 of 361** flagged, against 283 of 6,939
+  background — *P* = 1 × 10⁻³²
+- MEK × MAPK-driven specifically: **64 of 361**, against 207 of 6,939 —
+  *P* = 1 × 10⁻³³
 - median cross-replicate agreement: MEK × MAPK-driven **+0.065**, MEK ×
   wild-type +0.008, all other pairs −0.028
 
@@ -2528,6 +2528,87 @@ but does not claim to find all of it.
 | **which pairs carry it** | **per-pair reproducibility with FDR** |
 | is it spread or focused | the spectrum's component count (§38) |
 | can the instrument see anything | a positive control on the same data (§36–37) |
+
+---
+
+## 40. Validating the sparse calls: a bug, a confound, and an independent assay
+
+§39's result — 361 of 6,939 Tahoe conditions flagged, enriched for MEK × MAPK at
+*P* = 10⁻³³ — had three plausible non-biological explanations, none of which had
+been tested.
+
+### The bug: the permutation null was contaminated
+
+The null paired condition *i* with condition *i + shift*. Rows arrive sorted by
+cell line, so **99.3% of null pairs shared a cell line against 2.1% at chance**.
+Any leftover context structure was therefore inside the null. Replaced with
+block-crossing derangements — a random pairing with no fixed points that is
+additionally forced to cross cell lines.
+
+The conclusion survives: Higher Criticism falls from 1320 to **742** but the
+permutation *P* stays 0.0025, flagged pairs go 360 → 361, and the MEK × MAPK
+enrichment stands at *P* = 1 × 10⁻³³. The contaminated null was inflating the
+statistic's value without changing the inference.
+
+### The confound: magnitude, partly
+
+Cross-replicate agreement rises with signal-to-noise, and MEK inhibitors produce
+large responses. **They do have higher overall reproducibility (*P* = 10⁻¹³⁰), so
+the panel-wide enrichment is partly magnitude and is reported as such.**
+
+The magnitude-free version holds the drug fixed and varies only genotype — same
+compound, same dose, same response size:
+
+| | within-drug gap (MAPK-driven − wild-type) |
+|---|---:|
+| MEK inhibitors | **+0.0656** |
+| all other drugs (n = 109) | −0.0015 |
+
+*P* = 0.004. **Only two MEK inhibitors are testable this way**, so the comparison
+leans on the null distribution from the other 109 drugs rather than on the MEK
+sample; it supports the claim but does not carry it alone.
+
+### The real test: an independent assay, laboratory and readout
+
+Pairs flagged from Tahoe **transcription** should, if they reflect biology, also
+behave specially in PRISM **viability** — a different laboratory, chemistry and
+phenotype. 834 of the flagged and unflagged pairs are measured in both.
+
+| | median \|interaction\| in PRISM |
+|---|---:|
+| flagged in Tahoe (n = 109) | **0.313** |
+| not flagged (n = 725) | 0.179 |
+
+*P* = 1.5 × 10⁻⁵. **The calls transfer across assay, laboratory and readout**, so
+they are not a Tahoe artefact. This is the result that could have failed and did
+not.
+
+### What the flagged pairs are
+
+Mechanism classes enriched among the calls, Bonferroni-corrected:
+
+| mechanism | flagged / total | rate |
+|---|---:|---:|
+| protein synthesis inhibitor | 45 / 45 | **100%** |
+| HDAC inhibitor | 39 / 48 | 81% |
+| RAS inhibitor | 13 / 48 | 27% |
+| MEK inhibitor | 73 / 283 | 26% |
+| microtubule inhibitor | 23 / 96 | 24% |
+| JAK/STAT inhibitor | 31 / 192 | 16% |
+| DNA synthesis/repair inhibitor | 62 / 755 | 8% |
+
+against an overall rate of 5.2%. The ordering is biologically coherent: the most
+context-specific responses belong to drugs targeting processes that differ most
+between cell lines — **translational capacity, chromatin state, and pathway
+dependency** — while DNA-damage agents, whose target is present in every
+proliferating cell, sit near the bottom.
+
+**This ranking is also partly magnitude** and should be read as *which drug
+classes have detectable context-specificity*, not *which are most
+context-specific per unit of effect*. Protein synthesis inhibitors at 100% are
+among the most cytotoxic compounds in the atlas, and separating "large effect" a
+from "specific effect" for them would need the within-drug contrast applied class
+by class, which the current class sizes do not support.
 
 ## Reproducing
 

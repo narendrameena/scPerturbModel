@@ -265,3 +265,20 @@ def test_sparse_detection_is_clean_at_the_null():
     r = detect(A, B, n_perm=200, seed=7)
     assert r.hc_p > 0.05
     assert r.n_sig == 0
+
+
+def test_permutation_null_crosses_blocks():
+    """The null pairing must not systematically re-pair within a block.
+
+    The bug this guards: conditions arrive sorted by cell line, so a cyclic
+    shift paired 99.3% of null pairs within the same line against 2.1% at
+    chance, putting leftover context structure inside the null (RESULTS.md
+    sec.40).
+    """
+    from perturbmodel.sparse_interaction import _derangement
+    rng = np.random.default_rng(0)
+    n = 600
+    block = np.repeat(np.arange(20), n // 20)      # sorted, as the data are
+    idx = _derangement(n, rng, block)
+    assert (idx == np.arange(n)).sum() == 0        # no fixed points
+    assert (block == block[idx]).mean() < 0.02     # and it crosses blocks
