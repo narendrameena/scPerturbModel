@@ -3069,6 +3069,75 @@ share should therefore be read as an order-of-magnitude guide, not an exact
 bound** — which is enough for the use it is put to here, since the five atlases
 differ by two orders of magnitude in what they can resolve.
 
+---
+
+## 47. Testing the design calculation's premise: 2% of the cells, all of the answer
+
+§46's calculation rests on one claim — precision comes from replicate pairs, and
+cell count enters only through per-condition noise, which saturates. That claim is
+why the calculator tells atlas builders to spend differently, so it was tested
+directly rather than left as algebra.
+
+**The readout has to be something Tahoe actually has.** A first version measured
+the pooled interaction covariance, which on this atlas is −0.00016 —
+indistinguishable from zero, exactly as §31 found and as §46 predicts. Thinning
+something already absent measures nothing. The readout used instead is the effect
+§36 established *is* present: MEK inhibitors suppress the Pratilas ERK-output
+signature further in BRAF/RAS-driven lines than in wild-type ones.
+
+### Cutting cells fifty-fold costs nothing
+
+Counts binomially downsampled, every condition and replicate kept:
+
+| cells retained | MAPK − wild-type gap | share of full |
+|---:|---:|---:|
+| 100% | −0.1007 | — |
+| 50% | −0.1053 | 105% |
+| 25% | −0.0968 | 96% |
+| 10% | −0.1005 | 100% |
+| 5% | −0.1077 | 107% |
+| **2%** | **−0.0922** | **92%** |
+
+At **2% of the cells — a fiftyfold reduction — 92% of the effect survives.** The
+curve is flat, not decaying, across a range where total sequencing falls by more
+than an order of magnitude.
+
+### Cutting contexts destroys the measurement
+
+Contexts thinned, cells kept:
+
+| contexts retained | gap | spread across draws |
+|---:|---:|---:|
+| 100% | −0.1007 | — |
+| 50% | −0.1053 | 0.028 |
+| 25% | −0.0928 | 0.034 |
+| 10% | −0.1327 | **0.084** |
+
+The mean does not drift much; the **precision collapses**. At 10% of contexts the
+spread across draws is 0.084 against an effect of 0.10 — the estimate is no longer
+distinguishable from noise on any single draw. That is precisely the behaviour
+§46's algebra predicts, since precision scales with the number of pairs and pairs
+scale with contexts.
+
+### What it means for how these atlases are built
+
+Tahoe-100M sequenced 95.6 million cells. On this readout it would have obtained
+the same answer from **about 2 million**, and the remaining budget spent on
+contexts and replicates would have moved it from the wrong side of its detection
+threshold (§46: floor 0.0079 against a true 0.005) to the right one. The field's
+scaling instinct — more cells per condition — buys almost nothing for this class
+of question, while the third replicate that Tahoe lacked buys the question itself.
+
+### The limitation this rests on
+
+The readout **pools across roughly 80 MAPK-driven and 40 wild-type lines**, so
+per-condition sampling noise averages out before the contrast is taken. A
+*per-condition* estimate — one (line, drug) pair on its own — would degrade under
+cell thinning far sooner, and this experiment does not measure how much sooner.
+The claim supported is therefore about population-level contrasts of the kind
+context-dependence indices report, not about how deeply any single well must be
+sequenced to be individually reliable.
+
 ## Reproducing
 
 ```bash

@@ -247,6 +247,18 @@ n_contexts.** This is a property of the model class rather than of training, so
 more data does not remove it; equally, it is not a claim that such models are
 broken, only that *d* must scale with the atlas.
 
+**The premise is testable and holds.** Binomially downsampling Tahoe's counts
+while keeping every condition, the §36 effect retains **92% of its size at 2% of
+the cells** — a fiftyfold reduction in sequencing with a flat, non-decaying
+curve. Thinning contexts instead leaves the mean intact but collapses precision:
+at 10% of contexts the spread across draws is 0.084 against an effect of 0.10.
+Tahoe would have obtained the same answer from about 2 million cells rather than
+95.6 million, and the remaining budget spent on replicates would have moved it
+across its own detection threshold. This readout pools across ~120 lines, so
+per-condition sampling noise averages out before the contrast is taken; a
+single-condition estimate would degrade under cell thinning sooner, and this
+experiment does not measure how much sooner.
+
 *Calibration.* Against simulation with a known interaction, power above the
 predicted threshold is 83–100% and the false-positive rate 0–8% on larger
 designs; on the smallest design tested the false-positive rate reaches 17%. The

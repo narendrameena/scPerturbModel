@@ -20,11 +20,19 @@ So the experiment is a two-way subsampling of Tahoe:
   * cells per condition, thinned from 100% down to 5%, replicates held fixed;
   * conditions, thinned from 100% down to 5%, cells held fixed.
 
-Both reduce total sequencing. If the premise is right, thinning cells leaves the
-interaction estimate and its standard error nearly unchanged until the very
-lowest depths, while thinning conditions degrades both immediately and
-predictably. If instead cells and conditions cost the same, the calculator is
-wrong and sec.46 should be withdrawn.
+Both reduce total sequencing. If the premise is right, thinning cells leaves the readout nearly unchanged until
+the very lowest depths, while thinning conditions degrades it immediately. If
+instead cells and conditions cost the same, the calculator is wrong and sec.46
+should be withdrawn.
+
+**The readout has to be a quantity Tahoe actually has.** A first version measured
+the pooled interaction covariance, which on this atlas is -0.00016 -- indis-
+tinguishable from zero, exactly as sec.31 found and as the design calculation
+predicts. Thinning something that is already absent measures nothing. The readout
+used instead is the effect sec.36 established IS present in Tahoe: MEK inhibitors
+suppress the Pratilas ERK-output signature further in BRAF/RAS-driven lines than
+in wild-type ones. It is large, biologically specified, and independently
+validated, so its decay under each kind of thinning is interpretable.
 
 The measured exchange rate then answers the practical question directly: for a
 fixed budget of sequenced cells, how should they be spread?
@@ -52,189 +60,150 @@ BLUE, ORANGE, AQUA, VIOLET = "#2a78d6", "#eb6834", "#1baf7a", "#4a3aa7"
 GREY = "#9e9e9e"
 
 
+MEK_OUTPUT = ["DUSP4", "DUSP6", "SPRY2", "SPRY4", "ETV4", "ETV5", "PHLDA1",
+              "EPHA2", "SPRED1", "SPRED2", "CCND1", "FOSL1", "MYC"]
+MEK_DRUGS = ["Cobimetinib", "Trametinib", "Binimetinib", "TAK-733"]
+MAPK = ("BRAF", "KRAS", "NRAS")
+
+
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--n-boot", type=int, default=30)
+    ap.add_argument("--n-boot", type=int, default=12)
     args = ap.parse_args()
     FIG.mkdir(parents=True, exist_ok=True)
 
     C = pd.read_csv(PB / "conditions.csv")
+    G = pd.read_csv(PB / "genes.csv")
     X = np.load(PB / "pseudobulk_counts.npz")["counts"]
     keep = (C.n_cells >= 200).to_numpy()
     C, X = C[keep].reset_index(drop=True), X[keep]
-    print(f"{len(C)} pseudobulks", flush=True)
+    sym = G.gene_symbol.astype(str).str.upper().to_numpy()
+    gi = np.array([i for i, g in enumerate(sym) if g in set(MEK_OUTPUT)])
+    md = pd.read_csv(TAB / "cell_line_metadata.csv")
+    drv = md.groupby("Cell_ID_Cellosaur").Driver_Gene_Symbol.apply(
+        lambda z: set(z.dropna().astype(str)))
+    mapk = {k: bool(v & set(MAPK)) for k, v in drv.items()}
+    print(f"{len(C)} pseudobulks; {len(gi)} ERK-output genes; "
+          f"{sum(mapk.values())} MAPK-driven lines", flush=True)
 
-    # Thinning cells is simulated by binomial downsampling of the counts, which
-    # is what sequencing fewer cells does to a pseudobulk: the same expected
-    # profile with sampling noise scaled by 1/sqrt(depth). Re-normalising after
-    # thinning keeps the scale comparable.
     def prep(Xc):
-        s = Xc.sum(1, keepdims=True)
-        s[s == 0] = 1.0
-        return np.log1p(Xc / s * 1e4).astype(np.float32)
+        s_ = Xc.sum(1, keepdims=True)
+        s_[s_ == 0] = 1.0
+        return np.log1p(Xc / s_ * 1e4).astype(np.float32)
 
-    rng = np.random.default_rng(0)
-    var = np.asarray(X.sum(0)).ravel()
-    resp = np.argsort(-var)[:2000]
-
-    def interaction(Xl, cond, frac_cond=1.0, seed=0):
-        """Estimate the interaction share on a (possibly thinned) dataset."""
+    def readout(Xl, cond, frac_cond=1.0, seed=0):
+        """The sec.36 effect: how much further ERK output falls in MAPK lines."""
         r = np.random.default_rng(seed)
         ctl = {}
         for (ln, pl), g in cond[cond.drug.astype(str) == CTRL].groupby(
                 ["cell_line_id", "plate"], observed=True):
             ctl[(ln, pl)] = Xl[g.index.to_numpy()].mean(0)
-        trt = cond[cond.drug.astype(str) != CTRL]
-        rows = [(t.cell_line_id, t.drug, t.conc, t.plate, i)
-                for i, t in zip(trt.index.to_numpy(), trt.itertuples())
-                if (t.cell_line_id, t.plate) in ctl]
-        K = pd.DataFrame(rows, columns=["line", "drug", "conc", "plate", "i"])
-        if frac_cond < 1.0:
-            keys = K.groupby(["drug", "conc"], observed=True).ngroup()
-            uq = np.unique(keys)
-            pick = set(r.choice(uq, max(int(len(uq) * frac_cond), 2),
-                                replace=False))
-            K = K[keys.isin(pick)].reset_index(drop=True)
-        if not len(K):
+        sel = cond[cond.drug.isin(MEK_DRUGS)
+                   & (cond.conc == cond.conc.max())]
+        if frac_cond < 1.0 and len(sel):
+            lines_u = sorted(set(sel.cell_line_id) & set(mapk))
+            k = max(int(len(lines_u) * frac_cond), 4)
+            keepl = set(r.choice(lines_u, k, replace=False))
+            sel = sel[sel.cell_line_id.isin(keepl)]
+        a, b = [], []
+        for t in sel.itertuples():
+            key = (t.cell_line_id, t.plate)
+            if key not in ctl or t.cell_line_id not in mapk:
+                continue
+            d = Xl[t.Index][gi] - ctl[key][gi]
+            (a if mapk[t.cell_line_id] else b).append(float(d.mean()))
+        if len(a) < 5 or len(b) < 5:
             return np.nan
-        D = np.stack([Xl[t.i] - ctl[(t.line, t.plate)] for t in K.itertuples()])
-        # drug main effect out, leave-one-line-out per (drug, dose)
-        res = np.zeros_like(D)
-        for (dr, cc), g in K.groupby(["drug", "conc"], observed=True):
-            ii = g.index.to_numpy()
-            ln = K.line.to_numpy()[ii]
-            if len(np.unique(ln)) < 2:
-                continue
-            tot = D[ii].sum(0)
-            cs = {c: D[ii[ln == c]].sum(0) for c in np.unique(ln)}
-            cn = {c: int((ln == c).sum()) for c in np.unique(ln)}
-            for i, c in zip(ii, ln):
-                n_out = len(ii) - cn[c]
-                if n_out >= 1:
-                    res[i] = D[i] - (tot - cs[c]) / n_out
-        # line general response out, within plate
-        dv = K.drug.to_numpy()
-        for (ln, pl), g in K.groupby(["line", "plate"], observed=True):
-            ii = g.index.to_numpy()
-            by = {}
-            for i in ii:
-                by.setdefault(dv[i], []).append(res[i])
-            by = {d: np.mean(v, axis=0) for d, v in by.items()}
-            if len(by) < 3:
-                continue
-            tot_a, n_a = np.sum(list(by.values()), axis=0), len(by)
-            for i in ii:
-                res[i] = res[i] - (tot_a - by[dv[i]]) / (n_a - 1)
-        # cross-plate covariance at matched (line, drug, dose)
-        num, den, n = 0.0, 0.0, 0
-        for (ln, dr, cc), g in K.groupby(["line", "drug", "conc"],
-                                         observed=True):
-            ii = g.i.to_numpy()
-            pl = K.plate.to_numpy()[g.index.to_numpy()]
-            if len(set(pl)) < 2:
-                continue
-            a = g.index.to_numpy()[pl == pl[0]]
-            b = g.index.to_numpy()[pl != pl[0]]
-            num += float(np.mean(res[a].mean(0) * res[b].mean(0))); n += 1
-        if n < 20:
-            return np.nan
-        return num / n
+        return float(np.median(a) - np.median(b))
 
-    base_cond = C.copy()
-    print("\n1. THINNING CELLS (replicates and conditions held fixed)",
-          flush=True)
+    rng = np.random.default_rng(0)
     rows = []
-    for frac in (1.0, 0.5, 0.25, 0.1, 0.05):
+    print("\n1. THINNING CELLS (all conditions kept)", flush=True)
+    for frac in (1.0, 0.5, 0.25, 0.1, 0.05, 0.02):
         vals = []
-        for b in range(args.n_boot // 6 if frac < 1 else 1):
-            if frac >= 1.0:
-                Xt = X
-            else:
-                Xt = rng.binomial(X.astype(np.int64),
-                                  frac).astype(np.float32)
-            v = interaction(prep(Xt)[:, resp], base_cond, 1.0, seed=b)
+        for b_ in range(1 if frac >= 1.0 else args.n_boot // 3):
+            Xt = X if frac >= 1.0 else rng.binomial(
+                X.astype(np.int64), frac).astype(np.float32)
+            v = readout(prep(Xt), C, 1.0, seed=b_)
             if np.isfinite(v):
                 vals.append(v)
         if vals:
             rows.append({"axis": "cells", "frac": frac,
-                         "estimate": float(np.mean(vals)),
-                         "sd": float(np.std(vals)) if len(vals) > 1 else 0.0,
-                         "n": len(vals)})
-            print(f"   {frac:5.0%} of cells: interaction "
-                  f"{np.mean(vals):.5f}", flush=True)
+                         "effect": float(np.mean(vals)),
+                         "sd": float(np.std(vals)) if len(vals) > 1 else 0.0})
+            print(f"   {frac:5.0%} of cells: MAPK-vs-wildtype gap "
+                  f"{np.mean(vals):+.4f}", flush=True)
 
-    print("\n2. THINNING CONDITIONS (cells held fixed)", flush=True)
-    Xf = prep(X)[:, resp]
-    for frac in (1.0, 0.5, 0.25, 0.1, 0.05):
+    print("\n2. THINNING CONTEXTS (cells kept)", flush=True)
+    Xf = prep(X)
+    for frac in (1.0, 0.5, 0.25, 0.1):
         vals = []
-        for b in range(1 if frac >= 1.0 else args.n_boot // 3):
-            v = interaction(Xf, base_cond, frac, seed=100 + b)
+        for b_ in range(1 if frac >= 1.0 else args.n_boot):
+            v = readout(Xf, C, frac, seed=100 + b_)
             if np.isfinite(v):
                 vals.append(v)
         if vals:
-            rows.append({"axis": "conditions", "frac": frac,
-                         "estimate": float(np.mean(vals)),
-                         "sd": float(np.std(vals)) if len(vals) > 1 else 0.0,
-                         "n": len(vals)})
-            print(f"   {frac:5.0%} of conditions: interaction "
-                  f"{np.mean(vals):.5f}  (sd {np.std(vals):.5f} over "
-                  f"{len(vals)} draws)", flush=True)
+            rows.append({"axis": "contexts", "frac": frac,
+                         "effect": float(np.mean(vals)),
+                         "sd": float(np.std(vals)) if len(vals) > 1 else 0.0})
+            print(f"   {frac:5.0%} of contexts: gap {np.mean(vals):+.4f} "
+                  f"(sd {np.std(vals):.4f})", flush=True)
 
     T = pd.DataFrame(rows)
     T.to_csv(TAB / "cells_vs_replicates.csv", index=False)
-
-    cel = T[T.axis == "cells"].set_index("frac").estimate
-    con = T[T.axis == "conditions"].set_index("frac").estimate
+    cel = T[T.axis == "cells"].set_index("frac").effect
+    con = T[T.axis == "contexts"].set_index("frac").effect
     print("\n3. THE EXCHANGE RATE")
-    if 1.0 in cel.index and 0.1 in cel.index:
-        print(f"   cutting cells to 10% changes the estimate by "
-              f"{abs(cel[0.1] - cel[1.0]) / abs(cel[1.0]):.0%}")
-    if 1.0 in con.index and 0.1 in con.index:
-        print(f"   cutting conditions to 10% changes it by "
-              f"{abs(con[0.1] - con[1.0]) / abs(con[1.0]):.0%}, and its "
-              f"spread across draws by "
-              f"{T[(T.axis=='conditions')&(T.frac==0.1)].sd.iloc[0]:.5f}")
-    print("   If the first is small and the second large, the premise of "
-          "sec.46 holds:\n   sequencing depth per condition is not the binding "
-          "constraint, and the same\n   cells spread over more conditions and "
-          "replicates buy more information.")
+    base = cel.get(1.0, np.nan)
+    if np.isfinite(base) and base != 0:
+        for f in (0.1, 0.05, 0.02):
+            if f in cel.index:
+                print(f"   {f:.0%} of the cells retains "
+                      f"{cel[f] / base:.0%} of the effect")
+        for f in (0.25, 0.1):
+            if f in con.index:
+                print(f"   {f:.0%} of the contexts retains "
+                      f"{con[f] / base:.0%} of the effect, with spread "
+                      f"{T[(T.axis=='contexts')&(T.frac==f)].sd.iloc[0]:.4f}")
+    print("   The premise of sec.46 predicts the first row to stay near 100% "
+          "far down and\n   the second to degrade and become unstable. If both "
+          "decay alike, cells and\n   contexts cost the same and sec.46 is "
+          "wrong.")
 
     plt.rcParams.update({"font.size": 8.5, "axes.spines.top": False,
                          "axes.spines.right": False, "axes.grid": True,
                          "grid.alpha": 0.22, "figure.facecolor": "white"})
     fig, ax = plt.subplots(1, 2, figsize=(11, 4.3), constrained_layout=True)
-    for axis, col, lab in (("cells", BLUE, "thin the cells per condition"),
-                           ("conditions", ORANGE, "thin the conditions")):
+    for axis, col, lab in (("cells", BLUE, "thin cells per condition"),
+                           ("contexts", ORANGE, "thin contexts")):
         g = T[T.axis == axis].sort_values("frac")
         if len(g):
-            ax[0].errorbar(g.frac, g.estimate, yerr=g.sd, fmt="o-", color=col,
+            ax[0].errorbar(g.frac, g.effect, yerr=g.sd, fmt="o-", color=col,
                            lw=2, ms=6, capsize=3, label=lab)
+    ax[0].axhline(0, color="#444", lw=0.9)
     ax[0].set_xscale("log")
     ax[0].set_xlabel("fraction of the data retained")
-    ax[0].set_ylabel("estimated interaction (cross-plate covariance)")
+    ax[0].set_ylabel("MAPK-driven minus wild-type ERK suppression")
     ax[0].legend(frameon=False, fontsize=7.5)
-    ax[0].set_title("a  Two ways to spend less sequencing", loc="left",
+    ax[0].set_title("a  A signal Tahoe demonstrably has (§36)", loc="left",
                     fontweight="bold", fontsize=9.5)
 
-    base_c = cel.get(1.0, np.nan)
-    for axis, col in (("cells", BLUE), ("conditions", ORANGE)):
-        g = T[T.axis == axis].sort_values("frac")
-        if len(g) and np.isfinite(base_c) and base_c != 0:
-            ax[1].plot(g.frac, (g.estimate / base_c), "o-", color=col, lw=2,
-                       ms=6, label=axis)
+    if np.isfinite(base) and base != 0:
+        for axis, col in (("cells", BLUE), ("contexts", ORANGE)):
+            g = T[T.axis == axis].sort_values("frac")
+            if len(g):
+                ax[1].plot(g.frac, g.effect / base, "o-", color=col, lw=2,
+                           ms=6, label=axis)
     ax[1].axhline(1.0, ls="--", color="#555", lw=1.3)
     ax[1].set_xscale("log")
     ax[1].set_xlabel("fraction retained")
-    ax[1].set_ylabel("estimate relative to the full data")
+    ax[1].set_ylabel("effect relative to the full data")
     ax[1].legend(frameon=False, fontsize=7.5)
-    ax[1].text(0.5, 0.1, "flat under cell thinning = depth is not\nthe binding "
-               "constraint", transform=ax[1].transAxes, ha="center",
-               fontsize=7, color="#444")
     ax[1].set_title("b  Which axis actually costs", loc="left",
                     fontweight="bold", fontsize=9.5)
-    fig.suptitle("Testing the design calculation's premise: cells enter only "
-                 "through per-condition noise", fontsize=10.5, x=0.005,
-                 ha="left", fontweight="bold")
+    fig.suptitle("Testing the design calculation's premise on a signal that is "
+                 "known to be present", fontsize=10.5, x=0.005, ha="left",
+                 fontweight="bold")
     d = save_figure(fig, "cells_vs_replicates", FIG, source_data={"sweep": T},
                     script=__file__)
     print(f"figure bundle -> {d}")
