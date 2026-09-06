@@ -2684,10 +2684,11 @@ dimensional interaction, however much data it is given.
 | DNA synthesis/repair inhibitor | 16 | 0.181 | 12.5 |
 | EGFR/ERBB inhibitor | 8 | 0.214 | 10.2 |
 
-MEK inhibitors are the most rewiring-like class with usable *n*, which is what a
-pathway-dependency drug should look like: a MAPK-driven line and a
-MAPK-independent line are not running the same programme at different volumes.
-EGFR/ERBB inhibitors sit at the other end, closest to a single shared direction.
+MEK inhibitors are the most rewiring-like class with usable *n* here, and
+EGFR/ERBB sit closest to a single shared direction. **§43 withdraws this
+ordering**: at six times the scale on an independent platform the per-class
+bootstrap intervals still overlap, so the differences between classes are not
+resolved and only the pooled distance from rank one is supported.
 
 **Most classes are badly underpowered on this axis.** Only six have ≥4
 (drug, dose) combinations with enough replicated lines, and protein synthesis
@@ -2779,6 +2780,81 @@ different kinds: cross-plate reproducibility, survival of magnitude matching,
 high dimensionality, and — new here — **pathway localisation with a mechanism**.
 The last is the only one that could have been contradicted by biology rather than
 by statistics, and it was not.
+
+---
+
+## 43. Scaling up six-fold: what more data fixed, and what it did not
+
+§41's per-class potency/rewiring ordering rested on six mechanism classes, one of
+which had a single (drug, dose) combination. LINCS phase 1 supplies the same
+analysis at a much larger scale — **806 combinations with ≥12 replicated lines
+against Tahoe's 146, and 23 mechanism classes with ≥4 combinations against six** —
+on a different platform (L1000 bulk rather than single-cell), a different
+normalisation, and a different compound library.
+
+### What replicates
+
+Both atlases put the interaction far from rank one:
+
+| | median leading-direction share | effective directions | of how many lines |
+|---|---:|---:|---:|
+| Tahoe | 16.8% | 13.5 | 48 |
+| LINCS | 43.8% | 4.15 | 14 |
+
+Rank one would be 1 of 48 (2%) and 1 of 14 (7%). Neither is close. **The
+qualitative claim replicates on an independent platform.**
+
+And within LINCS the dimensionality **grows with the number of contexts
+measured** — slope 0.05 directions per line, *r* = +0.55, *P* = 10⁻⁶⁴. The
+interaction does not saturate at a fixed set of context programmes; measure more
+lines and you find more directions. That has a direct modelling consequence: a
+model with a fixed low-dimensional context latent cannot be made adequate by
+adding data, because the target grows with the data.
+
+### What does not replicate
+
+**The two platforms do not agree quantitatively.** As a share of the lines
+available, LINCS gives 17% and Tahoe 28%. That is a real disagreement, plausibly
+from LINCS's within-plate z-scoring removing part of what Tahoe's residual
+retains, and from the threefold difference in lines per combination. Only the
+ordering-versus-rank-one survives; the number itself does not transfer.
+
+### What more data did *not* fix
+
+**The per-class ordering is still unresolved.** With 23 classes instead of six,
+the bootstrap intervals on effective dimensionality still overlap between the
+most and least rewiring-like class:
+
+| class | effective directions | 95% CI |
+|---|---:|---|
+| HDAC inhibitor | 6.7 | [4.8, 7.5] |
+| protein synthesis inhibitor | 6.5 | [4.0, 6.6] |
+| mTOR inhibitor | 5.3 | [4.8, 6.2] |
+| … | | |
+| MEK inhibitor | 3.3 | — |
+| EGFR inhibitor | 3.2 | — |
+
+**This is the informative part.** A six-fold increase in combinations and a
+four-fold increase in classes did not separate them, so the limitation flagged in
+§41 is not a sample-size problem — between-class differences in dimensionality
+are genuinely small relative to within-class spread. The per-class ranking in
+§41 should be **dropped rather than caveated**; what is supported is the pooled
+statement that every class sits far from rank one.
+
+Protein synthesis inhibitors, which had one combination in Tahoe and motivated
+the potency hypothesis §41 refuted, have four here and sit near the top (6.5
+directions) — consistent with rewiring rather than potency, which is what §41
+concluded from the pooled data.
+
+### A note on bugs
+
+Two more instances of the same error class appeared here and are worth recording
+together, because it has now happened three times: a DataFrame column named
+`ndim` shadows the `.ndim` attribute (which is the integer 2), exactly as a
+column named `shift` shadowed `.shift` in §31's dose analysis. Attribute access
+on a DataFrame is not a safe way to read a column whose name might collide with
+pandas' own API, and every such access in these scripts has been changed to
+bracket indexing.
 
 ## Reproducing
 

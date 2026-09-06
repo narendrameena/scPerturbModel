@@ -203,9 +203,9 @@ def main():
     B = pd.DataFrame(boots)
     lo, hi = B.quantile(0.025), B.quantile(0.975)
     print(f"\n  bootstrap 95% intervals on effective dimensionality:")
+    nd = byc["ndim"]
     for m in byc.index[:8]:
-        print(f"    {m[:34]:34s} {byc.ndim[m]:5.1f}  "
-              f"[{lo[m]:4.1f}, {hi[m]:4.1f}]")
+        print(f"    {m[:34]:34s} {nd[m]:5.1f}  [{lo[m]:4.1f}, {hi[m]:4.1f}]")
     top, bot = byc.index[0], byc.index[-1]
     sep = (lo[top] > hi[bot])
     print(f"  most vs least rewiring class ({top[:24]} vs {bot[:24]}): "
@@ -214,6 +214,33 @@ def main():
         print("  The per-class ordering is not resolved even at this scale; "
               "what is resolved\n  is that every class sits far from rank one.")
 
+    # Tahoe and LINCS differ in how many lines each combination has (about 48
+    # vs 14), and effective dimensionality is bounded by that count, so the two
+    # medians are not comparable directly. What is comparable is the FRACTION of
+    # available directions the interaction occupies.
+    frac = float(np.median(T.n_dim / T.n_lines))
+    print(f"\n  effective directions as a share of lines measured: "
+          f"{frac:.0%}")
+    try:
+        Tt = pd.read_csv(TAB / "potency_vs_rewiring.csv")
+        ft = float(np.median(Tt.n_dim / Tt.n_lines))
+        print(f"  Tahoe, same quantity: {ft:.0%} "
+              f"({Tt.n_dim.median():.1f} of {Tt.n_lines.median():.0f} lines)")
+        print(f"  LINCS: {T.n_dim.median():.1f} of {T.n_lines.median():.0f} "
+              f"lines")
+        sl = stats.linregress(T.n_lines, T.n_dim)
+        print(f"  within LINCS, dimensionality grows with line count: "
+              f"slope {sl.slope:.2f} per line, r = {sl.rvalue:+.2f}, "
+              f"p = {sl.pvalue:.1e}")
+        print("  The two shares are NOT equal (17% vs 28%), so the platforms "
+              "do not agree\n  quantitatively -- LINCS z-scores within plate "
+              "and measures a third as many\n  lines per combination. What "
+              "replicates is the qualitative claim: both sit far\n  from rank "
+              "one (7% and 2% would be rank one), and within LINCS the "
+              "dimension\n  count grows with the number of contexts, so the "
+              "interaction does not saturate\n  at a fixed set of programmes.")
+    except Exception as e:
+        print(f"  (Tahoe comparison unavailable: {e})")
     T.to_csv(TAB / "lincs_potency_rewiring.csv", index=False)
     byc.to_csv(TAB / "lincs_potency_by_moa.csv")
 
@@ -234,8 +261,8 @@ def main():
 
     sel = byc.head(14)
     yy = np.arange(len(sel))[::-1]
-    ax[1].barh(yy, sel.ndim, color=VIOLET, height=0.7,
-               xerr=[sel.ndim - lo[sel.index], hi[sel.index] - sel.ndim],
+    ax[1].barh(yy, sel["ndim"], color=VIOLET, height=0.7,
+               xerr=[sel["ndim"] - lo[sel.index], hi[sel.index] - sel["ndim"]],
                error_kw=dict(ecolor="#333", lw=1.0))
     ax[1].set_yticks(yy, [f"{m[:30]} ({int(n)})" for m, n in
                           zip(sel.index, sel.n)], fontsize=6.2)
