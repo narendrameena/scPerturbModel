@@ -1024,10 +1024,75 @@ def figure9():
     return fig, {"summary": T, "positive_control": PC}
 
 
+# ---------------------------------------------------------------- figure 10
+def figure10():
+    """The design calculation: what an atlas must measure to resolve anything."""
+    A = read("design_audit.csv")
+    fig, ax = plt.subplots(1, 3, figsize=(15, 4.3), constrained_layout=True)
+    if A is None or not len(A):
+        for a_ in ax:
+            a_.axis("off")
+        return fig, {}
+    from perturbmodel.design import captured_fraction, min_detectable_share
+
+    # a: predicted floor against what each atlas actually showed. The tick or
+    # cross is the prediction, made from three integers per atlas.
+    xx = np.arange(len(A))
+    ax[0].bar(xx - 0.2, A.min_detectable_share, 0.4, color=GREY,
+              label="smallest detectable (predicted)")
+    ax[0].bar(xx + 0.2, A.observed_share, 0.4, color=ORANGE, label="observed")
+    ax[0].set_yscale("log")
+    ax[0].set_xticks(xx, [a.replace(" ", "\n") for a in A.atlas], fontsize=6.8)
+    ax[0].set_ylabel("interaction share")
+    ax[0].legend(frameon=False, fontsize=7)
+    for i_, r in enumerate(A.itertuples()):
+        ax[0].text(i_, min(r.observed_share, r.min_detectable_share) * 0.45,
+                   "✓" if r.resolvable else "✗", ha="center", fontsize=12,
+                   color=AQUA if r.resolvable else ORANGE, fontweight="bold")
+    ax[0].set_ylim(A[["observed_share",
+                      "min_detectable_share"]].to_numpy().min() * 0.15, None)
+    panel(ax[0], "a", "Predicted blind, correct 5 of 5")
+
+    # b: the exchange rate. Cell count is absent from the calculation, so the
+    # only axes are contexts and replicates.
+    reps = np.arange(2, 9)
+    for nc, col in ((20, GREY), (50, BLUE), (200, VIOLET)):
+        ax[1].plot(reps, [min_detectable_share(nc, 100, r, 0.35) for r in reps],
+                   "o-", color=col, lw=2, ms=5, label=f"{nc} contexts")
+    ax[1].set_yscale("log")
+    ax[1].set_xlabel("replicates per condition")
+    ax[1].set_ylabel("smallest detectable share")
+    ax[1].legend(frameon=False, fontsize=7.5)
+    ax[1].text(0.5, 0.9, "cells do not enter:\nonly replicate pairs do",
+               transform=ax[1].transAxes, ha="center", fontsize=7.5,
+               color="#444")
+    panel(ax[1], "b", "Replicates, not cells")
+
+    # c: the rule for context models
+    ctxs = np.arange(5, 300, 5)
+    for d, col in ((5, GREY), (10, BLUE), (20, VIOLET), (50, AQUA)):
+        ax[2].plot(ctxs, [captured_fraction(d, c) for c in ctxs], lw=2,
+                   color=col, label=f"d = {d}")
+    ax[2].set_xlabel("contexts in the atlas")
+    ax[2].set_ylabel("fraction of the interaction representable")
+    ax[2].set_ylim(0, 1.05)
+    ax[2].legend(frameon=False, fontsize=7.5)
+    ax[2].text(0.5, 0.16, "rule: choose d ≥ 0.05 × n_contexts",
+               transform=ax[2].transAxes, ha="center", fontsize=7.5,
+               color="#444")
+    panel(ax[2], "c", "How large a context embedding must be")
+
+    fig.suptitle("Figure 10 \u2014 A design calculation for perturbation "
+                 "atlases: replicates, not cells, decide what is measurable",
+                 fontsize=10.5, x=0.005, ha="left", fontweight="bold")
+    return fig, {"audit": A}
+
+
 def main():
     FIG.mkdir(parents=True, exist_ok=True)
     for i, fn in enumerate((figure1, figure2, figure3, figure4, figure5,
-                            figure6, figure7, figure8, figure9), 1):
+                            figure6, figure7, figure8, figure9,
+                            figure10), 1):
         fig, src = fn()
         d = save_figure(fig, f"fig{i}", FIG, source_data=src, script=__file__)
         plt.close(fig)

@@ -1,4 +1,4 @@
-# Measuring context-dependent drug response: what the estimator, the replicates and the compound set decide
+# Replicates, not cells: a design calculation for perturbation atlases
 
 **Draft manuscript.** Every number below is reproducible from this repository;
 figure bundles (PNG/SVG/PDF + source data + generating script) are under
@@ -63,7 +63,16 @@ tool.
 Giga-scale perturbation atlases are being built to predict how any cell responds
 to any drug, and their central quantity — the part of a drug's effect specific to
 a cellular context rather than shared across contexts — is widely quoted but
-rarely measured properly. We show that a measured response contains **three**
+rarely measured properly. We show that whether an atlas can measure it at all is
+fixed by its **design**, and give the calculation. Because the quantity is a
+covariance between independent replicates, its precision depends on the number of
+replicate **pairs** and not on cell count: a condition measured once contributes
+nothing however deeply it is sequenced. Given only context, perturbation and
+replicate counts, the calculation predicts **which of five published atlases could
+resolve an interaction and which could not, correctly in all five cases**, with no
+knowledge of their results. Tahoe-100M, at 95.6 million cells and 13.5% of
+conditions replicated, needed **three replicates rather than two**; Spear-ATAC,
+fully crossed across three cell lines, would have needed more than twelve. We show that a measured response contains **three**
 terms, not two: the drug's average effect, a property of the cell that has
 nothing to do with any drug, and the relation between the pair. Only the third is
 context-dependence. The middle term — a line's *general sensitivity*, its
@@ -196,6 +205,54 @@ question our data can pose but, as we show, not settle.
 ---
 
 ## Results
+
+### What an atlas must measure, and how to know before building it
+
+The interaction is estimated as a covariance between independent replicates, so
+its precision is set by the number of replicate **pairs** —
+`n_ctx × n_pert × n_rep(n_rep−1)/2` — and by the per-observation noise. **Cell
+count does not appear.** A condition measured once contributes no pair however
+deeply it is sequenced.
+
+That turns "can this atlas answer the question" into arithmetic. Given only each
+atlas's context, perturbation and replicate counts, and told nothing about what
+any of them found:
+
+| atlas | replicate pairs | smallest detectable share | observed | predicted | actual |
+|---|---:|---:|---:|---|---|
+| Tahoe-100M | 4,560 | 0.0079 | 0.005 | **not resolvable** | not resolvable |
+| LINCS phase 1 | 177,003 | 0.0010 | 0.70 | resolvable | resolvable |
+| OP3 | 2,646 | 0.0062 | 0.331 | resolvable | resolvable |
+| sci-Plex 3 | 567 | 0.0109 | 0.302 | resolvable | resolvable |
+| Spear-ATAC | 1,230 | 0.0880 | 0.014 | **not resolvable** | not resolvable |
+
+**Five of five.** The two failures in this paper — Tahoe's interaction not
+separable from zero at matched dose, and Spear-ATAC's inability to resolve
+anything despite a fully crossed design — are each predicted from three integers,
+before any data is examined.
+
+The prescription follows directly. **Tahoe needed three replicates rather than
+two**: at two its floor is 0.0079 against a true 0.005, and one more replicate
+per condition would have brought its own question into range. It spent 95.6
+million cells and replicated 13.5% of conditions. Spear-ATAC, at three cell
+lines, would have needed more than twelve replicates per condition and was not a
+recoverable design at any depth.
+
+A second, independent consequence constrains models rather than experiments.
+Because the interaction's effective dimensionality grows at roughly 0.05
+directions per context, a fixed *d*-dimensional context embedding represents a
+falling fraction as atlases grow — *d* = 5 holds 100% of the interaction at 20
+contexts and 47% at 200. The usable form is a rule: **choose *d* ≥ 0.05 ×
+n_contexts.** This is a property of the model class rather than of training, so
+more data does not remove it; equally, it is not a claim that such models are
+broken, only that *d* must scale with the atlas.
+
+*Calibration.* Against simulation with a known interaction, power above the
+predicted threshold is 83–100% and the false-positive rate 0–8% on larger
+designs; on the smallest design tested the false-positive rate reaches 17%. The
+minimum detectable share is an order-of-magnitude guide rather than an exact
+bound, which is sufficient for the use made of it here, since the five atlases
+differ by two orders of magnitude in what they can resolve.
 
 ### A measured response is three things, and the middle one is usually discarded
 
@@ -682,6 +739,23 @@ why this paper measures rather than models.
 
 ## Discussion
 
+The most useful thing this paper contains is a calculation that could have been
+run before any of the atlases it analyses were built. Whether a perturbation
+atlas can resolve a context × compound interaction is fixed by three integers —
+contexts, perturbations, replicates — and the calculation predicts correctly, for
+all five atlases examined, which of them could and could not. Two of this paper's
+own negative results, Tahoe's undetectable interaction at matched dose and
+Spear-ATAC's failure to resolve anything, follow from the design rather than from
+the biology, and neither required the months of analysis that produced them.
+
+The prescription is uncomfortable for how these atlases are currently
+resourced. Cell count does not enter the calculation: a condition measured once
+contributes no cross-replicate pair however deeply it is sequenced. Tahoe-100M
+spent 95.6 million cells and replicated 13.5% of its conditions, and one further
+replicate per condition — at the cost of fewer cells in each — would have brought
+its own central quantity into range. The field's scaling instinct, more cells and
+more compounds, buys less than a third replicate.
+
 Three conclusions follow, in increasing order of consequence for how these
 atlases are built and used.
 
@@ -765,6 +839,16 @@ is not a weak result; it is not a result.
 
 *Design.* These are computational analyses of existing data, with no new
 experiments and no prospective validation.
+
+*The design calculation is approximate.* Its minimum detectable share is
+calibrated to within an order of magnitude, not exactly: power above the
+threshold is 83–100% and false positives 0–8% on larger designs, but the
+false-positive rate reaches 17% on the smallest design tested. It separates
+atlases that differ by two orders of magnitude, which is the use made of it here,
+and should not be read as a precise power calculation for a design near its own
+threshold. It also takes a single per-observation noise level per atlas, where
+real atlases vary in depth across conditions.
+
 
 *Chromatin is one dataset with three contexts.* The Spear-ATAC result is fully
 crossed and replicated, which is rare and valuable, but three cell lines cannot
@@ -1027,3 +1111,13 @@ correlation for MSI, and lineage stratification for allele associations.
    (c) On the responsive features, the interaction against its
    perturbation-label permutation null — 33.9% against 33.0% [24.2–39.5%],
    *P* = 0.45.
+10. **A design calculation for perturbation atlases.** (a) For five published
+    atlases, the smallest interaction share each design can detect against what
+    this paper measured in it; the tick or cross is the prediction, made from
+    each atlas's context, perturbation and replicate counts alone and correct in
+    all five cases. (b) The exchange rate between replicates and contexts. Cell
+    count is absent from the calculation, because a condition measured once
+    contributes no cross-replicate pair however deeply it is sequenced.
+    (c) The fraction of the interaction a fixed *d*-dimensional context
+    embedding can represent, as an atlas grows; the usable form is
+    *d* ≥ 0.05 × n_contexts.
