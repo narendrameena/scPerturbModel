@@ -150,7 +150,7 @@ statistic should keep.
 
 Applied across four atlases, the corrected interaction is dose-dependent, and
 transcriptional and viability context-dependence show no detectable agreement
-(ρ = −0.18 against PRISM, +0.19 against LINCS phase 1) — though with only 11–12
+(ρ = −0.18 against PRISM, +0.09 against LINCS phase 1) — though with only 11–12
 mechanism classes shared between platforms this is an underpowered comparison,
 not a demonstrated decoupling. Asking what predicts the corrected relation once per
 compound, against that compound's own permutation null with FDR across the
@@ -507,7 +507,7 @@ With every dataset on one corrected estimator, mechanism structures
 context-dependence *within* Tahoe (Kruskal–Wallis *P* = 6.0×10⁻⁴ across 24
 classes) and within PRISM (*P* = 2×10⁻¹⁶ across 67 classes), but we cannot show
 that the ordering transfers. Across the mechanism classes both platforms measure,
-ρ = −0.18 against PRISM viability and +0.19 against LINCS phase 1 — neither
+ρ = −0.18 against PRISM viability and +0.09 against LINCS phase 1 — neither
 significant.
 
 **This is an underpowered comparison, not a demonstrated decoupling.** Only
@@ -543,7 +543,7 @@ sample, across 150 compounds with 5-fold cross-validated ridge:
 **Genome-wide mutation status carries no generalisable information; baseline
 molecular state does.** Expression beats lineage by 4.6× (p = 4.7×10⁻²⁰) and
 lineage adds nothing on top of expression, so lineage was acting as a coarse
-proxy for expression state. Copy number beats mutations (+0.0064, p = 5.7×10⁻⁴),
+proxy for expression state. Copy number appears to beat mutations (+0.0064, p = 5.7×10⁻⁴) — withdrawn under a compound-cluster bootstrap, CI [−0.002, +0.015] —
 as Schlüter & Schönhuth report, but trails expression by 0.088 (p = 3.3×10⁻²¹)
 and adds nothing to it — the joint block scores below expression alone. The
 absolute effect remains modest (≈9% of variance) but is highly consistent across
@@ -581,7 +581,7 @@ residual across the compounds both atlases share — shows the assertion usually
 fails: of 488 COSMIC→DepMap-matched lines, **only 5–12% are their own best
 match**, ranking a median 82nd of 971 candidates. Pairing each line with its
 single best fingerprint match instead of its identifier raises agreement to
-r = 0.427, against 0.241 for identifier matching and 0.048 for a same-tissue
+r = 0.419, against 0.235 for identifier matching and 0.048 for a same-tissue
 random line — an upper bound the atlas's own design does not let us reach. That is far better than chance
 (~486), so identity carries real information; it is simply not unique.
 

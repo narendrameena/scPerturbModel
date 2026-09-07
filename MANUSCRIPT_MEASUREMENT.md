@@ -68,7 +68,7 @@ With every dataset on one corrected estimator, mechanism structures
 context-dependence *within* Tahoe (Kruskal–Wallis *P* = 6.0×10⁻⁴ across 24
 classes) and within PRISM (*P* = 2×10⁻¹⁶ across 67 classes), but we cannot show
 that the ordering transfers. Across the mechanism classes both platforms measure,
-ρ = −0.18 against PRISM viability and +0.19 against LINCS phase 1 — neither
+ρ = −0.18 against PRISM viability and +0.09 against LINCS phase 1 — neither
 significant.
 
 **This is an underpowered comparison, not a demonstrated decoupling.** Only
@@ -91,6 +91,14 @@ with alpelisib, KRAS with a MEK inhibitor; 80 associations at FDR < 0.05 over 1.
 million tests), confirming the estimator and the genotype join. But out of
 sample, across 150 compounds with 5-fold cross-validated ridge:
 
+> ⚠ **Unverified table.** These values come from a 150-compound run whose output
+> table is not in `results/tables/`, so they could not be checked in the
+> 2026-09-07 number audit. The traceable analysis in `RESULTS.md` is a
+> **120**-compound version restricted to lines on which every block is measurable,
+> and it gives baseline expression **+0.0927 / 92.5%**, not +0.0998 / 99.2%.
+> Regenerate before use. Note also that 99.2% elsewhere in this project denotes a
+> different statistic — 119/120 compounds beating their own permutation null.
+
 | predictor block | median CV *R*² | compounds positive |
 |---|---|---|
 | **baseline expression** (2,000 genes) | **+0.0998** | **99.2%** |
@@ -104,9 +112,13 @@ sample, across 150 compounds with 5-fold cross-validated ridge:
 **Genome-wide mutation status carries no generalisable information; baseline
 molecular state does.** Expression beats lineage by 4.6× (p = 4.7×10⁻²⁰) and
 lineage adds nothing on top of expression, so lineage was acting as a coarse
-proxy for expression state. Copy number beats mutations (+0.0064, p = 5.7×10⁻⁴),
-as Schlüter & Schönhuth report, but trails expression by 0.088 (p = 3.3×10⁻²¹)
-and adds nothing to it — the joint block scores below expression alone. The
+proxy for expression state. Copy number appears to beat mutations (+0.0064, p = 5.7×10⁻⁴), as Schlüter &
+Schönhuth report, **but that advantage is withdrawn**: the 150 compounds were
+treated as independent when their residuals correlate at mean r = +0.23, an
+effective n ≈ 11, and a compound-cluster bootstrap returns CI [−0.002, +0.015],
+including zero. What survives is that copy number trails expression by 0.088 (p
+= 3.3×10⁻²¹) and adds nothing to it — the joint block scores below expression
+alone. The
 absolute effect remains modest (≈9% of variance) but is highly consistent across
 compounds. Using synonymous variants as a
 control — silent changes cannot alter a protein but carry identical ancestry,
@@ -115,8 +127,9 @@ same 3,435 genes — isolates a genuinely mechanistic excess of **+0.0036**
 (*P* = 0.025), about 0.3% of the interaction variance.
 
 Subsampling the confirmed PRISM associations quantifies why line-level tests fail
-in smaller atlases: recovery is 4% at 47 cell lines, 45% at 250, 72% at 400 and
-96% at 600. The genotype negatives reported in 47-line atlases are a power
+in smaller atlases: recovery is 5% at 47 cell lines, 40% at 250, 78% at 400 and
+100% at 600 (the 600-line row is over 9 associations rather than 12, the rest
+over 12). The genotype negatives reported in 47-line atlases are a power
 ceiling, not a biological absence.
 
 Screening 111,589 allele × compound tests for associations that are *not* known
@@ -142,7 +155,7 @@ residual across the compounds both atlases share — shows the assertion usually
 fails: of 488 COSMIC→DepMap-matched lines, **only 5–12% are their own best
 match**, ranking a median 82nd of 971 candidates. Pairing each line with its
 single best fingerprint match instead of its identifier raises agreement to
-r = 0.427, against 0.241 for identifier matching and 0.048 for a same-tissue
+r = 0.419, against 0.235 for identifier matching and 0.048 for a same-tissue
 random line — an upper bound the atlas's own design does not let us reach. That is far better than chance
 (~486), so identity carries real information; it is simply not unique.
 
