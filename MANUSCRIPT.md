@@ -782,7 +782,7 @@ can achieve.
 
 **The baseline they must beat depends on how many contexts it averages.** The
 perturbation-mean prediction improves monotonically with the number of contexts
-it is estimated from: r = 0.557 at 2 contexts, 0.592 at 3, 0.625 at 6, 0.660 at
+it is estimated from: r = 0.550 at 2 contexts, 0.592 at 3, 0.625 at 6, 0.654 at
 18 and 0.666 at 45. A model that is *equally good everywhere* would therefore
 appear **21% stronger** against a 2-context baseline than against an 18-context
 one.

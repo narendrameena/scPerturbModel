@@ -117,10 +117,12 @@ thinning sooner, and this experiment does not measure how much sooner.
 
 *Calibration.* Against simulation with a known interaction, power above the
 predicted threshold is 83–100% and the false-positive rate 0–8% on larger designs;
-on the smallest design tested the false-positive rate reaches 17%. The minimum
-detectable share is an order-of-magnitude guide rather than an exact bound, which
+on the smallest design tested the false-positive rate reaches 17%. The threshold is
+also not sharp from below: on some designs an effect *beneath* the predicted floor
+is still detected up to 75% of the time, so the floor is conservative rather than
+exact. The minimum detectable share is therefore an order-of-magnitude guide, which
 suffices here because the five atlases differ by two orders of magnitude in what
-they can resolve.
+they can resolve — but it should not be read as a precise boundary.
 
 ### One dataset in thirty-eight can support the estimate at all
 
@@ -243,12 +245,15 @@ training convention that drops plate 14, a designed replicate of plate 6, that
 falls to **5.4%**.
 
 Pairing across doses instead of across true replicates — the natural substitute
-when replicates appear unavailable — **doubles the reported interaction**, from
-11.5% to 20.7%, because two doses of the same compound in the same line share the
-compound's dose–response shape and that shared shape enters the covariance as if
-it were context-specific. At matched dose Tahoe's pooled interaction is **0.5%
-[0.0–1.5%], *P* = 0.10**: not detectable, exactly as the design calculation
-predicts from its 4,560 pairs.
+when replicates appear unavailable — inflates the estimate from **0.5%
+[0.0–1.5%], *P* = 0.10** at matched dose to **9.2%**: from a value not
+distinguishable from zero to a clearly non-zero one. Two doses of the same
+compound in the same line share the compound's dose–response shape, and that
+shared shape enters the covariance as if it were context-specific. (Both figures
+are from the corrected estimator. Under the uncorrected one the same substitution
+reads 11.5% → 20.7%, a doubling; the correction moves both levels but not the
+direction.) The matched-dose value being indistinguishable from zero is exactly
+what the design calculation predicts from Tahoe's 4,560 pairs.
 
 This is the failure mode the calculation is meant to prevent. The atlas was built
 at a scale that made the question look answerable, the replicate structure needed
@@ -269,9 +274,10 @@ of the model class rather than of training, so more data does not remove it.
 
 **Benchmarks must report the context count behind their mean baseline.** The
 perturbation-mean prediction improves monotonically with the number of contexts it
-is estimated from: *r* = 0.557 at 2 contexts, 0.592 at 3, 0.625 at 6, 0.660 at 18,
-0.666 at 45. A model equally good everywhere appears **21% stronger** against a
-2-context baseline than against an 18-context one. State (Adduri et al., *Cell*
+is estimated from: *r* = 0.550 at 2 contexts, 0.592 at 3, 0.625 at 6, 0.654 at 18,
+0.666 at 45. A model equally good everywhere appears **19% stronger** against a
+2-context baseline than against an 18-context one, and 21% stronger than against a
+45-context one. State (Adduri et al., *Cell*
 2026) evaluates across five query datasets whose mean baselines are built from 2,
 2, 3, 5 and 17 contexts, and reports its largest gains on the smallest. This is a
 **partial** confound — a ~19-point differential runs in the reported direction but

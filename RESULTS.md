@@ -1405,9 +1405,10 @@ directly consequential for how model gains are read.
 | 18 | 0.654 | **1.7%** |
 | 45 | 0.666 | 0% |
 
-A model that is **exactly as good in every dataset** would appear ~21% stronger
-against a baseline built from 2 contexts than against one built from 18, purely
-because the baseline is worse. Nothing about the model changes.
+A model that is **exactly as good in every dataset** would appear ~19% stronger
+against a baseline built from 2 contexts than against one built from 18 (0.550 vs
+0.654), and ~21% stronger than against one built from 45, purely because the
+baseline is worse. Nothing about the model changes.
 
 **This bears directly on State** (Adduri et al., *Cell* 2026), the current state
 of the art. Its zero-shot arm holds out one context at a time across five query
