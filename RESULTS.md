@@ -25,6 +25,42 @@
 > is withdrawn (§17), and two dose-mechanism tests sit at their permutation
 > null (§22).
 
+## ⚠ Superseded-value index (2026-09-07 sweep)
+
+This file is a chronological record: later sections correct earlier ones, and the
+earlier text is deliberately left in place so the record of what was believed when
+survives. That is fine for a notebook and dangerous for anything drawn from it —
+the manuscript audits of 2026-09-07 found seven wrong numbers, **every one of them
+a superseded value copied out of a section that had not been re-run**.
+
+This index lists every quantity known to be superseded, so a claim can be checked
+here before it is quoted. Where a stale value states a *reversed conclusion* it is
+also marked inline at its location.
+
+| quantity | stale value (and where) | current value | source of truth |
+|---|---|---|---|
+| assay vs laboratory share of cross-lab loss | **lab 84% / assay 16%**, §14 (L1130–1133), summary table (L1232), Limitations (L1241) | **assay 81% / lab 19%**, lab CI [−6%, 38%] includes zero | `results/tables/cross_lab_summary.csv` |
+| identity-validated transfer | 87% / 87.3% [69.5–102.9%] (L1013, L1116, L1231, L1239) | **98.0% [47.0–116.2%]** vs a matched ceiling | same |
+| cross-lab reproducible fraction, all lines | 56% / 56.1% (L1013, L1116, L1230) | **57.9%** | same |
+| reliability-matched control | 59% (L1548) | **49%** | same |
+| Tahoe interaction, same-dose | 11.5% (L771, L1226) | **0.5% [0.0–1.5%], _P_ = 0.10** | §31 |
+| Tahoe interaction, cross-dose | 20.7% (L772, L1227) | **9.2%** | §31 |
+| copy number beats mutations | +0.0064, _p_ = 5.7×10⁻⁴ asserted at L948 | **withdrawn** — cluster bootstrap CI [−0.002, +0.015] | §17, L1549 |
+| PRISM cell-line count | 738 (L103, L567, L579, L884) | **737** — one line was a parsing artefact, and 10 carry `FAILED_STR` | §25 correction, L1541 |
+| readout-decoupling power | "67 shared classes, a well-powered null" (L114, L659) | **11–12 classes**; an absence of evidence, not a demonstrated null | §31, L1889 |
+| single allele explains median 5.5% of an interaction | 5.5% | withdrawn (in-sample) | L886, already marked inline |
+
+### One quantity is currently irreproducible
+
+The mechanism ranking of Tahoe against LINCS phase 1 is quoted as **+0.09**
+(§16 table, L872) and as **+0.19** (§31 prose, L1891). The only saved table,
+`results/tables/three_platform_mechanism_cdi.csv`, reproduces **+0.558** (n = 10,
+_p_ = 0.093) — which is the *pre-correction* value that §16 explicitly retires.
+**The post-correction run's output was never saved, so neither +0.09 nor +0.19 can
+be reproduced from this repository.** All three values are null at n = 10, so no
+conclusion turns on it, but the point estimate should not be quoted until the
+comparison is re-run and its table committed.
+
 Modelling drug-perturbation response in **Tahoe-100M** (Zhang et al. 2025,
 [doi:10.1101/2025.02.20.639398](https://doi.org/10.1101/2025.02.20.639398)).
 All numbers below are reproducible from this repository; every figure is a
@@ -100,7 +136,7 @@ differentially expressed genes.
     replicates; every line-level predictor we tried failed — plausibly one
     power ceiling hit four times rather than four separate biological
     negatives (§10).
-11. **PRISM proves it.** At 738 cell lines the genotype x compound scan recovers
+11. **PRISM proves it.** At 737 cell lines the genotype x compound scan recovers
     the clinical biomarker set de novo (TP53/MDM2i, BRAF/vemurafenib,
     PIK3CA/alpelisib, KRAS/MEKi; 80 hits at FDR<0.05). Subsampling those same
     associations to **47 lines recovers 4% of them**; 80% power needs **~400
@@ -564,7 +600,7 @@ of distinct cellular contexts profiled**. A follow-up atlas with 500 lines and
 one-tenth the cells per condition would answer the questions this one cannot.
 
 **§11 tests that recommendation rather than leaving it as a hunch.** Repeating
-the genotype scan in PRISM at 738 cell lines recovers the effects that fail
+the genotype scan in PRISM at 737 cell lines recovers the effects that fail
 here, and subsampling it back down shows they become invisible at 47 — putting
 the required context count at ~400 for 80% power.
 
@@ -576,7 +612,7 @@ ceiling hit four times, but that argument could not be closed from Tahoe alone �
 the same test at a context count where a true effect *must* show.
 
 **PRISM Repurposing** (Corsello et al. 2020) supplies it: pooled viability for
-**738 cell lines x ~1,500 compounds x 8 doses** on replicate detection plates,
+**737 cell lines x ~1,500 compounds x 8 doses** on replicate detection plates,
 with DepMap mutation calls for 1,257 of those lines. The phenotype is a scalar
 rather than a transcriptome, but the decomposition is unchanged — the
 leave-one-line-out shared response, and an interaction estimated as the
@@ -656,8 +692,9 @@ and ten classes is still thin. MEK inhibitors (0.464) and glucocorticoid recepto
 agonists (0.452, n=31) sit at the context-specific end in both.
 
 **PRISM does not.** Against the same ranking, viability gives
-**rho = −0.18 to −0.23 (n.s.)** versus Tahoe, and — with 67 shared classes, so
-this is *not* an underpowered comparison — **rho = −0.09 (n.s.)** versus LINCS
+**rho = −0.18 to −0.23 (n.s.)** versus Tahoe, and — **⚠ the "not underpowered" reading here is superseded by §31: only 11–12
+classes clear the minimum class size on both platforms, and at that n even
+ρ = 0.6 would not reach significance** — **rho = −0.09 (n.s.)** versus LINCS
 phase 1. A consensus transcriptional rank built from Tahoe and LINCS correlates
 with viability at rho = −0.19 (p = 0.13, n = 69).
 
@@ -881,7 +918,7 @@ corrected one — it should not be cited.
 
 ## 17. Genotype has no cross-validated predictive power; lineage has a little
 
-§11 showed that at 738 cell lines the genotype scan recovers the clinical
+§11 showed that at 737 cell lines the genotype scan recovers the clinical
 biomarker set, and reported that a single allele explains a median 5.5% of a
 compound's interaction. **That 5.5% figure was in-sample and is withdrawn** — it
 was a point-biserial R² for an allele chosen on the same data, so selection
@@ -944,9 +981,10 @@ antibodies) under the identical cross-validated ridge, over 120 compounds:
 | copy number + expression | +0.0768 | 87.5% | 1.2×10⁻¹⁷ |
 
 **Copy number confirms Schlüter & Schönhuth (2025) in relative terms and refutes
-them in absolute ones.** On the 120 compounds where all blocks are measurable on
-identical lines, copy number does beat mutations (+0.0064, p = 5.7×10⁻⁴) — their
-claim holds — but it trails expression by a wide margin (−0.0880, p = 3.3×10⁻²¹).
+them in absolute ones.** On the 120 compounds where all blocks are measurable on identical lines,
+copy number appears to beat mutations (+0.0064, p = 5.7×10⁻⁴) — **but this
+advantage is withdrawn (§17): a compound-cluster bootstrap gives CI
+[−0.002, +0.015], which includes zero** — but it trails expression by a wide margin (−0.0880, p = 3.3×10⁻²¹).
 Copy number also *adds nothing over expression*: the joint block (+0.0768) scores
 **below** expression alone (+0.0927), the 2,000 extra largely uninformative
 predictors diluting the fit even under cross-validation. The ordering is
@@ -1129,6 +1167,13 @@ same institution over different concentration ranges (GDSC1 0.0004–16 µM, GDS
 | same lab, **different assay version** | 0.438 | −0.035 (**16%** of the drop) |
 | **different laboratory** and assay | 0.255 | −0.183 (**84%** of the drop) |
 
+> **⚠ SUPERSEDED — this conclusion is inverted.** Computed on the 1,435 / 123 /
+> 187 *different* compounds each rung happened to cover. On the compounds all
+> three rungs share it reverses: **assay 81%, laboratory 19%**, with the
+> laboratory CI [−6%, 38%] including zero. See the superseded-value index and
+> `results/tables/cross_lab_summary.csv`. The sentence below is left in place as
+> the record of what was believed; do not quote it.
+
 **Changing the assay within one laboratory costs 16% of the total loss; changing
 laboratory costs the remaining 84%.** The limitation is now partial rather than
 total: this is two points on a ladder, not a factorial design, and a cross-lab
@@ -1238,10 +1283,13 @@ both intervals cross or approach 100%, which changes how they should be stated:
 - After identity validation, cross-laboratory agreement is **statistically
   indistinguishable from the within-laboratory ceiling** (87.3%, CI 69.5–102.9%).
   That is a cleaner claim than "87%".
-- The laboratory accounts for 84% of the loss with a CI of 72–106%, so **the
+- ~~The laboratory accounts for 84% of the loss with a CI of 72–106%, so **the
   assay contribution is not distinguishable from zero**. The direction of the
   claim strengthens — protocol is not the problem — while the precise 84/16 split
-  should not be quoted as if resolved.
+  should not be quoted as if resolved.~~
+  **⚠ SUPERSEDED and reversed.** On a matched compound set it is assay 81% /
+  laboratory 19%, and it is the *laboratory* share whose CI [−6%, 38%] includes
+  zero. Protocol is the larger term, not the smaller one.
 
 A sampling bug is recorded here because it produced a plausible wrong answer: the
 first version kept the *first* 200,000 cross-replicate pairs for the bootstrap,

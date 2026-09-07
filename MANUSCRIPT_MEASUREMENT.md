@@ -68,8 +68,12 @@ With every dataset on one corrected estimator, mechanism structures
 context-dependence *within* Tahoe (Kruskal–Wallis *P* = 6.0×10⁻⁴ across 24
 classes) and within PRISM (*P* = 2×10⁻¹⁶ across 67 classes), but we cannot show
 that the ordering transfers. Across the mechanism classes both platforms measure,
-ρ = −0.18 against PRISM viability and +0.09 against LINCS phase 1 — neither
-significant.
+ρ = −0.18 against PRISM viability (n = 11) and a null against LINCS phase 1 (n =
+10) — neither significant. [The LINCS point estimate is quoted as +0.09 in §16
+and +0.19 in §31 of RESULTS.md, and the only saved table reproduces the pre-
+correction +0.56; the post-correction run's output was not committed, so no
+point estimate is given here until it is re-run. All candidate values are null
+at n = 10.]
 
 **This is an underpowered comparison, not a demonstrated decoupling.** Only
 **11–12 mechanism classes** clear the minimum class size on both platforms, and

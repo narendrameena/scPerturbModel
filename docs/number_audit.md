@@ -228,3 +228,101 @@ when a correction was recorded in a status banner but never propagated into the
 Results text. Two practical consequences: generate such sentences from tables
 where possible, and treat any claim carrying a withdrawal note in one place as
 requiring a search for every other place it is stated.
+
+---
+
+# Withdrawal-propagation sweep of `RESULTS.md`
+
+**2026-09-07.** Both manuscript audits found the same mechanism: a correction
+recorded in one place, never propagated to the other places the claim appears.
+`RESULTS.md` (3,313 lines) is the source both papers draw from and the one file
+neither audit checked against anything. This sweep takes every withdrawal or
+supersession marker in it and asks whether the withdrawn claim is still asserted
+elsewhere in the same file.
+
+**13 withdrawal markers. 9 of the withdrawn claims are still asserted somewhere
+in the file, 4 of them in text carrying no supersession banner at all.**
+
+## The serious findings
+
+### 1. A reversed conclusion, stated twice as a considered nuance
+
+§14 says: *"Changing the assay within one laboratory costs 16% of the total loss;
+changing laboratory costs the remaining 84%."* The Limitations then reasons from
+it: *"the assay contribution is not distinguishable from zero… protocol is not the
+problem."*
+
+Both are **inverted**. On a matched compound set it is **assay 81% / laboratory
+19%**, and it is the *laboratory* share whose CI [−6%, 38%] includes zero
+(`cross_lab_summary.csv`: 0.8089 / 0.1911). Protocol is the larger term, not the
+smaller one — the opposite of what the Limitations concludes.
+
+§31 (line ~1896) explicitly records that this "was still inverted in three places
+— the Discussion, the Limitations and a Results paragraph — despite having been
+corrected in the status banner." **It was still inverted in this file when this
+sweep ran.** The fix had been applied to the manuscript and not to its source.
+
+### 2. The copy-number claim asserted as fact, as in the measurement paper
+
+§17 withdraws it; the §17-adjacent text at line ~948 still read *"copy number does
+beat mutations (+0.0064, p = 5.7×10⁻⁴) — their claim holds"*. Same error, same
+cause, and the direct origin of the measurement paper's worst finding.
+
+### 3. "Not an underpowered comparison" — directly contradicted
+
+§12 argues a null is meaningful because it rests on "67 shared classes, so this is
+*not* an underpowered comparison". §31 establishes that only **11–12** classes
+clear the minimum class size, that the class count was wrong six-fold, and that
+the power claim was unsupportable. §12's sentence stood unmarked.
+
+### 4. The PRISM line count
+
+Corrected to **737** at line ~1541 (one line was a parsing artefact; ten carry
+`FAILED_STR`). "738 cell lines" was still asserted in four separate places,
+including a dataset-description line.
+
+## One quantity is irreproducible, which the sweep found by accident
+
+The mechanism ranking of Tahoe against LINCS phase 1 is quoted as **+0.09** in
+§16's table and **+0.19** in §31's prose. The only saved table,
+`results/tables/three_platform_mechanism_cdi.csv`, recomputes to **+0.558**
+(n = 10, *p* = 0.093) — the *pre-correction* value §16 explicitly retires.
+
+**The post-correction run's output was never committed, so neither +0.09 nor +0.19
+can be reproduced from this repository.** All three candidates are null at n = 10,
+so no conclusion turns on it. But this also means the measurement paper's
+correction earlier today — +0.19 → +0.09, made on the strength of §16's table —
+substituted one unverifiable number for another. That paper now states the null
+without a point estimate and records why.
+
+## What was done
+
+- A **superseded-value index** at the top of `RESULTS.md` listing every known
+  stale quantity, where it still appears, its current value, and its source of
+  truth.
+- **Inline markers** at the four places stating a reversed or retracted
+  conclusion. Stale sentences are struck through and kept, not deleted: the file
+  is a chronological record and destroying it would lose the provenance both
+  papers depend on.
+- The four "738" assertions corrected to 737.
+- The measurement paper's ρ restated as a null without an irreproducible point
+  estimate.
+
+## The pattern, across all three audits
+
+| audit | claims | wrong | unverifiable |
+|---|---:|---:|---:|
+| design paper | 49 | 3 | 0 |
+| measurement paper | 52 | 4 | 1 |
+| `RESULTS.md` sweep | 13 markers | 9 still asserted | 1 |
+
+Every manuscript error traced to a superseded value copied out of a section that
+had not been re-run. The corrections were not missing — they were present, in the
+same file, sometimes on a line explicitly complaining that the fix had not
+propagated. What was missing was any mechanism forcing a correction to reach every
+site of the claim.
+
+Two things would prevent recurrence, and neither is expensive: keep prose that
+restates a table generated from that table, and treat "committed the corrected
+table" as part of the definition of a correction — the irreproducible ρ exists
+because a rerun's output was never saved.
