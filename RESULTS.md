@@ -3024,11 +3024,11 @@ rather than of a fitted parameter.
 
 | atlas | replicate pairs | smallest detectable share | observed | predicted | actual |
 |---|---:|---:|---:|---|---|
-| Tahoe-100M | 4,560 | 0.0079 | 0.005 | **not resolvable** | not resolvable (§31) |
-| LINCS phase 1 | 177,003 | 0.0010 | 0.57 | resolvable | resolvable (§34) |
-| OP3 | 2,646 | 0.0062 | 0.331 | resolvable | resolvable (§35) |
-| sci-Plex 3 | 567 | 0.0109 | 0.302 | resolvable | resolvable (§35) |
-| Spear-ATAC | 1,230 | 0.0880 | 0.014 | **not resolvable** | not resolvable (§35) |
+| Tahoe-100M | 4,560 | 0.0169 | 0.005 | **not resolvable** | not resolvable (§31) |
+| LINCS phase 1 | 177,003 | 0.0027 | 0.57 | resolvable | resolvable (§34) |
+| OP3 | 2,646 | 0.0222 | 0.331 | resolvable | resolvable (§35) |
+| sci-Plex 3 | 567 | 0.0479 | 0.302 | resolvable | resolvable (§35) |
+| Spear-ATAC | 1,230 | 0.0325 | 0.014 | **not resolvable** | not resolvable (§35) |
 
 **Five of five.** Tahoe's headline null (§31) and Spear-ATAC's failure (§35) — two
 results that cost this project weeks and three withdrawn interpretations — are
@@ -3042,7 +3042,7 @@ both predicted from three integers each, before any data is touched.
   the same budget with one more replicate and fewer cells per condition would
   have answered the question it was built for.
 * **Spear-ATAC**: five replicates give a floor of 0.088 against a true 0.014.
-  It would need **more than twelve** replicates per condition at its scale —
+  It would need **eleven** replicates per condition at its scale —
   or many more contexts. With three cell lines it was not a recoverable design.
 
 ### A concrete rule for context models
@@ -3129,9 +3129,9 @@ scale with contexts.
 Tahoe-100M sequenced 95.6 million cells. On this readout it would have obtained
 the same answer from **about 2 million**, and the remaining budget spent on
 contexts and replicates would have moved it from the wrong side of its detection
-threshold (§46: floor 0.0079 against a true 0.005) to the right one. The field's
+threshold (§46: floor 0.0169 against a true 0.005) to the right one. The field's
 scaling instinct — more cells per condition — buys almost nothing for this class
-of question, while the third replicate that Tahoe lacked buys the question itself.
+of question, while the replication Tahoe lacked buys the question itself.
 
 ### The limitation this rests on
 

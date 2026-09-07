@@ -1,3 +1,21 @@
+# ARCHIVED: the combined draft, superseded by two papers
+
+> **This file is no longer the submission draft.** On 2026-09-07 it was split,
+> because at 1,345 abstract words, 13 Results sections and 11 figures it was two
+> papers in one coat and not submittable to any journal in that form.
+>
+> | | file | status |
+> |---|---|---|
+> | **Paper 1** | `MANUSCRIPT_DESIGN.md` | the design calculation, field survey, tool, pre-registration. Abstract 187 words, 5 Results sections, 5 figures. **Ready to work from.** |
+> | **Paper 2** | `MANUSCRIPT_MEASUREMENT.md` | dose, cross-laboratory transfer, genotype, chromatin, remodelling. Results carried over verbatim; **needs its own abstract, introduction and discussion.** |
+>
+> Nothing was discarded in the split. This file is kept because its status
+> banners, revision notes and withdrawal record are the provenance for both
+> papers, and because the Discussion and Limitations sections here are longer
+> than either paper's and worth mining.
+
+---
+
 # Replicates, not cells: a design calculation for perturbation atlases
 
 **Draft manuscript.** Every number below is reproducible from this repository;
@@ -72,8 +90,8 @@ replicate counts, the calculation predicts **which of five published atlases cou
 resolve an interaction and which could not, correctly in all five cases**, with no
 knowledge of their results and one shared noise constant rather than a per-atlas
 value. Tahoe-100M, at 95.6 million cells and 13.5% of
-conditions replicated, needed **three replicates rather than two**; Spear-ATAC,
-fully crossed across three cell lines, would have needed more than twelve. Applied
+conditions replicated, needed **six replicates per condition rather than two**;
+Spear-ATAC, fully crossed across three cell lines, would have needed eleven. Applied
 to every RNA and protein dataset in scPerturb (n = 38), the same calculation finds
 that **one can support the estimate at all**, and that of ten drug screens — where
 context-dependence is the whole question — three use more than one context and one
@@ -226,23 +244,23 @@ any of them found:
 
 | atlas | replicate pairs | smallest detectable share | observed | predicted | actual |
 |---|---:|---:|---:|---|---|
-| Tahoe-100M | 4,560 | 0.0079 | 0.005 | **not resolvable** | not resolvable |
-| LINCS phase 1 | 177,003 | 0.0010 | 0.57 | resolvable | resolvable |
-| OP3 | 2,646 | 0.0062 | 0.331 | resolvable | resolvable |
-| sci-Plex 3 | 567 | 0.0109 | 0.302 | resolvable | resolvable |
-| Spear-ATAC | 1,230 | 0.0880 | 0.014 | **not resolvable** | not resolvable |
+| Tahoe-100M | 4,560 | 0.0169 | 0.005 | **not resolvable** | not resolvable |
+| LINCS phase 1 | 177,003 | 0.0027 | 0.57 | resolvable | resolvable |
+| OP3 | 2,646 | 0.0222 | 0.331 | resolvable | resolvable |
+| sci-Plex 3 | 567 | 0.0479 | 0.302 | resolvable | resolvable |
+| Spear-ATAC | 1,230 | 0.0325 | 0.014 | **not resolvable** | not resolvable |
 
 **Five of five.** The two failures in this paper — Tahoe's interaction not
 separable from zero at matched dose, and Spear-ATAC's inability to resolve
 anything despite a fully crossed design — are each predicted from three integers,
 before any data is examined.
 
-The prescription follows directly. **Tahoe needed three replicates rather than
-two**: at two its floor is 0.0079 against a true 0.005, and one more replicate
+The prescription follows directly. **Tahoe needed six replicates rather than
+two**: at two its floor is 0.0169 against a true 0.005, and one more replicate
 per condition would have brought its own question into range. It spent 95.6
 million cells and replicated 13.5% of conditions. Spear-ATAC, at three cell
-lines, would have needed more than twelve replicates per condition and was not a
-recoverable design at any depth.
+lines, would have needed eleven replicates per condition and was not a
+recoverable design at any practical depth.
 
 A second, independent consequence constrains models rather than experiments.
 Because the interaction's effective dimensionality grows at roughly 0.05

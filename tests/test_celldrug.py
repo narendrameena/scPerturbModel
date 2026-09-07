@@ -422,3 +422,30 @@ def test_gem_groups_are_not_independent_replicates():
     # and the floor difference is the whole verdict
     assert min_detectable_share(2, 2056, 40, 0.20) < 0.001
     assert min_detectable_share(2, 2056, 1, 0.20) == 1.0
+
+
+def test_five_atlas_table_matches_the_code():
+    """The published five-atlas table must not drift from the calculation.
+
+    It did: the manuscript carried floors computed under the earlier per-atlas
+    noise constants (Tahoe 0.0079, sci-Plex 0.0109) long after the estimator moved
+    to a single shared snr = 0.20, which changes every floor and changes Tahoe's
+    prescription from three replicates to six. The verdicts happened to survive,
+    which is exactly why nothing caught it. This pins the numbers that appear in
+    MANUSCRIPT_DESIGN.md so a future change to the constant fails loudly here.
+    """
+    from perturbmodel.design import min_detectable_share, n_pairs
+    SNR = 0.20
+    published = [
+        # atlas,          ctx, pert, rep,   pairs,   floor, observed, resolvable
+        ("Tahoe-100M",     48,   95,   2,   4_560, 0.0169,    0.005, False),
+        ("LINCS phase 1",  71,  831,   3, 177_003, 0.0027,    0.570, True),
+        ("OP3",             6,  147,   3,   2_646, 0.0222,    0.331, True),
+        ("sci-Plex 3",      3,  189,   2,     567, 0.0479,    0.302, True),
+        ("Spear-ATAC",      3,   41,   5,   1_230, 0.0325,    0.014, False),
+    ]
+    for name, c, p_, r, pairs, floor, obs, resolvable in published:
+        assert n_pairs(c, p_, r) == pairs, name
+        got = min_detectable_share(c, p_, r, SNR)
+        assert abs(got - floor) < 5e-5, f"{name}: table {floor}, code {got:.4f}"
+        assert (obs > got) is resolvable, name
