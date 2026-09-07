@@ -378,3 +378,47 @@ def test_missing_levels_are_not_counted_as_contexts():
     assert m.pick(["cell_line", "perturbation"], m.CTX) == "cell_line"
     # nperts counts perturbations per cell and must never be read as a replicate
     assert "nperts" not in m.REP
+
+
+def test_frozen_prereg_artefacts_are_unmodified():
+    """The pre-registration is worthless if its frozen files can drift.
+
+    docs/PREREGISTRATION.md records a SHA-256 for each artefact the registered
+    analysis depends on. This recomputes them. A failure means either the
+    registration must be re-stated or the edit reverted -- it must not pass
+    silently.
+    """
+    import hashlib
+    import re
+    from pathlib import Path
+    root = Path(__file__).resolve().parent.parent
+    doc = (root / "docs" / "PREREGISTRATION.md").read_text()
+    rows = re.findall(r"\| `([^`]+\.py)` \| `([0-9a-f]{64})` \|", doc)
+    assert len(rows) >= 3, "frozen-artefact table missing or malformed"
+    for rel, want in rows:
+        got = hashlib.sha256((root / rel).read_bytes()).hexdigest()
+        assert got == want, (
+            f"{rel} changed since pre-registration.\n"
+            f"  registered {want}\n  now        {got}")
+
+
+def test_gem_groups_are_not_independent_replicates():
+    """A capture split must not be counted as a replicate.
+
+    RESULTS.md sec.48: Replogle's `batch` is the 10x gem group -- one transduced
+    pool distributed across captures -- so two cells with the same guide in
+    different gem groups share transduction, culture and selection and differ
+    only in the emulsion. Counting them inflates the pair count and would have
+    promoted a dataset that cannot support the estimate. The metadata cannot
+    distinguish the two cases, so the reported replicate count is an UPPER bound
+    and every downstream count must be stated as such.
+    """
+    from perturbmodel.design import min_detectable_share, n_pairs
+    # 2 contexts x 2056 shared perturbations, scored both ways
+    as_if_replicated = n_pairs(2, 2056, 40)
+    honest = n_pairs(2, 2056, 1)
+    assert honest == 0, "one usable replicate must yield no pairs"
+    assert as_if_replicated > 3_000_000
+    # and the floor difference is the whole verdict
+    assert min_detectable_share(2, 2056, 40, 0.20) < 0.001
+    assert min_detectable_share(2, 2056, 1, 0.20) == 1.0

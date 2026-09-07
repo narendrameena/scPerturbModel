@@ -124,6 +124,49 @@ def main():
     print("\n  binding constraint:")
     print(ok.binding.value_counts().to_string())
 
+    # ---- files are not studies -------------------------------------------
+    # scPerturb splits some multi-context studies into per-context files, so a
+    # per-file count undercounts multi-context designs. The union of context
+    # LABELS is needed, not the max of per-file counts -- Replogle's three files
+    # each hold one line but the study holds two. atlas_meta is frozen by the
+    # pre-registration, so its helpers are used unmodified rather than extended.
+    #
+    # Reported alongside the per-file count, not instead of it: the number of
+    # datasets supporting the estimate is unchanged either way, because
+    # Replogle's ~40 `batch` levels are 10x gem groups -- split captures of one
+    # transduced pool, not independent treatments (sec.48).
+    import re as _re
+    def _study(name):
+        m = _re.match(r"^([A-Za-z\-]+\d{4})", name)
+        return m.group(1) if m else name
+    ok["study"] = [_study(d) for d in ok.dataset]
+    multi = {st for st, g in ok.groupby("study") if len(g) > 1}
+    union = {}
+    for r in ok.itertuples():
+        if r.study not in multi or not r.context_col:
+            union.setdefault(r.study, set()).add(f"_f{r.Index}")
+            continue
+        o = read_obs(SP / f"{r.dataset}.h5ad")
+        union.setdefault(r.study, set()).update(nlev(o[r.context_col]).unique())
+    per_study = {st: (len(v) if st in multi else
+                      int(ok[ok.study == st].n_contexts.iloc[0]))
+                 for st, v in union.items()}
+    ns = len(per_study)
+    single = sum(1 for v in per_study.values() if v < 2)
+    print(f"\n  FILES ARE NOT STUDIES: {len(ok)} files span {ns} studies.")
+    print(f"     single-context, per file : {int((ok.n_contexts < 2).sum())}/"
+          f"{len(ok)} ({(ok.n_contexts < 2).mean():.0%})")
+    print(f"     single-context, per study: {single}/{ns} ({single/ns:.0%})")
+    hidden = [st for st in multi
+              if per_study[st] >= 2
+              and ok[ok.study == st].n_contexts.max() < 2]
+    for st in sorted(hidden):
+        g = ok[ok.study == st]
+        print(f"     {st}: {len(g)} files of 1 context each -> "
+              f"{per_study[st]} in the study")
+    print("     (their replicate columns are gem groups, so they still do not "
+          "qualify)")
+
     print("\n  by perturbation type — a CRISPR screen in one line is "
           "single-context by\n  design, so the interesting row is the drug "
           "screens:")

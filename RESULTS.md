@@ -3192,15 +3192,67 @@ condition.** The datasets a reanalyst would reach for to ask whether drug respon
 depends on cell context mostly cannot answer it — not because the effect is
 absent but because the design does not admit the estimate.
 
-### The caveat that bounds this
+### Files are not studies, and it changes one number
 
-This counts replicate structure **recoverable from the deposited metadata**, not
-what was run at the bench; harmonisation may have dropped annotation an experiment
-actually had. The practical point survives the distinction: an index computed by a
-reanalyst, or by the original authors from the released object, can only use
-annotation that is present. Where it is absent, the usual substitute is to split
-one well's cells — and §38 shows that returns 0.500 from data containing no
-interaction whatever.
+scPerturb distributes some multi-context *studies* as per-context *files*, so
+scoring per file undercounts multi-context designs. Two cases:
+
+| study | files | contexts per file | union |
+|---|---:|---|---:|
+| `ReplogleWeissman2022` | 3 | 1, 1, 1 | 2 (K562, RPE1) |
+| `TianKampmann2019` | 2 | 1, 1 | 2 (iPSC, iPSC-derived neuron) |
+
+Grouped by study rather than file, single-context datasets fall from **34/38
+(89%)** to **17/22 (77%)**. The count that supports the estimate does not change,
+and the reason is worth stating because the first attempt to fix this got it
+wrong. `ReplogleWeissman2022` unions to 2 contexts, 2,056 shared perturbations
+and ~40 `batch` levels per condition, which looks like a design that qualifies.
+It is not: `batch` there is the 10x gem group — the object also carries
+`z_gemgroup_UMI`, which names it. One transduced pool is distributed across gem
+groups for capture, so two cells with the same guide in different gem groups
+share transduction, culture, selection and perturbation duration and differ only
+in the emulsion. Split captures, not independent treatments. `TianKampmann2019`
+has one replicate regardless.
+
+### Two caveats that bound this
+
+**The metadata cannot distinguish a replicate from a split capture.** `batch`
+means an independent replicate in some datasets and a capture lane in others, and
+nothing in the deposited annotation separates them. The replicate counts here are
+therefore an **upper bound on usable replicates**, and the number of datasets
+supporting the estimate is an upper bound too. The bias runs in the conservative
+direction for the claim being made — the true count is at most one — but the
+number is not exact.
+
+**This counts what is recoverable from deposited metadata**, not what was run at
+the bench; harmonisation may have dropped annotation an experiment actually had.
+The practical point survives the distinction: an index computed by a reanalyst, or
+by the original authors from the released object, can only use annotation that is
+present. Where it is absent, the usual substitute is to split one well's cells —
+and §38 shows that returns 0.500 from data containing no interaction whatever.
+
+### A pre-registered extension to chromatin
+
+scPerturb's second article (ATAC, 6 files) was scored after **registering
+predictions about it publicly and pushing them** (`docs/PREREGISTRATION.md`, tag
+`prereg-2026-09-07`), so that the one genuinely unseen dataset was a blind test.
+Three of the six — Spear-ATAC, split per cell line — were already analysed in §35
+and §39, and a first draft that treated the whole article as unseen was withdrawn
+for that reason; the withdrawal is recorded in the registration.
+
+The registered prediction, that `MimitouSmibert2021` would not support a context ×
+perturbation interaction estimate, **held**: 10,018 cells, CD4+ T cells only, 6
+perturbations, one replicate per condition, zero pairs. Both
+`Liscovitch-BrauerSanjana2021` files are likewise single-context K562 with one
+replicate. This is *n* = 1 of informative evidence and is worth exactly that — its
+value is that it was fixed, public and falsifiable before the file was fetched.
+
+Outcomes are recorded in `docs/PREREGISTRATION_OUTCOMES.md`, which appends and
+never rewrites. `docs/PREREGISTRATION.md` Part B leaves a standing, falsifiable
+commitment for the first three qualifying atlases released after 2026-09-07, with
+the analysis script frozen by SHA-256: **an atlas with one replicate per condition
+will not resolve a reproducible interaction however many cells it sequenced.** One
+well-powered counterexample kills the premise of §46.
 
 ### The tool
 

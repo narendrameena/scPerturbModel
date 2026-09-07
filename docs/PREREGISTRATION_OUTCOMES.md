@@ -1,0 +1,102 @@
+# Pre-registration outcomes
+
+Append-only. Entries are added below, never edited or removed. The registration
+is `docs/PREREGISTRATION.md`, frozen at tag `prereg-2026-09-07`.
+
+---
+
+## 2026-09-07 — Part A settled
+
+**Order of operations, verifiable from git:** the registration was committed and
+pushed (`49a1e79`, tag `prereg-2026-09-07`) *before* the three unseen archives
+were downloaded. The download command runs in the shell history after the push.
+Anyone can check that the predictions predate the data by comparing the tag's
+push time to the figshare access.
+
+### Result
+
+| # | Prediction | Outcome |
+|---|---|---|
+| **A1** | `MimitouSmibert2021` does not support a context × perturbation interaction estimate | **HELD** |
+| **A2** | Both `Liscovitch-BrauerSanjana2021` files are single-context | held (registered as *not* evidence) |
+
+Scored by `perturbmodel.atlas_meta` at the frozen commit. The archives ship
+`obs.csv` rather than `.h5ad`, so `pandas.read_csv` replaced `read_obs`; the
+column-preference lists, the `MISSING` set and every downstream rule were used
+unmodified, as the analysis plan permits.
+
+| dataset | cells | context | perturbations | replicates/condition | pairs |
+|---|---:|---|---:|---:|---:|
+| `MimitouSmibert2021` | 10,018 | CD4+ T cells (1) | 6 | 1 | 0 |
+| `Liscovitch-BrauerSanjana2021_K562_1` | 8,723 | K562 (1) | 22 | 1 | 0 |
+| `Liscovitch-BrauerSanjana2021_K562_2` | 12,788 | K562 (1) | 84 | 1 | 0 |
+
+All three are single-context with one replicate per condition, so the pair count
+is zero and the interaction is not estimable in any of them at any effect size.
+
+### What this is worth
+
+**One informative prediction, one success.** A1 was the only prediction in Part A
+carrying information, and *n* = 1 is weak evidence. It is recorded as one
+dataset, not as a confirmation of §48. Its value is procedural: the prediction
+was fixed, public and falsifiable before the file was fetched, and it could have
+failed.
+
+### What went wrong first, and is left on the record
+
+The first draft of Part A claimed the *entire* scPerturb ATAC article was unseen
+and registered four predictions (A1–A4) about all six files. That claim was
+false: three files — `PierceGreenleaf2021_{GM12878,K562,MCF7}`, i.e. Spear-ATAC —
+had been downloaded on 2026-09-04 and analysed in §35 and §39, and Spear-ATAC is
+multi-context *and* replicated, which is exactly the case those predictions were
+counting. Registering them would have been scoring a test whose answer was
+partly known. The error was caught before pushing; the draft predictions are
+withdrawn in full and the episode is documented in the registration itself rather
+than deleted.
+
+---
+
+## 2026-09-07 — an error found while extending §48, and its correction
+
+Not a registered prediction; recorded here because it changed a published number's
+justification and because the first attempt at the fix was itself wrong.
+
+**The observation.** scPerturb distributes some multi-context *studies* as
+per-context *files*. Scoring per file therefore undercounts multi-context designs.
+Two cases in the 38:
+
+| study | files | contexts per file | union |
+|---|---:|---|---:|
+| `ReplogleWeissman2022` | 3 | 1, 1, 1 | 2 (K562, RPE1) |
+| `TianKampmann2019` | 2 | 1, 1 | 2 (iPSC, iPSC-derived neuron) |
+
+Grouped by study, single-context datasets fall from **34/38 files (89%)** to
+**17/22 studies (77%)**.
+
+**The wrong fix.** On seeing that `ReplogleWeissman2022` unions to 2 contexts,
+2,056 shared perturbations and ~40 annotated `batch` levels per condition, I was
+about to report that §48 had missed a dataset which does support the estimate,
+and to raise the headline from 1 to 2.
+
+**Why it was wrong.** Replogle's `batch` is the 10x gem group — the file also
+carries `z_gemgroup_UMI`, which names it. A pooled library is transduced once and
+the cells are then distributed across gem groups for capture. Two cells with the
+same guide in different gem groups share the transduction, the culture, the
+selection and the perturbation duration, and differ only in the emulsion. They
+are split captures, not independent treatments, and by the criterion stated in
+`perturbmodel.atlas_meta` — the same criterion that made §38's inflated indices
+diagnosable — they do not constitute usable replicates. `ReplogleWeissman2022`
+does **not** support the estimate. `TianKampmann2019` has one replicate
+regardless.
+
+**Net effect on §48.** The headline is unchanged: exactly one dataset supports
+the estimate. Its justification is now explicit rather than accidental, and the
+per-file/per-study distinction is reported as a caveat.
+
+**A limitation this exposes, now stated in §48.** `describe` cannot tell an
+independent replicate from a split capture, because the deposited metadata does
+not distinguish them — `batch` means both things in different datasets. The
+replicate counts it reports are therefore an **upper bound on usable
+replicates**, and the count of datasets supporting the estimate is an upper bound
+too. The direction of §48's claim is conservative under this bias; the specific
+number is not exact.

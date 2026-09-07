@@ -302,12 +302,35 @@ The datasets a reanalyst would reach for to ask whether drug response depends on
 cell context mostly cannot answer it — not because the effect is absent, but
 because the design does not admit the estimate.
 
-This counts replicate structure recoverable from deposited metadata, not what was
-run at the bench; harmonisation may have dropped annotation an experiment had.
-The practical consequence survives that distinction, because an index computed by
-a reanalyst — or by the original authors from the released object — can only use
+Two caveats bound this. **The deposited metadata cannot distinguish an
+independent replicate from a split capture**: `batch` denotes a genuine replicate
+in some datasets and a 10x capture lane in others. Replogle's ~40 `batch` levels
+are gem groups — one transduced pool distributed across captures, sharing
+transduction, culture and selection — so that study's union of K562 and RPE1 does
+not qualify despite appearing to. Reported replicate counts are therefore an
+**upper bound on usable replicates**, and the count of qualifying datasets is an
+upper bound too; the bias runs conservative for the claim. Second, this counts
+what is recoverable from deposited metadata, not what was run at the bench. The
+practical consequence survives that distinction, because an index computed by a
+reanalyst — or by the original authors from the released object — can only use
 annotation that is present, and the usual substitute where it is absent is to
 split one well's cells, which returns 0.500 from data containing no interaction.
+
+Files are also not studies: scPerturb distributes `ReplogleWeissman2022` and
+`TianKampmann2019` as per-context files, so single-context datasets are 34/38
+(89%) counted per file and 17/22 (77%) per study. The qualifying count is
+unchanged at one under either unit.
+
+*Prospective test.* Predictions about scPerturb's ATAC collection were registered
+publicly and pushed before the unseen archives were downloaded
+(`docs/PREREGISTRATION.md`, tag `prereg-2026-09-07`). The one informative
+prediction — that `MimitouSmibert2021` would not support the estimate — held:
+CD4+ T cells only, 6 perturbations, one replicate, zero pairs. This is *n* = 1 and
+is reported as one dataset. A standing registration commits the frozen analysis
+script, by SHA-256, to the first three qualifying atlases released after
+2026-09-07, with the falsifiable assertion that an atlas with one replicate per
+condition will not resolve a reproducible interaction however many cells it
+sequenced.
 
 *Availability.* The calculation ships as `perturbdesign`, with `plan`, `audit`
 (reads an `.h5ad` and reports which `obs` columns it used) and `budget`
