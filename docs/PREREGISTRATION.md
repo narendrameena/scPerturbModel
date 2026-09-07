@@ -86,14 +86,6 @@ weak support, and will be reported as one dataset, not as a confirmation.
   metadata table is permitted, since it precedes the frozen scorer; the scorer
   itself is not adapted to the result.
 
-### What a failure would mean
-
-If A1 or A3 fails, §48's claim that the field's designs almost never admit this
-estimate is too strong and must be softened to the RNA/protein collection alone.
-If A2 fails, the single-context pattern is specific to RNA CRISPR screens rather
-than general, which materially weakens the motivation for the whole design
-argument. I will report either outcome in the manuscript.
-
 ---
 
 ## Part B — a standing prediction for atlases released from 2026-09-07 onward
