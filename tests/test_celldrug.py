@@ -296,7 +296,7 @@ def test_design_calculator_ranks_atlases_correctly():
     # ONE shared noise constant for all five -- a per-atlas value would let
     # five free parameters fit five binary outcomes.
     cases = [("Tahoe-100M", 48, 95, 2, 0.005, False),
-             ("LINCS phase 1", 71, 831, 3, 0.70, True),
+             ("LINCS phase 1", 71, 831, 3, 0.57, True),
              ("OP3", 6, 147, 3, 0.331, True),
              ("sci-Plex 3", 3, 189, 2, 0.302, True),
              ("Spear-ATAC", 3, 41, 5, 0.014, False)]
@@ -317,3 +317,64 @@ def test_context_embedding_rule():
         assert captured_fraction(d, n_ctx) > 0.95
     # and a d chosen well below the line does not
     assert captured_fraction(5, 1000) < 0.2
+
+
+def test_replicated_fraction_changes_the_verdict():
+    """Quoting total perturbations instead of replicated ones flips the call.
+
+    RESULTS.md sec.48. Tahoe profiles ~1100 compounds but replicates 13.5% of
+    conditions, and only the replicated ones contribute cross-replicate pairs.
+    The CLI must not let the total be mistaken for the effective count: at 1100
+    the design looks comfortable, at the true 148 it is underpowered against
+    Tahoe's own measured share of 0.005.
+    """
+    from perturbmodel.design import min_detectable_share
+    naive = min_detectable_share(48, 1100, 2, 0.20)
+    honest = min_detectable_share(48, int(round(1100 * 0.135)), 2, 0.20)
+    assert naive < 0.005 < honest, (naive, honest)
+    # the inflation is the square root of the perturbation ratio
+    assert 2.5 < honest / naive < 2.9
+
+
+def test_one_replicate_is_never_optimal_under_any_budget():
+    """sec.48's budget advice must not depend on the noise-curve parameters.
+
+    The two parameters of the saturating snr curve are assumptions. The
+    qualitative claim -- that spending a fixed cell budget on a single replicate
+    is never optimal -- has to survive sweeping them, because one replicate
+    yields zero pairs however the curve is modelled.
+    """
+    from perturbmodel.design import min_detectable_share
+
+    def best_reps(cells, n_ctx, n_pert, snr_max, snr_half, max_r=12):
+        out = None
+        for r in range(1, max_r + 1):
+            per = int(cells / (n_ctx * n_pert * r))
+            if per < 50:
+                break
+            snr = snr_max / (1.0 + snr_half / max(per, 1))
+            m = min_detectable_share(n_ctx, n_pert, r, snr)
+            if out is None or m < out[1]:
+                out = (r, m)
+        return out[0]
+
+    for snr_half in (50, 100, 300, 1000, 2000):
+        for snr_max in (0.1, 0.35, 0.8):
+            r = best_reps(95_600_000, 48, 1100, snr_max, snr_half)
+            assert r >= 2, (snr_half, snr_max, r)
+
+
+def test_missing_levels_are_not_counted_as_contexts():
+    """sec.48's reader must not count '' or 'None' as a real level.
+
+    Unlabelled cells become '' when a categorical code is -1 and some datasets
+    write the literal string 'None'. Counting either inflates the design:
+    sci-Plex 3 reads as 4 cell lines and 3 replicates when it has 3 and 2, which
+    would overstate its pair count by half.
+    """
+    from perturbmodel import atlas_meta as m
+    col = pd.Series(["MCF7", "A549", "K562", "", "None", "nan", "MCF7"])
+    assert m.nlev(col).nunique() == 3
+    assert m.pick(["cell_line", "perturbation"], m.CTX) == "cell_line"
+    # nperts counts perturbations per cell and must never be read as a replicate
+    assert "nperts" not in m.REP

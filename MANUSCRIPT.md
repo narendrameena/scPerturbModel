@@ -70,9 +70,15 @@ replicate **pairs** and not on cell count: a condition measured once contributes
 nothing however deeply it is sequenced. Given only context, perturbation and
 replicate counts, the calculation predicts **which of five published atlases could
 resolve an interaction and which could not, correctly in all five cases**, with no
-knowledge of their results. Tahoe-100M, at 95.6 million cells and 13.5% of
+knowledge of their results and one shared noise constant rather than a per-atlas
+value. Tahoe-100M, at 95.6 million cells and 13.5% of
 conditions replicated, needed **three replicates rather than two**; Spear-ATAC,
-fully crossed across three cell lines, would have needed more than twelve. We show that a measured response contains **three**
+fully crossed across three cell lines, would have needed more than twelve. Applied
+to every RNA and protein dataset in scPerturb (n = 38), the same calculation finds
+that **one can support the estimate at all**, and that of ten drug screens — where
+context-dependence is the whole question — three use more than one context and one
+of those replicates a condition. We release the calculation as a tool.
+We show that a measured response contains **three**
 terms, not two: the drug's average effect, a property of the cell that has
 nothing to do with any drug, and the relation between the pair. Only the third is
 context-dependence. The middle term — a line's *general sensitivity*, its
@@ -221,7 +227,7 @@ any of them found:
 | atlas | replicate pairs | smallest detectable share | observed | predicted | actual |
 |---|---:|---:|---:|---|---|
 | Tahoe-100M | 4,560 | 0.0079 | 0.005 | **not resolvable** | not resolvable |
-| LINCS phase 1 | 177,003 | 0.0010 | 0.70 | resolvable | resolvable |
+| LINCS phase 1 | 177,003 | 0.0010 | 0.57 | resolvable | resolvable |
 | OP3 | 2,646 | 0.0062 | 0.331 | resolvable | resolvable |
 | sci-Plex 3 | 567 | 0.0109 | 0.302 | resolvable | resolvable |
 | Spear-ATAC | 1,230 | 0.0880 | 0.014 | **not resolvable** | not resolvable |
@@ -265,6 +271,56 @@ designs; on the smallest design tested the false-positive rate reaches 17%. The
 minimum detectable share is an order-of-magnitude guide rather than an exact
 bound, which is sufficient for the use made of it here, since the five atlases
 differ by two orders of magnitude in what they can resolve.
+
+### One dataset in thirty-eight can support the estimate at all
+
+Five atlases are few, and they were the five we happened to analyse. We therefore
+applied the calculation to **every RNA and protein dataset in scPerturb** (Peidli
+et al. 2024; n = 38), reading design parameters from deposited metadata without
+touching an expression value, using the same shared noise constant and no
+per-dataset tuning. As a check on the reader, our hand-entered row for sci-Plex 3
+(3 contexts × 189 perturbations × 2 replicates) is exactly what independent
+parsing of the raw `.h5ad` returns.
+
+| | datasets |
+|---|---:|
+| scPerturb RNA/protein datasets | 38 |
+| more than one context | 4 |
+| …and ≥ 1 condition measured twice | 1 |
+| …and able to detect a 5% interaction | **1** |
+
+**One of thirty-eight can support a context × perturbation interaction estimate**
+— sci-Plex 3, at a floor of 0.048 against its measured 0.302. Twenty-six carry
+replicate-like annotation, but in 23 the replicates never cover the same
+condition twice, which yields no pair.
+
+A CRISPR screen in one cell line is single-context *by design*, and scoring it as
+a failed atlas would be unfair. Splitting by perturbation type leaves the claim
+narrower and sharper: of **27 CRISPR datasets none use more than one context**,
+while of **ten drug screens three do and one of those replicates a condition**.
+The datasets a reanalyst would reach for to ask whether drug response depends on
+cell context mostly cannot answer it — not because the effect is absent, but
+because the design does not admit the estimate.
+
+This counts replicate structure recoverable from deposited metadata, not what was
+run at the bench; harmonisation may have dropped annotation an experiment had.
+The practical consequence survives that distinction, because an index computed by
+a reanalyst — or by the original authors from the released object — can only use
+annotation that is present, and the usual substitute where it is absent is to
+split one well's cells, which returns 0.500 from data containing no interaction.
+
+*Availability.* The calculation ships as `perturbdesign`, with `plan`, `audit`
+(reads an `.h5ad` and reports which `obs` columns it used) and `budget`
+subcommands, plus a browser calculator. `plan` exposes the commonest way to
+overstate a design: quoting total rather than replicated conditions. Tahoe
+profiles ~1,100 compounds but replicates 13.5% of them; at 1,100 the calculator
+returns "adequate, 10× margin", at the true 148 **"underpowered by 2.7×, five
+replicates needed"**. `budget` answers the question a builder actually faces —
+given Tahoe's own 95.6 million cells over 48 × 1,100 conditions the optimum is
+**8 replicates of 226 cells, detecting 0.0016**, an eightfold improvement from
+the same budget. Its noise-saturation curve has two assumed parameters, so they
+were swept: over a fortyfold range of saturation depth the optimum is **never one
+replicate**, though its exact value moves.
 
 ### A measured response is three things, and the middle one is usually discarded
 
@@ -1133,3 +1189,13 @@ correlation for MSI, and lineage stratification for allele associations.
     (c) The fraction of the interaction a fixed *d*-dimensional context
     embedding can represent, as an atlas grows; the usable form is
     *d* ≥ 0.05 × n_contexts.
+11. **The same calculation across the whole field.** All 38 RNA and protein
+    datasets in scPerturb, scored from deposited metadata with the same shared
+    noise constant and no per-dataset tuning. (a) Contexts against replicates per
+    condition, coloured by perturbation type, with the five atlases of Figure 10
+    as reference points; the estimator is defined only in the shaded corner,
+    where a dataset has both more than one context and a condition measured
+    twice. (b) The funnel: 38 datasets, 4 with more than one context, 1 that also
+    replicates a condition. (c) Drug screens alone, since a CRISPR screen in one
+    cell line is single-context by design — three of ten use more than one
+    context and one of those replicates.

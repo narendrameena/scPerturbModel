@@ -3025,7 +3025,7 @@ rather than of a fitted parameter.
 | atlas | replicate pairs | smallest detectable share | observed | predicted | actual |
 |---|---:|---:|---:|---|---|
 | Tahoe-100M | 4,560 | 0.0079 | 0.005 | **not resolvable** | not resolvable (§31) |
-| LINCS phase 1 | 177,003 | 0.0010 | 0.70 | resolvable | resolvable (§43) |
+| LINCS phase 1 | 177,003 | 0.0010 | 0.57 | resolvable | resolvable (§34) |
 | OP3 | 2,646 | 0.0062 | 0.331 | resolvable | resolvable (§35) |
 | sci-Plex 3 | 567 | 0.0109 | 0.302 | resolvable | resolvable (§35) |
 | Spear-ATAC | 1,230 | 0.0880 | 0.014 | **not resolvable** | not resolvable (§35) |
@@ -3143,6 +3143,95 @@ The claim supported is therefore about population-level contrasts of the kind
 context-dependence indices report, not about how deeply any single well must be
 sequenced to be individually reliable.
 
+## 48. The whole field, not five atlases: the design calculation across scPerturb
+
+§46 validated the design calculation on five atlases. Five is few, and they were
+the five this project happened to analyse — a reviewer is entitled to call that
+anecdotal. scPerturb (Peidli et al., *Nature Methods* 2024) harmonises the field's
+perturbation datasets into one schema, so every one of them is a test case that
+costs nothing but metadata: **all 38 RNA/protein datasets** were downloaded (20 GB),
+their `obs` tables read without touching an expression value, and the same
+calculation applied with the **same shared noise constant (0.20) and no
+per-dataset tuning**.
+
+### An independent check on the reader
+
+§46's hand-entered row for sci-Plex 3 is 3 contexts × 189 perturbations × 2
+replicates. Parsing the raw `.h5ad` independently returns **3 × 189 × 2**. The
+extraction was not tuned to reproduce it.
+
+### What the field's designs look like
+
+| | datasets |
+|---|---:|
+| all scPerturb RNA/protein datasets | 38 |
+| more than one context | 4 |
+| …and at least one condition measured twice | 1 |
+| …and able to detect a 5% interaction | **1** |
+
+**One dataset of 38 can support a context × perturbation interaction estimate at
+all** — sci-Plex 3, at a detection floor of 0.048 against its measured share of
+0.302. Twenty-six carry some replicate-like annotation, but in 23 the replicates
+do not cover the same condition twice, which yields no pair.
+
+### Separating the fair case from the unfair one
+
+A CRISPR screen in one cell line is single-context *by design*, and scoring it as
+a failed atlas would be unfair. Splitting by perturbation type removes that
+objection and leaves the claim narrower and sharper:
+
+| perturbation type | n | >1 context | …also replicated |
+|---|---:|---:|---:|
+| CRISPR | 27 | 0 | 0 |
+| drug / compound | 10 | 3 | **1** |
+| cytokine | 1 | 0 | 0 |
+
+The interesting row is the drug screens, where context-dependence is the whole
+question. **Of ten, three use more than one context and one of those replicates a
+condition.** The datasets a reanalyst would reach for to ask whether drug response
+depends on cell context mostly cannot answer it — not because the effect is
+absent but because the design does not admit the estimate.
+
+### The caveat that bounds this
+
+This counts replicate structure **recoverable from the deposited metadata**, not
+what was run at the bench; harmonisation may have dropped annotation an experiment
+actually had. The practical point survives the distinction: an index computed by a
+reanalyst, or by the original authors from the released object, can only use
+annotation that is present. Where it is absent, the usual substitute is to split
+one well's cells — and §38 shows that returns 0.500 from data containing no
+interaction whatever.
+
+### The tool
+
+The calculation ships as `perturbdesign`, with three subcommands:
+
+```bash
+perturbdesign plan  --contexts 48 --perturbations 1100 --replicates 2 \
+                    --replicated-fraction 0.135 --target 0.005
+perturbdesign audit  atlas.h5ad
+perturbdesign budget --cells 95600000 --contexts 48 --perturbations 1100
+```
+
+`plan` exposes the single most common way to overstate a design: Tahoe profiles
+~1100 compounds but replicates 13.5% of conditions, and only the replicated ones
+contribute pairs. Quoting the total inflates the pair count sevenfold and turns an
+underpowered atlas into an apparently adequate one — at 1100 the calculator says
+"adequate, 10× margin"; at the true 148 it says **underpowered by 2.7×, five
+replicates needed**.
+
+`budget` answers the question an atlas builder actually faces. Given Tahoe's own
+95.6 million cells over 48 × 1100 conditions, the optimum is **8 replicates of 226
+cells each, detecting 0.0016** — an eightfold improvement on what the atlas
+achieved, from the same budget. The two parameters of its noise-saturation curve
+are assumptions rather than measurements, so they were swept: over `snr-half` from
+50 to 2000 the optimum is **never one replicate** and is three or more unless
+noise saturates unusually slowly; over `snr-max` from 0.1 to 0.8 it stays between
+7 and 9. The exact number moves; the direction of the advice does not.
+
+*Script:* `scripts/atlas_design_benchmark.py`, `src/perturbmodel/design_cli.py`.
+*Figure:* `results/figures/00_manuscript/atlas_benchmark/`.
+
 ## Reproducing
 
 ```bash
@@ -3161,6 +3250,10 @@ python scripts/three_platform_synthesis.py           # Tahoe / LINCS / PRISM
 sbatch jobs/dose_ctx.sbatch                          # dose x context (PRISM, Tahoe)
 sbatch jobs/lincs_dose.sbatch                        # dose x context (LINCS)
 python scripts/validate_alleles_gdsc.py            # GDSC validation of alleles
+python scripts/design_calculator.py                # §46 five-atlas validation
+python scripts/cells_vs_replicates.py              # §47 premise test
+python scripts/atlas_design_benchmark.py           # §48 all 38 scPerturb datasets
+pip install -e . && perturbdesign plan --contexts 50 --perturbations 500
 ```
 
 See `docs/related_work_perturbation_models.md` for how these results sit

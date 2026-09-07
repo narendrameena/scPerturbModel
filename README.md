@@ -20,6 +20,29 @@ via scvi-tools (itself PyTorch) as the paper-matching baseline.
 | Methodological positioning | `docs/methodology_positioning.md` |
 | Novelty audit | `docs/novelty_audit.md` |
 
+## The tool: `perturbdesign`
+
+**What can your atlas actually resolve?** A context × perturbation interaction is
+estimated as a covariance between independent replicates, so its precision is set
+by the number of replicate **pairs** — `n_ctx × n_pert × n_rep(n_rep−1)/2` — and
+cell count never enters. Run the calculation before building.
+
+```bash
+pip install -e .
+
+perturbdesign plan --contexts 48 --perturbations 1100 --replicates 2 \
+                   --replicated-fraction 0.135 --target 0.005
+perturbdesign audit atlas.h5ad          # reads obs, reports the columns used
+perturbdesign budget --cells 95600000 --contexts 48 --perturbations 1100
+```
+
+Validated on five published atlases (Tahoe-100M, LINCS phase 1, OP3, sci-Plex 3,
+Spear-ATAC) with **one shared noise constant and no per-atlas tuning** — 5/5
+correct for any snr in 0.10–0.30 — then applied to all 38 scPerturb RNA/protein
+datasets, of which **one can support the estimate at all** (RESULTS.md §46–§48).
+
+Browser version: `docs/design_calculator.html`.
+
 ## The tool: `pertdecomp`
 
 Replicate-validated decomposition of any perturbation atlas into the response

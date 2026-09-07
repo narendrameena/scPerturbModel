@@ -65,7 +65,7 @@ SNR = 0.20
 ATLASES = [
     # name,            contexts, perturbations, replicates, observed share
     ("Tahoe-100M",           48,  95,  2, 0.005),   # §31, same-dose
-    ("LINCS phase 1",        71, 831,  3, 0.70),    # §43
+    ("LINCS phase 1",        71, 831,  3, 0.57),    # §34, 56.9-57.4%
     ("OP3",                   6, 147,  3, 0.331),   # §35 rerun
     ("sci-Plex 3",            3, 189,  2, 0.302),
     ("Spear-ATAC",            3,  41,  5, 0.014),   # §35, ANOVA

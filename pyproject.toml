@@ -10,5 +10,8 @@ requires-python = ">=3.10"
 # runtime deps are managed via envs/environment.yml; keep this list minimal
 dependencies = ["numpy", "pyyaml", "torch"]
 
+[project.scripts]
+perturbdesign = "perturbmodel.design_cli:main"
+
 [tool.setuptools.packages.find]
 where = ["src"]
