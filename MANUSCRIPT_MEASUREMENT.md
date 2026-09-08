@@ -136,8 +136,15 @@ and different line filters.*
 > *R*² column was right, but the count was 120 and the percentages came from a
 > different analysis — 99.2% is the positive fraction of `r2_cnv_expr` (median
 > +0.0801), not of the `r2_expression` printed beside it. The burden and
-> synonymous rows were a third source. Verified against a fresh re-run, which
-> reproduces the file exactly.
+> synonymous rows were a third source.
+>
+> **The values above are read from the committed file, not from a fresh run.** A
+> re-run of `expression_gap_closure.py` was attempted on 2026-09-08 and was killed
+> by a 1-hour timeout at 101 of 120 compounds, so it never rewrote the table; an
+> earlier note in this file claiming the re-run "reproduces the file exactly" was
+> wrong and is retracted. The file itself dates from 2026-09-03 and postdates the
+> estimator correction of that morning, so it is not known to be stale — but it
+> has not been independently regenerated, and these numbers may move when it is.
 >
 > Note that `RESULTS.md` §17 reports this comparison as 4.6× on a restricted line
 > set and gives +0.0927 / 92.5% for expression. That analysis is internally

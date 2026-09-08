@@ -593,3 +593,39 @@ agreement, §16's readout decoupling) and one manuscript table has been shown to
 merge three sources. The remaining 35 scripts are the heavy ones — Tahoe and
 LINCS at full scale — and are where the estimator correction is most likely to
 bite, since those are the analyses that use it directly.
+
+## Correction to this file, 2026-09-08
+
+An entry added earlier today said the predictor-block table had been "verified
+against a fresh re-run, which reproduces the file exactly". **That was wrong.**
+The re-run of `expression_gap_closure.py` was killed by a one-hour timeout at 101
+of 120 compounds (`rc=124`) and never rewrote the table; I misread a polling loop
+and compared the snapshot against itself. The claim is retracted in the
+manuscript and here.
+
+What stands: the table's three defects — n = 120 not 150, a "compounds positive"
+column taken from a different analysis, and two rows from a third script — are
+real, and were established by reading the committed file, which needs no re-run
+to check. What does not stand is any claim that the file has been independently
+regenerated. It dates from 2026-09-03, after that morning's estimator correction,
+so it is not known to be stale; it is simply unverified. The script has been
+restarted without a timeout cap.
+
+The episode is the same failure this whole audit is about — asserting a
+verification that did not happen — and it is recorded rather than quietly fixed.
+
+## Cascading staleness, working as intended
+
+Re-running `prism_context_genetics.py` rewrote `prism_decomposition.csv`, which
+the freshness check immediately flagged as making two downstream tables stale:
+`prism_vs_tahoe_cdi.csv` and `three_platform_mechanism_cdi.csv`. Both were
+regenerated.
+
+**The mechanism comparison reproduces exactly on the fresh PRISM inputs**:
+Tahoe vs LINCS-1 +0.103 (*p* = 0.777), Tahoe vs PRISM −0.155 (*p* = 0.650),
+LINCS-1 vs PRISM **+0.279** (*p* = 0.022). The withdrawal of the
+readout-decoupling claim therefore survives an independent regeneration of its
+main input, which is the strongest form of confirmation available here.
+
+This is also the first time the dependency check has caught a *cascade* rather
+than a single stale file — the failure mode it was built for.
