@@ -388,3 +388,92 @@ This closes the specific gap the sweep identified — "committed the corrected
 table" is now something that can be checked, rather than assumed. The rule it
 implements: **a number may appear in a manuscript only if the table that produced
 it is committed.**
+
+---
+
+# Full staleness sweep and bug hunt, 2026-09-08
+
+Prompted by the mechanism-table finding: if one table had gone stale relative to
+its inputs, others might have too.
+
+## Staleness
+
+Two detectors were run over all 144 tables. **6 stale outputs found; all 6
+re-run.**
+
+| detector | found |
+|---|---|
+| output older than its newest input table | 5 |
+| output of a corrected-estimator script predating `celldrug.py` (2026-09-03 11:18) | 1 |
+| **remaining after re-run** | **0** |
+
+A third detector — figure bundles older than their own source-data CSV — flagged
+98 bundles and was a **false positive**: `save_figure` writes the PNG and the CSV
+in one call, and the largest gap across 99 bundles was 37 s. No real figure
+staleness.
+
+### What changed on re-run
+
+| table | change |
+|---|---|
+| `cdi_vs_target_genetics.csv` | **CDI changed for all 254 drugs** (max Δ 0.236); target-annotation columns unchanged |
+| `prism_vs_tahoe_cdi.csv` | PRISM CDI max Δ 0.264, Tahoe max Δ 0.036 |
+| `sparse_validation*.csv` | `n_flagged` ±1; hypergeometric *p* shifted slightly as a consequence (deterministic, not RNG) |
+| `cross_lab_identity.csv` | **not rewritten — see the bug below** |
+
+### A claim changed
+
+`RESULTS.md` said CDI is uncorrelated with target expression level
+(ρ = +0.08, *p* = 0.21). Re-run: **ρ = +0.135, *p* = 0.032** — nominally
+significant, though not surviving Bonferroni across the three tests
+(*p* < 0.017 required). The mutation-frequency and expression-variance
+correlations also moved (+0.10 → +0.113; −0.21 → −0.228). Corrected in place.
+
+Separately, `RESULTS.md` quoted "264 drugs" in a summary table while its own prose
+and its table both had **254**. Pre-existing, unrelated to the re-run, corrected.
+
+## A confirmed bug: the transcription cross-laboratory arm
+
+`cross_lab_identity.csv` is dated 2026-09-01 — **three script revisions** before
+`cross_lab_transcription.py` was updated (`fb4830f`, 2026-09-03) to strip each
+line's general response. Re-running the current script:
+
+| quantity | published | re-run |
+|---|---|---|
+| LINCS p1 vs p2, within-lab median *r* | 0.061 | **0.023** |
+| Tahoe vs LINCS, cross-lab pairs | (r = 0.032) | **0 pairs** |
+| reproducible fraction | 46% | **not computable** |
+| identity check | 16 of 16 | **skipped** (no shared compounds) |
+
+**The zero is a bug, not a null.** 172 (line, compound) pairs demonstrably exist
+in the raw inputs — ht29 135, a549 25, hs578t 12, from 136 shared normalised
+compound names and 3 shared cell lines — and the pipeline loses all of them
+between loading and pairing. `remove_line_effect_profiles` is *not* the cause: its
+min-3-compounds filter cannot drop ht29. **Cause not located; not guessed at.**
+
+Both `RESULTS.md` and the measurement paper now carry a do-not-quote banner on
+this arm. **The viability arm is unaffected** — it has a committed table
+(`cross_lab_summary.csv`) and reproduces exactly.
+
+## Bug hunt
+
+Four failure classes were scanned, chosen because this project has hit three of
+them before.
+
+| class | result |
+|---|---|
+| DataFrame attribute shadowed by a column name (`.shift`, `.ndim` — hit 3× historically) | **0 live instances.** 16 tables do carry colliding column names (`index`, `size`, `median`, `diff`, `rank`, `mode`, `filter`, `sample`, `ndim`), and all 8 dot-access sites resolve to the real attribute or use bracket indexing. |
+| unseeded randomness → irreproducible *p*-values | **0.** Four scripts flagged by a first pass were all seeded; the detector required a literal digit and missed `default_rng(seed)` with a loop variable, plus two hits that were in comments. |
+| circular table dependencies | **0 real.** Three scripts read a table they also write, all behind a `--replot` flag that redraws a figure without recomputing. |
+| stale outputs | 6, all re-run, 0 remaining |
+
+## The process gap this exposes
+
+The mechanism table went stale because `results/` is gitignored and nothing
+recorded that its inputs had moved. `docs/source_data/` fixes that for tables
+backing manuscript numbers, and now holds three. But the transcription bug shows
+the deeper issue: **a script can be corrected without its outputs being
+regenerated, and nothing fails.** A `make`-style dependency check — outputs older
+than inputs or older than the code that writes them — would have caught all six of
+today's cases and the mechanism table in September. It is the obvious next piece
+of infrastructure and does not exist yet.

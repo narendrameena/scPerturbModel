@@ -208,11 +208,21 @@ Transfer scales steeply with signal strength (ρ = +0.54, *P* = 1.8×10⁻²⁹)
 strongest quartile of compounds transfers *at* the within-laboratory ceiling,
 the weakest at 36%.
 
-The result is a property of laboratories rather than of a killing assay. Repeating
+> ⚠ **Withdrawn pending investigation (2026-09-08).** The transcription arm's
+> figures — 46%, within-lab *r* = 0.061, cross-lab 0.032, 16 of 16 identity
+> matches — come from a script version **three revisions old**, predating the
+> correction that strips each line's general response. Re-running the current
+> script gives a within-lab median *r* of 0.023 and **zero** Tahoe-vs-LINCS
+> (line, compound) pairs. That zero is a bug rather than a null: 172 such pairs
+> demonstrably exist in the raw inputs. Do not quote these figures until the
+> pipeline is fixed and re-run. **The viability arm above is unaffected** — it has
+> a committed table and reproduces.
+
+The result is a property of laboratories rather than of a killing assay. ~~Repeating
 the analysis on transcription gives **46%** (LINCS phase 1 vs phase 2 within-lab
 r = 0.061; Tahoe vs LINCS cross-lab 0.032), and the identity check behaves the
 same way: 16 of 16 name-matched lines are reciprocal best matches within the
-Broad, but only 3 of 6 across laboratories.
+Broad, but only 3 of 6 across laboratories.~~
 
 ### The same omission inflates another group's statistic, in another modality
 

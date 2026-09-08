@@ -401,9 +401,13 @@ transfer.
 
 **It is not a target-genetics phenomenon.** For the 254 drugs with mappable
 annotated targets, CDI is *uncorrelated* with how often the target is mutated
-across the panel (Spearman ρ = +0.10, p = 0.10) and with target expression
-level (ρ = +0.08, p = 0.21); it is weakly *negatively* correlated with target
-expression variance (ρ = −0.21, p = 8×10⁻⁴). The clearest case is the leading
+across the panel (Spearman ρ = +0.113, p = 0.071); it is weakly *negatively*
+correlated with target expression variance (ρ = −0.228, p = 2.4×10⁻⁴) and weakly
+*positively* with target expression level (ρ = +0.135, p = 0.032 — nominally
+significant but not surviving Bonferroni across the three tests, which requires
+p < 0.017). *(Re-run 2026-09-08 on the corrected estimator; the previous values
++0.10/+0.08/−0.21 came from a table generated 2026-08-29, before the CDI column
+was recomputed.)* The clearest case is the leading
 class itself: nuclear-receptor drugs have a median CDI of 0.342 versus 0.154
 overall, yet their targets are mutated in **zero** atlas lines.
 
@@ -567,7 +571,7 @@ features have failed:
 |---|---|
 | driver mutations × mechanism (825 tests, full atlas) | 0 at FDR<0.10 |
 | baseline (DMSO) transcriptome, 47-fold LOO | 0.692 vs additive 0.692 |
-| drug-target mutation frequency and abundance (264 drugs) | ρ = +0.10, p = 0.10 |
+| drug-target mutation frequency and abundance (254 drugs) | ρ = +0.113, p = 0.071 |
 | DNA methylation level and heterogeneity, 20 features, 43 lines | 0 at FDR<0.10 |
 
 The DNA-methylation panel is worth spelling out because it was the strongest
@@ -1146,6 +1150,27 @@ phase 1 vs phase 2 as the within-lab control:
 |---|---|---|
 | LINCS p1 vs p2 (within-lab, Broad) | 0.061 | 5,803 |
 | Tahoe vs LINCS (cross-lab) | 0.032 | 489 |
+> **⚠ NOT REPRODUCIBLE as of 2026-09-08 — do not quote.** These transcription
+> numbers were produced 2026-09-01, *three script revisions* before
+> `scripts/cross_lab_transcription.py` was updated (`fb4830f`, 2026-09-03) to
+> strip each line's general response via `celldrug.remove_line_effect_profiles`.
+> Re-running the current script gives a within-lab median *r* of **0.023** (not
+> 0.061) and **zero** Tahoe-vs-LINCS (line, compound) pairs, so the 46% is not
+> computable and the cross-lab 0.032 is not obtainable.
+>
+> The zero is a **bug, not a null**: 172 (line, compound) pairs demonstrably exist
+> in the raw inputs (ht29 135, a549 25, hs578t 12, over 136 shared compounds and
+> 3 shared cell lines), and the pipeline loses all of them somewhere between
+> loading and pairing. `remove_line_effect_profiles` is not the cause — its
+> min-3-compounds filter cannot drop ht29. Cause not yet located.
+>
+> `cross_lab_identity.csv` (the "16 of 16 name-matched lines" result) is likewise
+> from 2026-09-01 and was **not** rewritten by the re-run, because the identity
+> check is skipped when there are no shared compounds.
+>
+> The viability arm is unaffected: it has its own committed table
+> (`cross_lab_summary.csv`) and reproduces.
+
 | **reproducible fraction** | **46%** |
 
 The transcription figure was reported as 52% until the sciPlex3 arm was added
