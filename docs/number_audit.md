@@ -742,3 +742,33 @@ supporting covariances beside them were not.
 * `methodology_evidence.csv`'s other rows moved slightly (D3 additive prior
   0.4490 → 0.4422, D6 dose trend 0.3333 → 0.1557) without changing which option
   each decision selects.
+
+## Batch through 42/49, 2026-09-08
+
+Three more tables changed; **none touches a quoted claim.**
+
+* `lincs_discrepancy_investigation.csv` — the "top dose only (5.0 µM)" variant
+  went from 15 compounds with a median CDI of exactly **0.000** to **107
+  compounds at 0.175**. A median of exactly zero is the inert-compound artefact
+  (near-zero numerator and denominator), so the old row was measuring nothing.
+  §33 quotes the dose-pooling and gene-set variants, not this one, so no claim
+  moves — but it is another instance of a table row that was silently vacuous.
+* `lincs_discrepancy_confounds.csv` — all six correlations remain
+  non-significant; the largest *p* shift is 0.913 → 0.806.
+* `potency_vs_rewiring.csv` — 39 rows moved by at most 5×10⁻⁴.
+* `target_abundance_pgx.csv` — 256 *z* values moved, not quoted in prose.
+
+## Two withdrawn claims re-confirmed on fresh runs
+
+**§38 / §28, the published-statistic replications.** Every number reproduces
+exactly: sci-Plex 3 74.4% against a published 48%, CMap 5.0% against 26%, and
+the correction factors 1.01× / 1.15× / 1.05×. The script's own conclusion is
+unchanged — *"No claim is made that published numbers are inflated."*
+
+**§28's generalisation claim stays withdrawn.** `replication_proper.py` re-run:
+**0 of 2 statistics reproduce within 10 points** of their published values
+(sci-Plex proper 0.161 vs 0.48; CMap 0.062 vs 0.26). This is the third
+independent confirmation that the withdrawal was correct.
+
+Both of these are cases where re-running could have embarrassed the project and
+did not.
