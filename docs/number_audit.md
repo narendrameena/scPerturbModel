@@ -816,3 +816,48 @@ conditions (median *r*<sub>de100</sub> 0.7012 → 0.7067).
 Regenerating inputs made 15 downstream results stale during the run — the
 dependency check caught each one. A convergence pass re-runs them until nothing
 is stale, which is the point of having the check rather than a one-shot list.
+
+## Converged: zero stale results, 2026-09-08
+
+The convergence pass settled in three rounds — 7 scripts, then 1
+(`potency_vs_rewiring`), then 1 (`lincs_potency_rewiring`) — all succeeding.
+
+**`check_freshness.py` now reports zero stale results across the whole
+repository**, down from 124 when the check was written. The critical scope has
+been clean throughout.
+
+### Final tally
+
+**86 tables re-run: 65 identical, 13 changed, 4 shape, 4 float noise.**
+
+### Every headline reproduces after full regeneration
+
+| claim | value |
+|---|---|
+| readout decoupling **withdrawn** | LINCS-1 vs PRISM ρ = +0.279, *p* = 0.022, n = 67 |
+| Tahoe interaction, matched dose vs cross-dose | 0.46% vs 9.2% |
+| design premise: 2% of cells | retains **92%** of the effect |
+| field survey | 1 of 38 datasets supports the estimate |
+
+### One last instance of the non-determinism caveat
+
+`phase3_delta_eval.csv`: the trained `full` model moved 0.8222 → 0.8203 while the
+`additive` and `no_line` baselines are **byte-identical** at 0.7771. That is the
+clean signature of GPU non-determinism — deterministic code reproduces exactly,
+trained models do not. Third instance after `hard_splits_eval` and `cvae_eval`,
+and consistent with both: orderings preserved, aggregates stable in the third
+decimal, no quoted value affected.
+
+### What the whole exercise produced
+
+Eight corrections, two of which changed a conclusion (§21's mixed-model agreement,
+§16/§33's readout decoupling), plus two silent bugs that no test would have caught
+— a filename collision that dropped a figure panel, and a crash that had been
+leaving a methodology cross-check empty. Against that, the estimator simulation,
+both rejected methods, the Tahoe replicate structure, the published-statistic
+comparisons and §28's withdrawal all reproduced exactly.
+
+The infrastructure that makes this repeatable is now in place: `check_freshness.py`
+with a `--critical` scope gating the test suite, `docs/source_data/` holding the
+tables behind quoted numbers, and tests for loop-variable shadowing, filename
+collisions, and frozen pre-registration artefacts.
