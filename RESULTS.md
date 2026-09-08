@@ -2597,7 +2597,7 @@ Total interaction held constant, spread over *k* of 400 conditions:
 | 100 | 12% | 12% | — |
 | 16 | 12% | 25% | recall 2% |
 | 8 | 12% | 50% | recall 9% |
-| **4 (sparse)** | **12%** | **100%** | **recall 53%, precision 98%** |
+| **4 (sparse)** | **12%** | **100%** | **recall 53%, precision 92%** |
 
 The pooled test is flat at 12% throughout — exactly as an unbiased sum should be,
 since its power depends only on total signal. Higher Criticism goes from 0% to
