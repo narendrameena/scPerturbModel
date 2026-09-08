@@ -48,18 +48,20 @@ also marked inline at its location.
 | copy number beats mutations | +0.0064, _p_ = 5.7×10⁻⁴ asserted at L948 | **withdrawn** — cluster bootstrap CI [−0.002, +0.015] | §17, L1549 |
 | PRISM cell-line count | 738 (L103, L567, L579, L884) | **737** — one line was a parsing artefact, and 10 carry `FAILED_STR` | §25 correction, L1541 |
 | readout-decoupling power | "67 shared classes, a well-powered null" (L114, L659) | **11–12 classes**; an absence of evidence, not a demonstrated null | §31, L1889 |
+| LINCS-1 vs PRISM mechanism agreement | −0.09 (n.s.) (§12 L659, §16) | **+0.279 (_p_ = 0.023, 67 classes)** — readout decoupling withdrawn | `docs/source_data/three_platform_mechanism_cdi.csv` |
 | single allele explains median 5.5% of an interaction | 5.5% | withdrawn (in-sample) | L886, already marked inline |
 
-### One quantity is currently irreproducible
+### Resolved 2026-09-08: the mechanism comparison was re-run and committed
 
-The mechanism ranking of Tahoe against LINCS phase 1 is quoted as **+0.09**
-(§16 table, L872) and as **+0.19** (§31 prose, L1891). The only saved table,
-`results/tables/three_platform_mechanism_cdi.csv`, reproduces **+0.558** (n = 10,
-_p_ = 0.093) — which is the *pre-correction* value that §16 explicitly retires.
-**The post-correction run's output was never saved, so neither +0.09 nor +0.19 can
-be reproduced from this repository.** All three values are null at n = 10, so no
-conclusion turns on it, but the point estimate should not be quoted until the
-comparison is re-run and its table committed.
+The Tahoe-vs-LINCS ranking was quoted as +0.09 (§16) and +0.19 (§31) while the
+only saved table reproduced the pre-correction +0.558. The comparison has been
+re-run on the corrected inputs and its output committed to
+`docs/source_data/three_platform_mechanism_cdi.csv`. The value is **+0.103**
+(n = 10, *p* = 0.777) — §16 was right to one decimal place, §31 was wrong.
+
+The re-run also **flipped one row**: LINCS-1 vs PRISM viability moves from
+−0.09 (n.s.) to **+0.279 (*p* = 0.023, 67 classes)**, which withdraws the
+readout-decoupling claim. See §16.
 
 Modelling drug-perturbation response in **Tahoe-100M** (Zhang et al. 2025,
 [doi:10.1101/2025.02.20.639398](https://doi.org/10.1101/2025.02.20.639398)).
@@ -692,9 +694,9 @@ and ten classes is still thin. MEK inhibitors (0.464) and glucocorticoid recepto
 agonists (0.452, n=31) sit at the context-specific end in both.
 
 **PRISM does not.** Against the same ranking, viability gives
-**rho = −0.18 to −0.23 (n.s.)** versus Tahoe, and — **⚠ the "not underpowered" reading here is superseded by §31: only 11–12
-classes clear the minimum class size on both platforms, and at that n even
-ρ = 0.6 would not reach significance** — **rho = −0.09 (n.s.)** versus LINCS
+**rho = −0.18 to −0.23 (n.s.)** versus Tahoe, and — **⚠ superseded twice: §31 shows the Tahoe comparisons rest on 11–12
+classes, not 67; and the 2026-09-08 re-run flips this LINCS-1-vs-PRISM value from
+−0.09 to +0.279 (p = 0.023). See §16** — **rho = −0.09 (n.s.)** versus LINCS
 phase 1. A consensus transcriptional rank built from Tahoe and LINCS correlates
 with viability at rho = −0.19 (p = 0.13, n = 69).
 
@@ -903,18 +905,43 @@ word-boundary matching on `PUTATIVE_TARGET` gives the correct 16.
 With every dataset on the same matched-null estimator, the mechanism claim of §5
 narrows sharply.
 
-| comparison | shared classes | rho |
-|---|---|---|
-| within Tahoe (Kruskal–Wallis across mechanisms) | 24 | H = 50.2, **p = 6.0×10⁻⁴** |
-| Tahoe vs LINCS phase 1 | 10 | **+0.09** (p = 0.80) |
-| Tahoe vs PRISM viability | 11 | −0.18 (n.s.) |
-| LINCS phase 1 vs PRISM viability | 67 | −0.09 (n.s.) |
+> **Re-run 2026-09-08; one row changed sign.** The table below is now generated
+> from `docs/source_data/three_platform_mechanism_cdi.csv`, which is committed —
+> the previous version of that table predated three of its four inputs, which is
+> why §16 and §31 disagreed and neither could be reproduced. The Tahoe rows are
+> confirmed. **The LINCS-1 vs PRISM row flips from −0.09 (n.s.) to +0.279
+> (p = 0.023)**, which changes the readout-decoupling conclusion; see below.
 
-Mechanism structures context-dependence *within* Tahoe, robustly. It does not
-transfer to another transcriptional platform, and it does not transfer to
-viability. The earlier ρ = +0.56 reported against LINCS was produced by the
-biased per-perturbation estimator and disappears once both sides use the same
-corrected one — it should not be cited.
+| comparison | shared classes | rho | *p* |
+|---|---:|---:|---:|
+| within Tahoe (Kruskal–Wallis across mechanisms) | 24 | H = 50.2 | **6.0×10⁻⁴** |
+| Tahoe vs LINCS phase 1 | 10 | +0.103 | 0.777 |
+| Tahoe vs PRISM viability | 11 | −0.155 | 0.650 |
+| **LINCS phase 1 vs PRISM viability** | **67** | **+0.279** | **0.023** |
+| LINCS-1 vs LINCS-2 | 19 | +0.511 | 0.026 |
+
+Mechanism structures context-dependence *within* Tahoe, robustly, and does not
+transfer to another transcriptional platform at the ten classes Tahoe shares with
+LINCS. The earlier ρ = +0.56 reported against LINCS was produced by the biased
+per-perturbation estimator and disappears once both sides use the same corrected
+one — it should not be cited. §31's +0.19 is likewise wrong; the value is
+**+0.103**.
+
+**The transcription-versus-viability claim does not survive the re-run.** On the
+best-powered comparison available — LINCS phase 1 against PRISM, 67 shared
+classes, an order of magnitude more than any Tahoe comparison — context-dependence
+now agrees **positively** between transcription and viability (ρ = +0.279,
+*p* = 0.023; on all annotated compounds rather than active ones, ρ = +0.353,
+*p* = 0.002 over 78 classes). The previously reported −0.09 came from the stale
+table. A consensus transcriptional rank against viability likewise moves from
+−0.19 to **+0.190** (*p* = 0.108, n = 73).
+
+Two cautions keep this from being overstated. Six pairwise comparisons were made
+and Bonferroni at α = 0.05 requires *p* < 0.0083, which +0.279 does not meet; and
+the effect is modest. The defensible statement is that **the evidence for
+readout decoupling is withdrawn** — what remains is weak positive agreement that
+does not survive correction for multiplicity, i.e. no strong evidence either
+way, rather than evidence of decoupling.
 
 ## 17. Genotype has no cross-validated predictive power; lineage has a little
 

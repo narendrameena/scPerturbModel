@@ -62,30 +62,46 @@ is little left to differ about. The rising limb replicates in LINCS transcriptio
 response (+74% vs +36%), which is why the ratio rises. A context-dependence index
 is therefore only comparable at matched dose.
 
-### Transcriptional and viability context-dependence cannot be shown to agree
+### Transcriptional and viability context-dependence agree weakly, if at all
 
 With every dataset on one corrected estimator, mechanism structures
 context-dependence *within* Tahoe (Kruskal–Wallis *P* = 6.0×10⁻⁴ across 24
-classes) and within PRISM (*P* = 2×10⁻¹⁶ across 67 classes), but we cannot show
-that the ordering transfers. Across the mechanism classes both platforms measure,
-ρ = −0.18 against PRISM viability (n = 11) and a null against LINCS phase 1 (n =
-10) — neither significant. [The LINCS point estimate is quoted as +0.09 in §16
-and +0.19 in §31 of RESULTS.md, and the only saved table reproduces the pre-
-correction +0.56; the post-correction run's output was not committed, so no
-point estimate is given here until it is re-run. All candidate values are null
-at n = 10.]
+classes) and within PRISM (*P* = 2×10⁻¹⁶ across 67 classes). Whether the ordering
+transfers between a transcriptional and a viability readout depends entirely on
+which platform pair is used, and only one of them is adequately powered.
 
-**This is an underpowered comparison, not a demonstrated decoupling.** Only
-**11–12 mechanism classes** clear the minimum class size on both platforms, and
-at that n even ρ = 0.6 would not reach significance, so these correlations are
-consistent with anything from strong agreement to strong disagreement. An earlier
-draft reported this as "ρ = −0.09 over 67 shared classes — a well-powered null";
-the class count was wrong by six-fold and the power claim was unsupportable. What
-the data support is the weaker statement that a transcriptional
-context-dependence index and a viability one are **not interchangeable without
-evidence**, and that the evidence is not yet available at this n. Establishing
-either agreement or decoupling needs a platform pair sharing far more mechanism
-classes than any we have.
+| comparison | classes | ρ | *p* |
+|---|---:|---:|---:|
+| Tahoe vs LINCS-1 (transcription vs transcription) | 10 | +0.103 | 0.78 |
+| Tahoe vs PRISM (transcription vs viability) | 11 | −0.155 | 0.65 |
+| **LINCS-1 vs PRISM (transcription vs viability)** | **67** | **+0.279** | **0.023** |
+
+The Tahoe comparisons rest on 10–11 mechanism classes, at which even ρ = 0.6
+would not reach significance; they are consistent with anything from strong
+agreement to strong disagreement and support no conclusion. **The informative
+comparison is LINCS-1 against PRISM**, which shares 67 classes — an order of
+magnitude more — and shows *positive* agreement (ρ = +0.279, *p* = 0.023; on all
+annotated rather than active compounds, +0.353 over 78 classes, *p* = 0.002). A
+consensus transcriptional rank against viability gives +0.190 (*p* = 0.108,
+n = 73).
+
+**An earlier version of this section claimed the opposite** — "ρ = −0.09 over 67
+shared classes, a well-powered null" — and a later draft restated it as a
+demonstrated absence of agreement. Both were wrong, for two different reasons. The
+class count was right for this pair but the correlation came from a table
+generated before three of its four inputs were re-run on the corrected estimator;
+regenerating it flips the sign. Separately, the *Tahoe* comparisons were quoted as
+though they carried the power of the 67-class one, which they do not.
+
+What the data now support is weak positive agreement rather than decoupling, with
+one caution: six pairwise comparisons were made, Bonferroni at α = 0.05 requires
+*p* < 0.0083, and +0.279 does not meet it. **The claim of readout decoupling is
+withdrawn.** A transcriptional and a viability context-dependence index should
+still not be treated as interchangeable without evidence, but the evidence
+available now points weakly toward agreement, not away from it.
+
+Generating table: `docs/source_data/three_platform_mechanism_cdi.csv`, re-run
+2026-09-08.
 
 ### Molecular state predicts the interaction; genotype does not
 

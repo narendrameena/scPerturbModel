@@ -326,3 +326,65 @@ Two things would prevent recurrence, and neither is expensive: keep prose that
 restates a table generated from that table, and treat "committed the corrected
 table" as part of the definition of a correction — the irreproducible ρ exists
 because a rerun's output was never saved.
+
+---
+
+# Re-run: the mechanism comparison, 2026-09-08
+
+The sweep found that the Tahoe-vs-LINCS mechanism correlation was quoted as +0.09
+(§16) and +0.19 (§31) while the only saved table reproduced +0.558 — the
+pre-correction value §16 retires — because the corrected run's output had never
+been committed. It has now been re-run and its table committed to
+`docs/source_data/`.
+
+**Cause.** `results/tables/three_platform_mechanism_cdi.csv` was generated
+2026-08-31. Three of its four inputs were regenerated on 2026-09-01 and
+2026-09-03 when the corrected estimator was applied. The table was never
+re-generated, so it silently described a superseded state. `results/` is
+gitignored, so nothing recorded that it had gone stale.
+
+**Result.** Two of §16's three rows are confirmed; the third changes sign.
+
+| comparison | classes | §16 (2026-09-03 prose) | re-run 2026-09-08 |
+|---|---:|---:|---:|
+| Tahoe vs LINCS-1 | 10 | +0.09 | **+0.103** (*p* = 0.78) |
+| Tahoe vs PRISM | 11 | −0.18 | **−0.155** (*p* = 0.65) |
+| LINCS-1 vs PRISM | 67 | −0.09 (n.s.) | **+0.279** (*p* = 0.023) |
+
+§16 was right to one decimal on the Tahoe rows; **§31's +0.19 was wrong** and the
+measurement paper's point estimate is restored to +0.103.
+
+## The readout-decoupling claim is withdrawn
+
+The third row is not a rounding difference. LINCS-1 against PRISM is the only
+adequately powered comparison in this analysis — 67 shared mechanism classes
+against 10–11 for either Tahoe comparison — and it moves from a null to
+**positive agreement between a transcriptional and a viability readout**. On all
+annotated compounds rather than active ones it is +0.353 over 78 classes
+(*p* = 0.002). A consensus transcriptional rank against viability moves from
+−0.19 to +0.190.
+
+This is the second time this claim has been wrong, each time for a different
+reason. It was first stated as "ρ = −0.09 over 67 shared classes, a well-powered
+null"; §31 showed the *Tahoe* comparisons rest on 11–12 classes and restated it as
+an absence of evidence. That restatement kept the −0.09, which the re-run now
+shows came from the stale table.
+
+**Held back from overstatement:** six pairwise comparisons were made, Bonferroni
+at α = 0.05 requires *p* < 0.0083, and +0.279 does not meet it. The defensible
+statement is that the evidence for decoupling is withdrawn and what remains is
+weak positive agreement — not that agreement is established. The measurement
+paper's section is retitled accordingly and now leads with the powered comparison
+rather than the underpowered ones.
+
+## The process fix
+
+`docs/source_data/` is a new tracked directory for small tables backing numbers
+quoted in either manuscript, with provenance recorded in its README: generating
+script, date, each input and its date. `results/` stays gitignored for figures and
+large intermediates.
+
+This closes the specific gap the sweep identified — "committed the corrected
+table" is now something that can be checked, rather than assumed. The rule it
+implements: **a number may appear in a manuscript only if the table that produced
+it is committed.**
