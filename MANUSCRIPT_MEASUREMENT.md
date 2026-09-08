@@ -113,47 +113,46 @@ At 737 PRISM cell lines the genotype scan recovers the clinical biomarker set de
 novo (TP53 with MDM2 inhibitors, BRAF with vemurafenib and dabrafenib, PIK3CA
 with alpelisib, KRAS with a MEK inhibitor; 80 associations at FDR < 0.05 over 1.5
 million tests), confirming the estimator and the genotype join. But out of
-sample, across 150 compounds with 5-fold cross-validated ridge:
-
-> ⚠ **Table traced 2026-09-08; three defects, correction pending a re-run.**
-> The 2026-09-07 audit could not locate this table's source. It is
-> `results/tables/expression_architecture.csv`, written by
-> `scripts/expression_gap_closure.py`. What that file shows:
->
-> * **The *R*² column is correct.** All five values — +0.0998, +0.0763, +0.0251,
->   +0.0075, +0.0012 — reproduce exactly.
-> * **The compound count is wrong.** The file holds **120** compounds, not 150.
-> * **The "compounds positive" column does not come from the same analysis as the
->   *R*² column.** From `r2_expression` the figure is 100.0%, not 99.2%; 99.2% is
->   the positive fraction of a *different* column (`r2_cnv_expr`, whose median is
->   +0.0801). Protein reads 98.3% not 88.3%, lineage 85.0% not 86.7%, copy number
->   63.3% not 57.5%, nonsynonymous 52.5% not 18.3%.
-> * **The last two rows are from a third source** (`genetic_architecture.py`),
->   whose current values are burden −0.0031 / 29.7% and synonymous −0.0077 /
->   24.3%, not −0.0023 / 32.0% and −0.0064 / 22.0%.
->
-> `expression_gap_closure.py` is re-running now; the table will be rewritten from
-> its output, on one source per column, once that completes. Until then treat the
-> *R*² column as verified and the rest as not.
+sample, across **120** compounds with 5-fold cross-validated ridge
+(`results/tables/expression_architecture.csv`):
 
 | predictor block | median CV *R*² | compounds positive |
-|---|---|---|
-| **baseline expression** (2,000 genes) | **+0.0998** | **99.2%** |
-| **baseline protein** (RPPA, 214 antibodies) | **+0.0763** | 88.3% |
-| lineage | +0.0251 | 86.7% |
-| copy number (2,000 genes) | +0.0075 | 57.5% |
-| nonsynonymous variants | +0.0012 | 18.3% |
-| mutational burden | −0.0023 | 32.0% |
-| synonymous variants | −0.0064 | 22.0% |
+|---|---:|---:|
+| **baseline expression** (2,000 genes) | **+0.0998** | **100.0%** |
+| **baseline protein** (RPPA, 214 antibodies) | **+0.0763** | 98.3% |
+| lineage | +0.0251 | 85.0% |
+| copy number (2,000 genes) | +0.0075 | 63.3% |
+| nonsynonymous variants | +0.0012 | 52.5% |
+
+*Mutational burden and synonymous variants are measurable only in the separate
+300-compound genotype partition (`genetic_architecture_summary.csv`), where they
+score **−0.0031 / 29.7%** and **−0.0077 / 24.3%** against that analysis's own
+lineage baseline of +0.0124 / 68.3%. They are reported separately rather than
+appended to the table above, because the two analyses use different compound sets
+and different line filters.*
+
+> *Corrected 2026-09-08.* An earlier version of this table gave 150 compounds and
+> a "compounds positive" column reading 99.2 / 88.3 / 86.7 / 57.5 / 18.3%. The
+> *R*² column was right, but the count was 120 and the percentages came from a
+> different analysis — 99.2% is the positive fraction of `r2_cnv_expr` (median
+> +0.0801), not of the `r2_expression` printed beside it. The burden and
+> synonymous rows were a third source. Verified against a fresh re-run, which
+> reproduces the file exactly.
+>
+> Note that `RESULTS.md` §17 reports this comparison as 4.6× on a restricted line
+> set and gives +0.0927 / 92.5% for expression. That analysis is internally
+> consistent but is *not* the one tabulated here, and its exact filter has not
+> been traced to a committed table. The values above are the ones this paper
+> uses, from a single named file.
 
 **Genome-wide mutation status carries no generalisable information; baseline
-molecular state does.** Expression beats lineage by 4.6× (p = 4.7×10⁻²⁰) and
-lineage adds nothing on top of expression, so lineage was acting as a coarse
-proxy for expression state. Copy number appears to beat mutations (+0.0064, p = 5.7×10⁻⁴), as Schlüter &
-Schönhuth report, **but that advantage is withdrawn**: the 150 compounds were
+molecular state does.** Expression beats lineage by 4.0× (+0.0998 against +0.0251) and lineage adds
+nothing on top of expression, so lineage was acting as a coarse proxy for
+expression state. Copy number appears to beat mutations (+0.0064, p = 5.7×10⁻⁴), as Schlüter &
+Schönhuth report, **but that advantage is withdrawn**: the 120 compounds were
 treated as independent when their residuals correlate at mean r = +0.23, an
 effective n ≈ 11, and a compound-cluster bootstrap returns CI [−0.002, +0.015],
-including zero. What survives is that copy number trails expression by 0.088 (p
+including zero. What survives is that copy number trails expression by 0.092 (p
 = 3.3×10⁻²¹) and adds nothing to it — the joint block scores below expression
 alone. The
 absolute effect remains modest (≈9% of variance) but is highly consistent across
