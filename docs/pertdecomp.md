@@ -18,7 +18,7 @@ guard rail with a measured cost.
 | 1 | Estimate interaction as residual **variance** | Absorbs noise, which does not cancel | 82% "interaction" vs a true value near 0 on the same Tahoe conditions |
 | 2 | Pool **same-batch** comparisons | Batch state is shared signal | Within-plate pairs agree ~7× better than cross-plate; share 41% vs 28% |
 | 3 | Use the **in-sample mean** as the shared response | Residuals sum to zero, forcing E[r_a·r_b] = −σ²/n | Drove per-drug covariance negative for 21 of 24 drugs; clamping then produced exact zeros |
-| 4 | Treat **different doses** as replicates | Doses are different conditions, not repeats | Tahoe: true replicates covary −0.0031, cross-dose +0.0062, p = 3×10⁻¹²⁰ |
+| 4 | Treat **different doses** as replicates | Doses are different conditions, not repeats | Tahoe: true replicates covary +0.00025, cross-dose +0.0058 — 23× larger, p = 3×10⁻¹²⁰ |
 
 Failure 3 has a subtlety worth stating because we got it wrong twice: the
 obvious fix, leave-one-*condition*-out, makes it **worse**, since the mean

@@ -697,3 +697,48 @@ critical tables stale in turn. All regenerated, and every number held:
 its *z* moved 0.629 → 0.959, *p* 0.529 → 0.338. Non-significant either way, and
 this table is not quoted — `RESULTS.md`'s survival numbers come from the
 *adjusted* analysis, a different table. No claim moves.
+
+## The predictor table, now genuinely verified
+
+`expression_gap_closure.py` completed without the timeout cap and reproduces all
+five blocks **exactly**: +0.0998 / 100.0%, +0.0763 / 98.3%, +0.0251 / 85.0%,
++0.0075 / 63.3%, +0.0012 / 52.5%, n = 120. The verification I claimed prematurely
+earlier today has now actually happened, and the manuscript note says so rather
+than saying it twice.
+
+## A sign that had been wrong in two documents
+
+`methodology_evidence.csv` re-ran with its D2 row moving from −0.00307 to
++0.00687. Chasing it: `docs/methodology_rationale.md` §15 and `docs/pertdecomp.md`
+both argued against cross-dose pairing by quoting "true replicates covary at
+**−0.00307**, cross-dose pairs at +0.00620" — replicates agreeing *less* than
+different doses.
+
+The negative was an artefact of a superseded prior, and
+`methodology_evidence.py` says so in its own source comment: the in-sample and
+leave-one-condition-out priors give covariances near −σ²/n, and "the negative
+numbers were arithmetic, not absence of signal". Under the leave-one-context-out
+prior the value is slightly positive.
+
+Authoritative values, from `tahoe_true_replicates.csv` regenerated today:
+
+| pairing | pairs | raw covariance | share |
+|---|---:|---:|---:|
+| true replicate (same line, drug, dose) | 11,492 | **+0.00025** | 0.46% |
+| cross-dose (previous pairing) | 67,744 | **+0.00583** | 9.2% |
+
+**The argument survives; the number did not.** The ordering that carries it —
+replicates agreeing less than cross-dose pairs — holds by a factor of 23. Both
+documents corrected, with the reason recorded rather than the value quietly
+swapped. Note also that the corrected shares here (0.46% and 9.2%) are exactly
+the figures already used in the manuscripts, so those were right while the
+supporting covariances beside them were not.
+
+## Confirmed unchanged this batch
+
+* **Methylation null holds**: 0 of 20 features at FDR < 0.10 before and after
+  (`epigenome_vs_context.csv`, min *q* 0.578 → 0.643).
+* `target_abundance_pgx.csv` shifted on 256 rows but is not quoted in prose.
+* `methodology_evidence.csv`'s other rows moved slightly (D3 additive prior
+  0.4490 → 0.4422, D6 dose trend 0.3333 → 0.1557) without changing which option
+  each decision selects.

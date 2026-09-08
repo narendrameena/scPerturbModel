@@ -269,8 +269,18 @@ plates count as replicates.
 **Alternative rejected.** *Treating different doses of the same (line, drug) as
 replicates* — the original pairing. Measured on identical (line, drug) sets, the
 two disagree at p = 3×10⁻¹²⁰ and in the wrong direction: true replicates covary
-at −0.00307, cross-dose pairs at +0.00620. Replicates agreeing *less* than
-different doses cannot be reproducible interaction.
+at **+0.00025** (11,492 pairs, a 0.46% share) against cross-dose pairs at
+**+0.00583** (67,744 pairs, 9.2%). Replicates agreeing *less* than different doses
+cannot be reproducible interaction.
+
+> *Corrected 2026-09-08.* This previously read "−0.00307 … +0.00620". The negative
+> figure came from a superseded prior — `methodology_evidence.py` says so in its
+> own comment, that the in-sample and leave-one-condition-out priors give
+> covariances near −σ²/n and the negatives were "arithmetic, not absence of
+> signal". Under the leave-one-context-out prior the true-replicate covariance is
+> slightly *positive* rather than negative. **The argument is unaffected** — the
+> ordering that carries it, replicates agreeing less than cross-dose pairs, holds
+> by a factor of 23. Source: `results/tables/tahoe_true_replicates.csv`.
 
 **Consequence, reported rather than hidden.** This leaves Tahoe with 6,482
 usable pairs from 25 of 379 drugs, which is not enough. The honest output is a
