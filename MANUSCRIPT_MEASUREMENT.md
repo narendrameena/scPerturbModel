@@ -115,13 +115,26 @@ with alpelisib, KRAS with a MEK inhibitor; 80 associations at FDR < 0.05 over 1.
 million tests), confirming the estimator and the genotype join. But out of
 sample, across 150 compounds with 5-fold cross-validated ridge:
 
-> ⚠ **Unverified table.** These values come from a 150-compound run whose output
-> table is not in `results/tables/`, so they could not be checked in the
-> 2026-09-07 number audit. The traceable analysis in `RESULTS.md` is a
-> **120**-compound version restricted to lines on which every block is measurable,
-> and it gives baseline expression **+0.0927 / 92.5%**, not +0.0998 / 99.2%.
-> Regenerate before use. Note also that 99.2% elsewhere in this project denotes a
-> different statistic — 119/120 compounds beating their own permutation null.
+> ⚠ **Table traced 2026-09-08; three defects, correction pending a re-run.**
+> The 2026-09-07 audit could not locate this table's source. It is
+> `results/tables/expression_architecture.csv`, written by
+> `scripts/expression_gap_closure.py`. What that file shows:
+>
+> * **The *R*² column is correct.** All five values — +0.0998, +0.0763, +0.0251,
+>   +0.0075, +0.0012 — reproduce exactly.
+> * **The compound count is wrong.** The file holds **120** compounds, not 150.
+> * **The "compounds positive" column does not come from the same analysis as the
+>   *R*² column.** From `r2_expression` the figure is 100.0%, not 99.2%; 99.2% is
+>   the positive fraction of a *different* column (`r2_cnv_expr`, whose median is
+>   +0.0801). Protein reads 98.3% not 88.3%, lineage 85.0% not 86.7%, copy number
+>   63.3% not 57.5%, nonsynonymous 52.5% not 18.3%.
+> * **The last two rows are from a third source** (`genetic_architecture.py`),
+>   whose current values are burden −0.0031 / 29.7% and synonymous −0.0077 /
+>   24.3%, not −0.0023 / 32.0% and −0.0064 / 22.0%.
+>
+> `expression_gap_closure.py` is re-running now; the table will be rewritten from
+> its output, on one source per column, once that completes. Until then treat the
+> *R*² column as verified and the rest as not.
 
 | predictor block | median CV *R*² | compounds positive |
 |---|---|---|

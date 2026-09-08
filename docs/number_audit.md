@@ -523,3 +523,73 @@ committed to `docs/source_data/`.
 | bugs fixed | 1, with an AST regression test |
 | claims materially changed | **3** — readout decoupling withdrawn; CDI vs target expression level now nominally significant; transcription transfer 46% → 27.3% |
 | scooping risks resolved | 2 of 2, one a material partial overlap |
+
+---
+
+# Rerun of the 49 stale-output scripts, 2026-09-08 (in progress)
+
+Snapshot of 142 tables taken first, so every regenerated table is diffed against
+what it replaced. Deltas below 1e-4 are classed as float jitter, not results.
+
+## Status
+
+14 of 49 scripts complete, 0 failed. **23 tables re-run: 19 identical, 2 float
+noise, 2 genuinely changed.** Stale outputs 124 → 115.
+
+## Changed
+
+**`variance_component_comparison.csv` — §21 reversed.** Reported above; the
+mixed-model agreement claim is withdrawn and the tool's failure mode inverts.
+
+**`sparse_benchmark.csv` — one figure.** Permutation jitter only. Every aggregate
+claim holds (Higher Criticism rejects 100% at *k* = 4, 50% at *k* = 8, 25% at
+*k* = 16, 0% at the null; the pooled test flat at 12% throughout). Precision at
+*k* = 4 is **92%**, not the published 98%. Corrected; not quoted in either
+manuscript.
+
+## Confirmed unchanged
+
+Nineteen tables reproduce exactly, including several carrying real claims:
+`estimator_simulation.csv` (§19's slope 0.950, *R*² 0.9995, 0.008 at the null),
+`spectrum_benchmark.csv` (the spectral estimator's rejection),
+`two_stage_benchmark.csv` and `two_stage_discovery.csv` (the two-stage method's
+rejection), `cell_cycle_log2or.csv` (the paper replication),
+`replication_correlations.csv` (plate 6 vs 14), and all dataset-fact tables.
+
+Two tables differ only in the sixth decimal of an energy distance
+(`published_methods_etest.csv`, `atac_gene_scores_etest.csv`); *p* and *q* are
+identical.
+
+## The predictor-block table, traced
+
+The 2026-09-07 audit flagged the measurement paper's predictor-block table as
+unverifiable — its source was not in `results/tables/`. **It is
+`expression_architecture.csv`**, written by `expression_gap_closure.py`, and
+finding it turns one vague flag into three specific defects:
+
+| | paper | file |
+|---|---|---|
+| median CV *R*², all five blocks | +0.0998, +0.0763, +0.0251, +0.0075, +0.0012 | **identical** |
+| compounds | 150 | **120** |
+| expression, % positive | 99.2% | **100.0%** (99.2% is `r2_cnv_expr`, median +0.0801) |
+| protein, % positive | 88.3% | **98.3%** |
+| lineage, % positive | 86.7% | **85.0%** |
+| copy number, % positive | 57.5% | **63.3%** |
+| nonsynonymous, % positive | 18.3% | **52.5%** |
+
+So the *R*² column is right and the "compounds positive" column beside it comes
+from a different analysis — the two were merged into one table. The last two rows
+(mutational burden, synonymous) come from a third source,
+`genetic_architecture.py`, whose current values are −0.0031 / 29.7% and
+−0.0077 / 24.3% against the paper's −0.0023 / 32.0% and −0.0064 / 22.0%.
+
+The flag in the manuscript now records this precisely. The table will be rebuilt
+on one source per column once `expression_gap_closure.py` finishes re-running.
+
+## Note on what this exercise is worth
+
+Two conclusions have now changed from re-running stale tables (§21's mixed-model
+agreement, §16's readout decoupling) and one manuscript table has been shown to
+merge three sources. The remaining 35 scripts are the heavy ones — Tahoe and
+LINCS at full scale — and are where the estimator correction is most likely to
+bite, since those are the analyses that use it directly.
