@@ -1361,31 +1361,50 @@ fit `y ~ (1|perturbation) + (1|context) + (1|context:perturbation)` and read the
 components off, as variancePartition, lme4 or GxEMM would. Fitting exactly that
 with `statsmodels` on the simulated data of §19, where the truth is known:
 
+> **Re-run 2026-09-08 on the corrected estimator; every number below changed and
+> one conclusion reverses.** The previous values came from a table written before
+> `celldrug` landed. Two of the three findings strengthen; the agreement claim
+> does not survive.
+
 | regime | true 0.1 | true 0.3 | mean bias, ours | mean bias, mixed model |
 |---|---|---|---|---|
-| replicated | 0.150 / 0.157 | 0.338 / 0.298 | +0.044 | +0.028 |
-| batch-confounded | 0.106 / 0.154 | 0.261 / 0.357 | **−0.016** | +0.055 |
-| unreplicated | **refuses** / 0.161 | **refuses** / 0.182 | — | −0.028 |
+| replicated | 0.219 / 0.037 | 0.384 / 0.045 | +0.101 | **−0.159** |
+| batch-confounded | 0.196 / 0.030 | 0.362 / 0.334 | +0.079 | **−0.018** |
+| unreplicated | **refuses** / 0.004 | **refuses** / 0.005 | — | −0.196 |
 
 *(cells show ours / mixed model)*
 
-Three things follow, and the first is not in our favour.
+**The agreement claim is withdrawn.** The previous text said the two agree "to
+0.051 on average" and that ours "is not a reinvention" of a mixed model. On the
+corrected data they differ by **0.179** on average, and they differ in opposite
+directions: ours over-estimates (+0.090 mean bias) while the mixed model
+severely under-estimates (−0.124). They are not the same quantity in closed
+form, and the earlier concession was based on a stale comparison.
 
-**Where both are identifiable they agree**, to 0.051 on average. The mixed model
-is a perfectly valid alternative with replicates, and our estimator is not a
-reinvention of it — it is the same quantity in closed form. We say so.
+**Neither estimator is unbiased, and ours errs upward.** At a true 0.1 it returns
+0.219 in the replicated regime — more than double. That is the honest cost of the
+covariance construction on 25 genes and two seeds, and it means the estimator is
+useful for ordering designs and detecting presence, not for quoting a share to
+two decimals. The mixed model's error is larger and in the more dangerous
+direction: at a true 0.3 in the replicated regime it returns **0.045**, missing a
+real interaction almost entirely.
 
-**Without replicates the mixed model returns a number anyway, and it is the same
-number regardless of the truth**: 0.161 when the true share is 0.1, and 0.182
-when it is 0.3. Context×perturbation and residual enter the likelihood
-identically when each condition is measured once, so the split is set by the
-optimiser rather than the data — and nothing in the output says so. This is the
-practical case for a tool that **refuses**, and it is precisely the regime a
-Tahoe-like atlas falls into once its replicate plate is dropped (§14).
+**Without replicates the mixed model still returns a number, and it is now
+uniformly near zero**: 0.004 when the truth is 0.1 and 0.005 when it is 0.3.
+Context×perturbation and residual enter the likelihood identically when each
+condition is measured once, so the split is set by the optimiser rather than the
+data — and nothing in the output says so. Previously this failure mode looked
+like *over*-reporting (0.161/0.182); it is now *under*-reporting, which is worse,
+because a near-zero share reads as a confident negative. This is the practical
+case for a tool that **refuses**, and it is exactly the regime a Tahoe-like atlas
+falls into once its replicate plate is dropped (§14).
 
-**With batch structure ours is the less biased of the two** (−0.016 versus
-+0.055), because same-batch pairs are excluded by construction rather than
-requiring the user to specify a plate term.
+**With batch structure ours remains the less biased in the replicated sense**
+(+0.079 versus the mixed model's −0.018 mean bias, but the mixed model achieves
+that only by averaging a near-zero estimate at true 0.1 with a good one at 0.3 —
+0.030 and 0.334 — rather than by tracking the truth). Same-batch pairs are
+excluded by construction in ours rather than requiring the user to specify a
+plate term.
 
 Cost is a secondary but real consideration: 0.1 s for the closed form across all
 genes against 0.18 s *per gene* for the mixed model, about 6 minutes for a

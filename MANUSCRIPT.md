@@ -431,12 +431,16 @@ removing the whole context eliminates the coupling. We additionally report the
 interaction against a **matched cross-context null**, which removes the residual
 construction offset without assuming its magnitude; where the signal is strong
 this changes nothing (LINCS phase 2: 45% → 61%), and where it is weak it was the
-entire result. These guards are released as `pertdecomp`. Against a standard mixed-model
-decomposition on the same simulated data, the two agree to 0.051 where both are
-identifiable — ours is not a reinvention — but without replicates the mixed model
-returns 0.161 for a true share of 0.1 and 0.182 for 0.3, a number set by the
-optimiser rather than the data and flagged by nothing in its output. That is the
-case for a tool that refuses.
+entire result. These guards are released as `pertdecomp`. Against a standard mixed-model decomposition on the same simulated data the two
+do *not* agree: they differ by 0.179 on average and in opposite directions, ours
+over-estimating (mean bias +0.090) and the mixed model under-estimating
+(−0.124), so at a true share of 0.3 with replicates it returns 0.045 and misses
+a real interaction almost entirely. Neither is unbiased and ours errs upward,
+which makes it useful for ordering designs and detecting presence rather than
+for quoting a share precisely. Without replicates the mixed model still returns
+a number — 0.004 for a true 0.1 and 0.005 for 0.3 — set by the optimiser rather
+than the data and flagged by nothing in its output. A near-zero share reads as a
+confident negative, which is the case for a tool that refuses.
 
 ### The replicate structure exists, and discarding it doubles the estimate
 
