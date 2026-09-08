@@ -20,7 +20,7 @@ gap is a much harder test than agreement between two transcriptional platforms:
 it says the ordering is a property of the drug, not of the readout.
 
 Outputs: results/tables/prism_vs_tahoe_cdi.csv
-         results/tables/three_platform_mechanism_cdi.csv
+         results/tables/prism_tahoe_lincs_overlap.csv
          figure bundle results/figures/13_prism/prism_vs_tahoe/
 """
 import re
@@ -89,7 +89,12 @@ def main():
     if lf.exists():
         L = pd.read_csv(lf, index_col=0)
         rows = rows.join(L[["lincs"]], how="left")
-    rows.to_csv(TAB / "three_platform_mechanism_cdi.csv")
+    # NOT three_platform_mechanism_cdi.csv: three_platform_synthesis.py writes
+    # that name with a different schema (per-MoA CDI, one column per platform),
+    # and manuscript_figures.py reads it expecting those columns. Whichever
+    # script ran last used to win, so running this one afterwards silently
+    # dropped a panel from Figure 3 rather than failing.
+    rows.to_csv(TAB / "prism_tahoe_lincs_overlap.csv")
     n3 = rows.lincs.notna().sum() if "lincs" in rows else 0
     print(f"\nclasses with all three platforms: {n3}")
 

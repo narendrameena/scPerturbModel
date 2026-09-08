@@ -568,3 +568,50 @@ def test_freshness_check_detects_a_stale_output():
     finally:
         script.unlink(missing_ok=True)
         out.unlink(missing_ok=True)
+
+
+def test_no_two_scripts_write_the_same_table():
+    """Two scripts writing one filename means whichever ran last wins.
+
+    `prism_vs_tahoe.py` and `three_platform_synthesis.py` both wrote
+    `three_platform_mechanism_cdi.csv`, with different schemas: a 12x6 overlap
+    table and a 179x5 per-mechanism CDI matrix. `manuscript_figures.py` reads
+    that name and guards on `{"Tahoe","PRISM"} <= columns`, so when the wrong
+    writer ran last the guard failed and a panel silently vanished from the
+    figure -- no error, no warning, just a missing plot. It also made the file
+    look mysteriously "stale" during the freshness audit, because its content
+    kept changing for reasons unrelated to its own inputs.
+    """
+    import ast
+    import re
+    from collections import defaultdict
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parent.parent
+    writers = defaultdict(set)
+    for f in sorted((root / "scripts").glob("*.py")):
+        try:
+            tree = ast.parse(f.read_text())
+        except SyntaxError:
+            continue
+        for n in ast.walk(tree):
+            if not isinstance(n, ast.Call):
+                continue
+            fn = n.func
+            name = fn.attr if isinstance(fn, ast.Attribute) else ""
+            if name != "to_csv":
+                continue
+            # An f-string like f"eval{suf}.csv" parses into the constants
+            # "eval" and ".csv"; the bare extension is not a filename and must
+            # not be treated as one, or every templated writer collides.
+            for lit in (c.value for c in ast.walk(n)
+                        if isinstance(c, ast.Constant)
+                        and isinstance(c.value, str)):
+                if not lit.endswith((".csv", ".csv.gz")) or "{" in lit:
+                    continue
+                stem = Path(lit).name.split(".")[0]
+                if stem:
+                    writers[Path(lit).name].add(f.name)
+    clashes = {t: sorted(w) for t, w in writers.items() if len(w) > 1}
+    assert not clashes, "table written by more than one script:\n  " + "\n  ".join(
+        f"{t}: {', '.join(w)}" for t, w in sorted(clashes.items()))

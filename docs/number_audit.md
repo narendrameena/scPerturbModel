@@ -629,3 +629,32 @@ main input, which is the strongest form of confirmation available here.
 
 This is also the first time the dependency check has caught a *cascade* rather
 than a single stale file — the failure mode it was built for.
+
+## A filename collision, found 2026-09-08
+
+The freshness audit kept reporting `three_platform_mechanism_cdi.csv` as behaving
+oddly — content changing for reasons unrelated to its own inputs. The cause is not
+staleness at all.
+
+**Two scripts wrote that filename with different schemas.**
+`three_platform_synthesis.py` writes the per-mechanism CDI matrix (179 × 4: one
+column per platform). `prism_vs_tahoe.py` wrote a 12 × 6 overlap table
+(`m, prism, n_prism, tahoe, n_tahoe, lincs`) to the same path. Whichever ran last
+won.
+
+The consequence was silent. `manuscript_figures.py` reads that name and guards on
+`{"Tahoe", "PRISM"} <= set(tp.columns)`; under the wrong writer the guard simply
+failed, so **a panel disappeared from Figure 3 with no error and no warning**. It
+also explains why this table looked mysteriously stale during the audit — the
+mechanism comparison's apparent instability was partly this, not just the 08-31
+timestamp.
+
+Fixed by renaming `prism_vs_tahoe.py`'s output to `prism_tahoe_lincs_overlap.csv`.
+Verified: running `prism_vs_tahoe.py` after `three_platform_synthesis.py` now
+leaves the mechanism table intact (ρ = +0.279, *p* = 0.022, n = 67 unchanged).
+
+A test now asserts no two scripts write the same table name, validated both ways —
+it names this exact collision on the pre-fix source and passes on the fixed tree.
+Writing the detector required care: an f-string like `f"eval{suf}.csv"` parses
+into the constants `"eval"` and `".csv"`, and treating the bare extension as a
+filename makes twelve unrelated scripts appear to collide.
