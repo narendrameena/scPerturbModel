@@ -63,17 +63,34 @@ work are now withdrawn, and one of them (W3) was withdrawn only after a stale
 table was re-run today. That is the correct outcome each time, but it is also the
 reason to treat any remaining un-re-run analysis as provisional.
 
-## Unresolved scooping risk
+## Scooping risk: resolved 2026-09-08
 
-Both items from the original audit remain **unverified by direct fetch**:
+Both items were verified from published abstracts via the Europe PMC REST API,
+which serves records the publisher sites block. Full detail in
+`docs/scooping_check.md`.
 
-1. **Svensson et al.** (bioRxiv, June 2026) — a Tahoe author building the same
-   baseline ladder on the same data. The sweep found no residual analysis or
-   additive/interaction split, which is the opening, but the preprint has not
-   been read in full.
-2. **Shen et al.** (Research Square 2026) — reportedly defines a
-   "context-robustness" axis on Tahoe-100M. Direct fetch returned HTTP 403.
+- **Svensson et al.** (Rhaister, bioRxiv 2026) — **not a scoop.** A predictor on
+  screen-level summary statistics; no detection limit, no design calculation. It
+  does overlap the few-shot "cheap method matches expensive model" result, which
+  was already dropped from both papers in the split.
+- **Shen `rs-10448056`** — defines a per-drug "context-robustness" score, so the
+  old suspicion was correct. **Low impact**: it overlaps our mechanism ranking,
+  which is already withdrawn for failing to transfer across platforms.
+- **Shen `rs-10846736` (2026-09-01)** — **a material partial overlap, and new.**
+  Posted a week before this check, so the old audit could not have found it. It
+  independently establishes that Tahoe's context-specific residual is only weakly
+  reproducible (median repeat reliability 0.067 over 107 replicated drugs) and
+  that this **caps what any context predictor can achieve**, concluding that
+  "benchmarks should report repeatability ceilings alongside model skill".
 
-Neither touches N1 or N2, which is where the design paper's novelty sits. Both
-should be read before submission; this session's web-search budget was exhausted
-and could not settle them.
+**Effect on the tally above: none of N1–N7 is withdrawn.** The design
+calculation, the 38-dataset survey, the cells-vs-contexts exchange rate and both
+model rules are untouched by all three.
+
+**Effect on the framing: substantial.** The motivating observation — that Tahoe's
+context-specific signal is too weak to support what is asked of it — is now
+published by someone else. The design paper must cite `rs-10846736` and position
+its contribution as what he does not do: turning a post-hoc, single-atlas
+reliability measurement into a **prospective design calculation validated across
+atlases**. That is still novel; it is a narrower claim than the paper currently
+implies.

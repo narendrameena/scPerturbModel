@@ -80,8 +80,10 @@ def load_lincs(gctx, inst_info, gene_info, tag):
     genes = np.array([sym.get(c, c) for c in M.columns])
     X = M.to_numpy(dtype=np.float32)
     out = {}
-    for k, gg in meta.groupby("k", observed=True):
-        pos = {c: i for i, c in enumerate(M.index)}
+    # built once: M.index is fixed, and rebuilding it per compound made this
+    # loop quadratic in the number of instances
+    pos = {c: i for i, c in enumerate(M.index)}
+    for cpd, gg in meta.groupby("k", observed=True):
         by_line = {}
         acc = {}
         for cid, gl in gg.groupby("cell_id", observed=True):
@@ -93,17 +95,23 @@ def load_lincs(gctx, inst_info, gene_info, tag):
             # groups. Accumulate and average instead. NPC.CAS9 is a Cas9
             # derivative rather than the same culture, so this is a compromise;
             # it is at least no longer a silent last-wins.
-            k = norm(str(cid).split(".")[0])
-            acc.setdefault(k, []).append(X[ii])
-        for k, mats in acc.items():
-            by_line[k] = np.concatenate(mats, axis=0).mean(0)
+            #
+            # This variable MUST NOT be called `k`: it used to be, which rebound
+            # the enclosing compound key to a cell line and keyed every profile
+            # (line, last-line-seen) instead of (line, compound). The two dicts
+            # then shared no keys and every cross-laboratory comparison silently
+            # returned zero pairs.
+            ln = norm(str(cid).split(".")[0])
+            acc.setdefault(ln, []).append(X[ii])
+        for ln, mats in acc.items():
+            by_line[ln] = np.concatenate(mats, axis=0).mean(0)
         if len(by_line) < 2:
             continue
         names = list(by_line)
         A = np.stack([by_line[c] for c in names])
         tot = A.sum(0)
         for j, c in enumerate(names):
-            out[(c, k)] = A[j] - (tot - A[j]) / (len(names) - 1)
+            out[(c, cpd)] = A[j] - (tot - A[j]) / (len(names) - 1)
     # remove each line's general response before calling the rest a
     # cell-drug relation -- see celldrug.remove_line_effect_profiles
     return remove_line_effect_profiles(out), genes

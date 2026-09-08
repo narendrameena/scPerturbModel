@@ -449,3 +449,60 @@ def test_five_atlas_table_matches_the_code():
         got = min_detectable_share(c, p_, r, SNR)
         assert abs(got - floor) < 5e-5, f"{name}: table {floor}, code {got:.4f}"
         assert (obs > got) is resolvable, name
+
+
+def test_no_inner_loop_rebinds_an_enclosing_loop_variable():
+    """Guard the bug class that silently broke the cross-laboratory arm.
+
+    In `cross_lab_transcription.load_lincs` an inner loop over cell lines was
+    written `for k, ...` while the enclosing loop over compounds was also `k`.
+    The compound key was therefore overwritten by a cell line, and every profile
+    was stored under (line, last-line-seen) instead of (line, compound). The two
+    datasets then shared no keys, so every cross-laboratory comparison returned
+    zero pairs -- silently, with exit code 0 and a plausible-looking figure.
+
+    The pattern is only dangerous when the shadowed name is read again after the
+    inner loop, which is what this checks. Validated against the pre-fix source:
+    it flags that file and no other in the tree.
+    """
+    import ast
+    from pathlib import Path
+
+    def targets(node):
+        return {n.id for n in ast.walk(node.target) if isinstance(n, ast.Name)}
+
+    def read_after(outer, name, inner):
+        seen = False
+        for st in outer.body:
+            if st is inner:
+                seen = True
+                continue
+            if not seen:
+                continue
+            for n in ast.walk(st):
+                if isinstance(n, ast.Name) and n.id == name \
+                        and isinstance(n.ctx, ast.Load):
+                    return True
+        return False
+
+    root = Path(__file__).resolve().parent.parent
+    offenders = []
+    for f in sorted(list((root / "scripts").glob("*.py"))
+                    + list((root / "src").rglob("*.py"))):
+        try:
+            tree = ast.parse(f.read_text())
+        except SyntaxError:
+            continue
+        for outer in ast.walk(tree):
+            if not isinstance(outer, ast.For):
+                continue
+            ot = targets(outer)
+            for inner in ast.walk(outer):
+                if inner is outer or not isinstance(inner, ast.For):
+                    continue
+                for name in ot & targets(inner):
+                    if read_after(outer, name, inner):
+                        offenders.append(
+                            f"{f.relative_to(root)}:{inner.lineno} rebinds "
+                            f"'{name}' from the loop at line {outer.lineno}")
+    assert not offenders, "loop-variable shadowing:\n  " + "\n  ".join(offenders)
