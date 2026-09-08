@@ -8,9 +8,9 @@ reproducible fraction (all),0.57901158299697
 reproducible fraction (reliability-selected control),0.4934256055363321
 share of loss from changing assay within a lab,0.8089187761964248
 share of loss from changing laboratory,0.19108122380357515
-reproducible fraction (all) CI low,0.4898056855957045
-reproducible fraction (all) CI high,0.7746310267928422
-reproducible fraction (validated) CI low,0.4698169148303475
-reproducible fraction (validated) CI high,1.161585289074939
-laboratory share of loss CI low,-0.05735203674475615
-laboratory share of loss CI high,0.3754941811311768
+reproducible fraction (all) CI low,0.4894367303269998
+reproducible fraction (all) CI high,0.7714280118307704
+reproducible fraction (validated) CI low,0.45430330272113045
+reproducible fraction (validated) CI high,1.1692058026525252
+laboratory share of loss CI low,-0.04877171647498782
+laboratory share of loss CI high,0.37328031172609

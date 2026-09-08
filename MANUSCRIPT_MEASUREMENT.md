@@ -204,9 +204,10 @@ apportionment must be computed on compounds all three rungs share: on the 1,435 
 123 / 187 different compounds each rung happened to cover, it inverts to 84%
 laboratory, which is what an earlier draft reported and what its title asserted.
 
-Transfer scales steeply with signal strength (ρ = +0.54, *P* = 1.8×10⁻²⁹): the
-strongest quartile of compounds transfers *at* the within-laboratory ceiling,
-the weakest at 36%.
+Transfer scales with signal strength (ρ = +0.496, *P* = 1.6×10⁻¹⁰, n = 147): the
+strongest quartile of compounds transfers *at* the within-laboratory ceiling, the
+weakest at about a third of it. The middle two quartiles are within noise of each
+other, so this separates strong from weak rather than ordering all four.
 
 The result is a property of laboratories rather than of a killing assay, though
 transcription transfers considerably worse than viability. On the matched set —

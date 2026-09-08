@@ -1128,18 +1128,25 @@ trusting the label.
 
 ### Transfer scales steeply with signal strength
 
-ρ = +0.54, p = 1.8×10⁻²⁹, n = 364:
+ρ = **+0.496**, p = 1.6×10⁻¹⁰, **n = 147**:
 
 | interaction strength quartile | cross-lab r | fraction of ceiling |
 |---|---|---|
-| Q1 (weakest) | 0.165 | 36% |
-| Q2 | 0.230 | 51% |
-| Q3 | 0.378 | 83% |
+| Q1 (weakest) | 0.159 | 35% |
+| Q2 | 0.343 | 75% |
+| Q3 | 0.322 | 71% |
 | Q4 (strongest) | 0.455 | **100%** |
 
-The strongest quartile transfers at the within-lab ceiling — perfectly. Weak
-compounds do not transfer at all, and modelling them across atlases is chasing
-noise.
+The strongest quartile transfers at the within-lab ceiling; the weakest at about
+a third of it. The ordering is no longer monotonic — Q2 and Q3 are within noise
+of each other — so the claim is that strong and weak compounds differ, not that
+transfer rises smoothly across quartiles.
+
+*(Re-run 2026-09-08. The previous values ρ = +0.54, p = 1.8×10⁻²⁹, n = 364 came
+from a table written 58 minutes before `celldrug.remove_line_effect` landed. The
+correction drops n from 364 to 147, because a compound needs a minimum number of
+co-measured compounds before its line effect can be removed leave-one-out; the
+smaller, cleaner set gives a weaker but still clear relationship.)*
 
 ### It is a property of laboratories, not of the killing assay
 

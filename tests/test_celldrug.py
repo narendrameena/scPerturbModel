@@ -10,6 +10,7 @@ as context-dependence, inflating it by roughly half.
 The tests below plant a known general-sensitivity term and check that the
 estimators do not pay for it.
 """
+import sys
 import numpy as np
 import pandas as pd
 import pytest
@@ -506,3 +507,64 @@ def test_no_inner_loop_rebinds_an_enclosing_loop_variable():
                             f"{f.relative_to(root)}:{inner.lineno} rebinds "
                             f"'{name}' from the loop at line {outer.lineno}")
     assert not offenders, "loop-variable shadowing:\n  " + "\n  ".join(offenders)
+
+
+def test_manuscript_tables_are_not_stale():
+    """No table backing a quoted number may predate the code that writes it.
+
+    Every wrong number in the 2026-09-07/08 audits was stale rather than
+    miscomputed: `three_platform_mechanism_cdi.csv` predated three of its four
+    inputs, and `cross_lab_transcription.py`'s outputs predated the revision that
+    silently broke its keying. Both were plausible to read and invisible to every
+    other check in this suite.
+
+    Scope is `docs/source_data/`, the tables mirrored there precisely because a
+    manuscript quotes them. The full repository has a long tail of older analyses
+    that legitimately predate the estimator correction; `check_freshness.py` with
+    no flag lists those as a to-do, and this test does not gate on them.
+    """
+    import subprocess
+    from pathlib import Path
+    root = Path(__file__).resolve().parent.parent
+    r = subprocess.run(
+        [sys.executable, str(root / "scripts" / "check_freshness.py"),
+         "--critical"],
+        cwd=root, capture_output=True, text=True, timeout=600)
+    assert r.returncode == 0, (
+        "a table backing a manuscript number is older than what produced it; "
+        "re-run the script named below and update any number that moves.\n\n"
+        + r.stdout + r.stderr)
+
+
+def test_freshness_check_detects_a_stale_output():
+    """The freshness check must actually fail when something is stale.
+
+    A checker that always passes is worse than none, so this plants the failure:
+    a temporary script whose output predates it by an hour must be reported.
+    """
+    import subprocess
+    import tempfile
+    import os
+    from pathlib import Path
+    root = Path(__file__).resolve().parent.parent
+    tab = root / "results" / "tables"
+    stem = "_freshness_selftest"
+    script = root / "scripts" / f"{stem}.py"
+    out = tab / f"{stem}.csv"
+    try:
+        out.write_text("a,b\n1,2\n")
+        script.write_text(
+            "import pandas as pd\n"
+            "from pathlib import Path\n"
+            "TAB = Path(__file__).resolve().parent.parent / 'results/tables'\n"
+            f"pd.DataFrame({{'a':[1]}}).to_csv(TAB / '{stem}.csv')\n")
+        old = os.stat(out).st_mtime - 3600          # output an hour older
+        os.utime(out, (old, old))
+        r = subprocess.run(
+            [sys.executable, str(root / "scripts" / "check_freshness.py")],
+            cwd=root, capture_output=True, text=True, timeout=600)
+        assert r.returncode == 1, "checker passed on a planted stale output"
+        assert f"{stem}.csv" in r.stdout, r.stdout[:2000]
+    finally:
+        script.unlink(missing_ok=True)
+        out.unlink(missing_ok=True)
