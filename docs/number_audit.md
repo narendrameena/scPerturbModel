@@ -772,3 +772,47 @@ independent confirmation that the withdrawal was correct.
 
 Both of these are cases where re-running could have embarrassed the project and
 did not.
+
+## The 49-script rerun: complete
+
+Driver finished — **46 ok, 2 failed and both fixed by hand** (the
+`compare_context_metrics` KeyError, and `expression_gap_closure` killed by a
+1-hour cap then re-run uncapped and verified).
+
+**78 tables re-run: 58 identical, 12 changed, 4 shape changes, 4 float noise.**
+
+### Corrections that came out of it
+
+| finding | outcome |
+|---|---|
+| §21 mixed-model comparison | agreement claim **withdrawn**; the tool's failure mode inverts from over- to under-reporting |
+| §16/§33 readout decoupling | **withdrawn** (LINCS-1 vs PRISM +0.279, *p* = 0.022), confirmed twice on independent regenerations |
+| predictor-block table | rebuilt on one source per column; n = 120 not 150, five "% positive" values corrected |
+| cross-dose covariance | sign corrected in two docs (−0.00307 → +0.00025); argument survives |
+| CDI vs target expression level | now nominally significant (ρ = +0.135, *p* = 0.032) |
+| sparse benchmark precision at *k* = 4 | 98% → 92% |
+| filename collision | `prism_vs_tahoe.py` was overwriting the mechanism table, silently dropping a figure panel |
+| `compare_context_metrics` | crashed *and* had been producing an empty table for the methodology cross-check |
+
+### Claims re-confirmed rather than changed
+
+The estimator simulation (§19), both rejected methods (spectral, two-stage), the
+Tahoe replicate structure, the paper replication, plate 6-vs-14, the methylation
+null, §38's published-statistic comparisons, and §28's permanent withdrawal
+(0 of 2 reproduce). `drug_context_dependence.csv` re-ran **byte-identical**.
+
+### A caveat the rerun exposed
+
+`hard_splits_eval.csv` moved on 2,564 rows despite the script setting
+`torch.manual_seed` and seeded generators — GPU/cuDNN non-determinism. Aggregates
+are stable to the third decimal (drug median 0.3865 → 0.3882, line
+0.7667 → 0.7672) and every model ordering is preserved, so no claim moves. But
+**per-row values from this benchmark are not bit-reproducible and should not be
+quoted individually.** The same applies to `cvae_eval.csv`, which samples
+conditions (median *r*<sub>de100</sub> 0.7012 → 0.7067).
+
+### Cascade
+
+Regenerating inputs made 15 downstream results stale during the run — the
+dependency check caught each one. A convergence pass re-runs them until nothing
+is stale, which is the point of having the check rather than a one-shot list.
