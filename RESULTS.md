@@ -1148,48 +1148,44 @@ phase 1 vs phase 2 as the within-lab control:
 
 | comparison | median residual-profile r | pairs |
 |---|---|---|
-| LINCS p1 vs p2 (within-lab, Broad) | 0.061 | 5,803 |
-| Tahoe vs LINCS (cross-lab) | 0.032 | 489 |
-> **⚠ NOT REPRODUCIBLE as of 2026-09-08 — do not quote.** These transcription
-> numbers were produced 2026-09-01, *three script revisions* before
-> `scripts/cross_lab_transcription.py` was updated (`fb4830f`, 2026-09-03) to
-> strip each line's general response via `celldrug.remove_line_effect_profiles`.
-> Re-running the current script gives a within-lab median *r* of **0.023** (not
-> 0.061) and **zero** Tahoe-vs-LINCS (line, compound) pairs, so the 46% is not
-> computable and the cross-lab 0.032 is not obtainable.
->
-> The zero is a **bug, not a null**: 172 (line, compound) pairs demonstrably exist
-> in the raw inputs (ht29 135, a549 25, hs578t 12, over 136 shared compounds and
-> 3 shared cell lines), and the pipeline loses all of them somewhere between
-> loading and pairing. `remove_line_effect_profiles` is not the cause — its
-> min-3-compounds filter cannot drop ht29. Cause not yet located.
->
-> `cross_lab_identity.csv` (the "16 of 16 name-matched lines" result) is likewise
-> from 2026-09-01 and was **not** rewritten by the re-run, because the identity
-> check is skipped when there are no shared compounds.
->
-> The viability arm is unaffected: it has its own committed table
-> (`cross_lab_summary.csv`) and reproduces.
+| LINCS p1 vs p2 (within-lab, Broad) | 0.034 | 5,803 |
+| Tahoe vs LINCS p1 (cross-lab) | 0.012 | 317 |
+> **Re-run 2026-09-08 after fixing a keying bug; every number in this block
+> changed.** `cross_lab_transcription.load_lincs` bound its inner cell-line loop
+> to `k`, the same name as the enclosing compound loop, so LINCS profiles were
+> keyed (line, last-line-seen) instead of (line, compound). Tahoe's keys were
+> correct, so the two datasets shared none and every cross-laboratory comparison
+> silently returned zero pairs; the within-lab number survived only because both
+> sides carried the same wrong keys. Fixed in `383e890`, with an AST regression
+> test. Corrected values below; the viability arm was never affected.
 
-| **reproducible fraction** | **46%** |
+| **reproducible fraction** | **27.3%** |
 
-The transcription figure was reported as 52% until the sciPlex3 arm was added
-(§23), whose rows were then pooled into the headline by accident along with the
-identity-validated rows the viability arm excludes. Rebuilt the same way as the
-viability number — non-validated rows, Tahoe versus LINCS only — it is **46%**,
-against viability's 56%. The audit in §25 now covers this quantity so the same
-slip cannot recur silently. |
+| comparison | median *r* | (line, compound) pairs |
+|---|---:|---:|
+| LINCS p1 vs p2 (within-lab, Broad) | 0.034 | 5,803 |
+| LINCS p1 vs p2 (identity-validated) | 0.035 | 4,947 |
+| Tahoe vs LINCS p1 (cross-lab) | 0.012 | 317 |
+| Tahoe vs LINCS p2 (cross-lab) | 0.022 | 172 |
+| sciPlex3 vs LINCS p1 (cross-lab) | 0.020 | 111 |
 
-46% for transcription against 56% for viability, from different institutions and
-wholly different assays. The number is a property of laboratories rather than of
-a particular readout. The identity check behaves the same way: within the Broad
-(LINCS p1 vs p2) **16 of 16** name-matched lines are their own best match; across
-labs (Tahoe vs LINCS) only **3 of 6**.
+On the matched set — the 114 within-lab pairs sharing a (line, compound) with the
+317 cross-lab pairs — the within-lab ceiling is 0.044 and cross-lab agreement
+0.012, giving a reproducible fraction of **27.3%** for transcription against
+**56%** for viability. The direction of the original claim survives and its
+magnitude does not: transcription transfers *worse* than the earlier 46%
+suggested, and less than half as well as viability.
 
-A caveat specific to this arm: the transcriptional within-lab ceiling is itself
-only r ≈ 0.06, so the line-specific transcriptional residual is barely
-reproducible even within one laboratory, and the 46% is a ratio of two small
-numbers.
+The identity check behaves the same way but is also weaker than reported: within
+the Broad (LINCS p1 vs p2) **15 of 16** name-matched lines are their own best
+match (94%, median rank 1 of 26); across laboratories (Tahoe vs LINCS phase 1)
+only **2 of 6** (33%, median rank 4 of 62).
+
+A caveat specific to this arm, now sharper: the transcriptional within-lab
+ceiling is only *r* ≈ 0.034–0.044, so the line-specific transcriptional residual
+is barely reproducible even within one laboratory, and 27.3% is a ratio of two
+very small numbers. Shen (`rs-10846736`, 2026) reaches a compatible conclusion on
+Tahoe alone by measuring per-drug repeat reliability directly (median 0.067).
 
 ### Consequences
 
@@ -1246,9 +1242,10 @@ reciprocal-best-hit rate is an **upper bound on the rate of true identity
 problems** — the median rank of 82 of 971 shows identity is informative but not
 unique.
 
-*Transcriptional arm.* Its within-lab ceiling is only r ≈ 0.06, so the 46%
-figure is a ratio of two small numbers. It agrees with the viability arm, which
-is the substantive point, but should not be quoted precisely.
+*Transcriptional arm.* Its within-lab ceiling is only r ≈ 0.034–0.044, so the
+27.3% figure is a ratio of two very small numbers. It runs in the same direction
+as the viability arm — which is the substantive point — but at roughly half the
+magnitude, and should not be quoted precisely.
 
 *Selection.* The identity-validated rungs in the matching ladder are selected on
 the outcome and bound the available room rather than estimating it; the

@@ -477,3 +477,49 @@ regenerated, and nothing fails.** A `make`-style dependency check — outputs ol
 than inputs or older than the code that writes them — would have caught all six of
 today's cases and the mechanism table in September. It is the obvious next piece
 of infrastructure and does not exist yet.
+
+---
+
+# Cross-laboratory transcription arm: fixed and re-run, 2026-09-08
+
+The keying bug is fixed (`383e890`) and the arm re-run. **Every number in it
+changed, and the headline nearly halved.**
+
+| quantity | published (buggy) | corrected |
+|---|---:|---:|
+| reproducible fraction, transcription | 46% | **27.3%** |
+| within-lab LINCS p1 vs p2, median *r* | 0.061 | **0.034** |
+| within-lab matched ceiling | — | **0.044** |
+| cross-lab Tahoe vs LINCS, median *r* | 0.032 | **0.012** |
+| cross-lab pairs | 489 | **317** (p1), 172 (p2) |
+| identity, within Broad | 16 of 16 | **15 of 16** (94%) |
+| identity, across labs | 3 of 6 | **2 of 6** (33%) |
+
+**The fix is confirmed by an independent prediction.** Before fixing, I computed
+from the raw inputs that exactly **172** (line, compound) pairs should exist
+between Tahoe and LINCS phase 2. The re-run reports **172**. The pre-fix run
+reported 0.
+
+**What survives.** The direction of the claim: transcription transfers less well
+than viability, and cross-laboratory transfer is worse than within-laboratory.
+**What does not:** the magnitude. Transcription now transfers at *half* the
+viability arm's rate rather than four-fifths of it, and the within-lab
+transcriptional ceiling (*r* ≈ 0.034–0.044) is low enough that 27.3% is a ratio
+of two very small numbers.
+
+Corrected in `RESULTS.md`, `MANUSCRIPT_MEASUREMENT.md` and the archived draft,
+including three secondary sites that restated the stale values — the propagation
+check that the September sweep showed is necessary. Generating tables are now
+committed to `docs/source_data/`.
+
+## Tally for the day
+
+| | |
+|---|---|
+| stale tables found | 6 |
+| stale tables re-run | 6 |
+| remaining stale | **0** |
+| bugs found | **1** (loop-variable shadowing, silent, ~5 days live) |
+| bugs fixed | 1, with an AST regression test |
+| claims materially changed | **3** — readout decoupling withdrawn; CDI vs target expression level now nominally significant; transcription transfer 46% → 27.3% |
+| scooping risks resolved | 2 of 2, one a material partial overlap |

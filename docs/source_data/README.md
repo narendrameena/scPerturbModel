@@ -46,3 +46,27 @@ Pairwise Spearman correlations, active compounds only:
 
 Six comparisons were made; Bonferroni at α = 0.05 requires *p* < 0.0083, which
 none of them meets. Read the two nominally significant rows accordingly.
+
+### `cross_lab_identity.csv`, `cross_lab_summary.csv`
+
+Cross-laboratory transfer of the line-specific drug response, transcription and
+viability arms.
+
+| | |
+|---|---|
+| generated | 2026-09-08 (transcription arm re-run after the keying fix in `383e890`) |
+| script | `scripts/cross_lab_transcription.py`, `scripts/cross_lab_reproducibility.py` |
+
+Transcription arm, corrected:
+
+| comparison | median *r* | pairs |
+|---|---:|---:|
+| LINCS p1 vs p2 (within-lab) | 0.034 | 5,803 |
+| Tahoe vs LINCS p1 (cross-lab) | 0.012 | 317 |
+| Tahoe vs LINCS p2 (cross-lab) | 0.022 | 172 |
+
+Matched ceiling 0.044 vs cross-lab 0.012 → **reproducible fraction 27.3%**
+(viability: 56%). Identity: 15/16 within the Broad, 2/6 across laboratories.
+
+The pre-fix version of this table reported 46%, within-lab 0.061 and 16/16, from
+profiles keyed (line, last-line-seen) instead of (line, compound).

@@ -208,21 +208,26 @@ Transfer scales steeply with signal strength (ρ = +0.54, *P* = 1.8×10⁻²⁹)
 strongest quartile of compounds transfers *at* the within-laboratory ceiling,
 the weakest at 36%.
 
-> ⚠ **Withdrawn pending investigation (2026-09-08).** The transcription arm's
-> figures — 46%, within-lab *r* = 0.061, cross-lab 0.032, 16 of 16 identity
-> matches — come from a script version **three revisions old**, predating the
-> correction that strips each line's general response. Re-running the current
-> script gives a within-lab median *r* of 0.023 and **zero** Tahoe-vs-LINCS
-> (line, compound) pairs. That zero is a bug rather than a null: 172 such pairs
-> demonstrably exist in the raw inputs. Do not quote these figures until the
-> pipeline is fixed and re-run. **The viability arm above is unaffected** — it has
-> a committed table and reproduces.
+The result is a property of laboratories rather than of a killing assay, though
+transcription transfers considerably worse than viability. On the matched set —
+114 within-lab pairs sharing a (line, compound) with the 317 cross-lab pairs —
+the within-laboratory ceiling is *r* = 0.044 and cross-laboratory agreement
+0.012, a **reproducible fraction of 27.3%** against viability's 56%. The identity
+check behaves the same way: within the Broad (LINCS phase 1 vs phase 2) **15 of
+16** name-matched lines are reciprocal best matches (median rank 1 of 26), but
+across laboratories only **2 of 6** (median rank 4 of 62).
 
-The result is a property of laboratories rather than of a killing assay. ~~Repeating
-the analysis on transcription gives **46%** (LINCS phase 1 vs phase 2 within-lab
-r = 0.061; Tahoe vs LINCS cross-lab 0.032), and the identity check behaves the
-same way: 16 of 16 name-matched lines are reciprocal best matches within the
-Broad, but only 3 of 6 across laboratories.~~
+The transcriptional ceiling is itself only *r* ≈ 0.034–0.044, so this residual is
+barely reproducible even within one laboratory and 27.3% is a ratio of two very
+small numbers. Shen (`rs-10846736`, 2026) reaches a compatible conclusion on
+Tahoe alone, by measuring per-drug repeat reliability directly (median 0.067).
+
+*These figures were corrected on 2026-09-08. An earlier version reported 46%,
+within-lab r = 0.061 and 16 of 16 identity matches; those came from a keying bug
+in which an inner loop overwrote the compound key with a cell line, so the two
+datasets shared no keys and every cross-laboratory comparison silently returned
+zero pairs. Fixed in `383e890` with an AST regression test. Generating tables are
+committed to `docs/source_data/`.*
 
 ### The same omission inflates another group's statistic, in another modality
 

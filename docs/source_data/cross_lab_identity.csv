@@ -1,0 +1,162 @@
+comparison,line,name_match_present,r_name_match,best_match,r_best,rank_of_name_match,n_candidates,reciprocal_best
+"LINCS p1 vs p2 (within-lab, Broad)",a375,True,0.07473456114530563,a375,0.07473456114530563,1,26,True
+"LINCS p1 vs p2 (within-lab, Broad)",a549,True,0.11173836886882782,a549,0.11173836886882782,1,26,True
+"LINCS p1 vs p2 (within-lab, Broad)",a673,False,,npc,0.039167486131191254,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",ags,False,,hcc515,0.024236025288701057,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",asc,True,0.13475637137889862,asc,0.13475637137889862,1,26,True
+"LINCS p1 vs p2 (within-lab, Broad)",bt20,True,0.1779828518629074,bt20,0.1779828518629074,1,26,True
+"LINCS p1 vs p2 (within-lab, Broad)",cl34,False,,ht29,0.024636179208755493,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",corl23,False,,bt20,0.040154360234737396,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",cov644,False,,asc,0.03366637974977493,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",dv90,False,,lncap,0.05166617035865784,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",efo27,False,,hs578t,0.0339532308280468,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",fibrnpc,False,,skl,0.11615168303251266,-1,22,False
+"LINCS p1 vs p2 (within-lab, Broad)",h1299,False,,hcc515,0.030894368886947632,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",ha1e,True,0.06265425682067871,hs578t,0.06375470757484436,2,26,False
+"LINCS p1 vs p2 (within-lab, Broad)",hcc15,False,,hme1,0.030318226665258408,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",hcc515,True,0.08175560086965561,hcc515,0.08175560086965561,1,26,True
+"LINCS p1 vs p2 (within-lab, Broad)",hct116,False,,mcf10a,0.04382312297821045,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",hec108,False,,cd34,0.04570627957582474,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",hek293t,False,,a549,0.06491316854953766,-1,16,False
+"LINCS p1 vs p2 (within-lab, Broad)",hepg2,True,0.05843425169587135,hepg2,0.05843425169587135,1,26,True
+"LINCS p1 vs p2 (within-lab, Broad)",hs578t,True,0.170319601893425,hs578t,0.170319601893425,1,26,True
+"LINCS p1 vs p2 (within-lab, Broad)",ht115,False,,mneu,0.025203948840498924,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",ht29,True,0.05940700322389603,ht29,0.05940700322389603,1,26,True
+"LINCS p1 vs p2 (within-lab, Broad)",huh7,False,,yapc,0.03161446377635002,-1,7,False
+"LINCS p1 vs p2 (within-lab, Broad)",jhuem2,False,,bt20,0.035848844796419144,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",lovo,False,,jurkat,0.021448586136102676,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",mcf10a,True,0.2222917377948761,mcf10a,0.2222917377948761,1,26,True
+"LINCS p1 vs p2 (within-lab, Broad)",mcf7,True,0.08179298788309097,mcf7,0.08179298788309097,1,26,True
+"LINCS p1 vs p2 (within-lab, Broad)",mdamb231,True,0.15398864448070526,mdamb231,0.15398864448070526,1,26,True
+"LINCS p1 vs p2 (within-lab, Broad)",mdst8,False,,hs578t,0.05220918729901314,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",ncih1694,False,,hepg2,0.015298515558242798,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",ncih1836,False,,lncap,0.05076388642191887,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",ncih2073,False,,a549,0.05494906008243561,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",ncih508,False,,hepg2,0.04788932576775551,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",ncih596,False,,bt20,0.036135219037532806,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",neu,True,0.0837659165263176,neu,0.0837659165263176,1,26,True
+"LINCS p1 vs p2 (within-lab, Broad)",nkdba,False,,ha1e,0.09715292602777481,-1,8,False
+"LINCS p1 vs p2 (within-lab, Broad)",nomo1,False,,cd34,0.029561365023255348,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",npc,True,0.05761338025331497,npc,0.05761338025331497,1,26,True
+"LINCS p1 vs p2 (within-lab, Broad)",ov7,False,,hs578t,0.03928815945982933,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",pc3,True,0.07699992507696152,pc3,0.07699992507696152,1,26,True
+"LINCS p1 vs p2 (within-lab, Broad)",phh,False,,mcf10a,0.042317915707826614,-1,26,False
+"LINCS p1 vs p2 (within-lab, Broad)",pl21,False,,jurkat,0.03856324404478073,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",rko,False,,cd34,0.034606289118528366,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",rmgi,False,,cd34,0.03256918117403984,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",rmugs,False,,bt20,0.03483351320028305,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",skb,False,,skl,0.12661682069301605,-1,26,False
+"LINCS p1 vs p2 (within-lab, Broad)",skbr3,True,0.219464972615242,skbr3,0.219464972615242,1,26,True
+"LINCS p1 vs p2 (within-lab, Broad)",sklu1,False,,mdamb231,0.032911717891693115,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",skm1,False,,jurkat,0.049105990678071976,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",skmel1,False,,lncap,0.03690428286790848,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",skmel28,False,,mdamb231,0.03530323877930641,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",sngm,False,,neu,0.04122495651245117,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",snu1040,False,,a549,0.027372218668460846,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",snuc4,False,,lncap,0.04028432443737984,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",snuc5,False,,hepg2,0.028202908113598824,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",sw480,False,,bt20,0.023951485753059387,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",sw620,False,,hepg2,0.02937944233417511,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",sw948,False,,neu,0.03503553569316864,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",t3m10,False,,hepg2,0.023446137085556984,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",thp1,False,,neu,0.02919904887676239,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",tyknu,False,,bt20,0.033984266221523285,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",u937,False,,skbr3,0.03878498077392578,-1,25,False
+"LINCS p1 vs p2 (within-lab, Broad)",vcap,False,,jurkat,0.09041465818881989,-1,26,False
+"LINCS p1 vs p2 (within-lab, Broad)",wsudlcl2,False,,jurkat,0.0544620119035244,-1,25,False
+Tahoe vs LINCS p1 (CROSS-LAB),a172,False,,hs578t,0.030222788453102112,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),a427,False,,mdamb231,0.04880760610103607,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),a498,False,,fibrnpc,0.02870791219174862,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),a549,True,0.04257253557443619,a549,0.04257253557443619,1,62,True
+Tahoe vs LINCS p1 (CROSS-LAB),an3ca,False,,vcap,0.016901487484574318,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),aspc1,False,,rko,0.021725594997406006,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),bt474,False,,mcf10a,0.06355662643909454,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),c32,False,,a375,0.020564209669828415,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),c33a,False,,mcf10a,0.054940115660429,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),cfpac1,False,,phh,0.02331278659403324,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),chp212,False,,ncih1694,0.011111531406641006,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),colo205,False,,ncih508,0.026981763541698456,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),h4,False,,mdamb231,0.03411678597331047,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),hct15,False,,vcap,0.03404800966382027,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),hec1a,False,,ht29,0.02707589417695999,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),hepg2c3a,False,,hepg2,0.03367507457733154,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),hop62,False,,mdamb231,0.07550975680351257,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),hs578t,True,0.023341920226812363,efo27,0.025774165987968445,3,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),hs766t,False,,mdamb231,0.028573833405971527,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),ht29,True,0.04877859354019165,ht29,0.04877859354019165,1,62,True
+Tahoe vs LINCS p1 (CROSS-LAB),hterthpne,False,,asc,0.029531124979257584,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),j82,False,,skbr3,0.027646806091070175,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),katoiii,False,,bt20,0.05839718133211136,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),lovo,True,0.01367888692766428,t3m10,0.02046753279864788,5,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),loximvi,False,,mdamb231,0.04237062856554985,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),ls180,False,,ht29,0.03704452887177467,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),miapaca2,False,,mdst8,0.028490547090768814,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),ncih1573,False,,mcf10a,0.03205587714910507,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),ncih1792,False,,phh,0.03403114527463913,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),ncih2030,False,,sw480,0.020918624475598335,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),ncih23,False,,mdamb231,0.04644758254289627,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),ncih2347,False,,phh,0.022798703983426094,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),ncih460,False,,mdamb231,0.0345199778676033,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),ncih661,False,,mcf10a,0.0203509870916605,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),panc0327,False,,efo27,0.021386535838246346,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),panc1,False,,rmgi,0.01867365837097168,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),rko,True,0.0034503904171288013,mdamb231,0.028000516816973686,25,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),rpmi7951,False,,asc,0.022433003410696983,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),shp77,False,,phh,0.023643191903829575,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),skmel2,False,,mdamb231,0.03026917204260826,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),snu1,False,,mdamb231,0.036641642451286316,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),snu423,False,,skbr3,0.02605971321463585,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),sw1088,False,,hs578t,0.018355749547481537,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),sw1271,False,,a673,0.013768562115728855,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),sw1417,False,,ht29,0.025143329054117203,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),sw48,False,,ht29,0.019244639202952385,-1,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),sw480,True,0.004368539433926344,mdamb231,0.08455530554056168,20,62,False
+Tahoe vs LINCS p1 (CROSS-LAB),sw900,False,,hcc515,0.018707403913140297,-1,62,False
+Tahoe vs LINCS p2 (CROSS-LAB),a172,False,,asc,0.07979248464107513,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),a427,False,,mdamb231,0.02551426738500595,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),a498,False,,asc,0.06798500567674637,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),a549,True,0.07801705598831177,a549,0.07801705598831177,1,22,True
+Tahoe vs LINCS p2 (CROSS-LAB),an3ca,False,,npc,0.045613378286361694,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),aspc1,False,,bt20,0.036635592579841614,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),bt474,False,,mcf10a,0.0934368222951889,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),c32,False,,a375,0.050270579755306244,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),c33a,False,,mcf10a,0.06502345204353333,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),cfpac1,False,,asc,0.0771416500210762,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),chp212,False,,cd34,0.01999046467244625,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),colo205,False,,ht29,0.03716801479458809,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),h4,False,,a375,0.029511015862226486,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),hct15,False,,asc,0.02948901243507862,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),hec1a,False,,npc,0.03398999944329262,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),hepg2c3a,False,,hepg2,0.07485149055719376,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),hop62,False,,hme1,0.08285950869321823,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),hs578t,True,0.053743910044431686,skl,0.056685227900743484,2,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),hs766t,False,,asc,0.09135216474533081,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),ht29,True,0.06143537163734436,ht29,0.06143537163734436,1,22,True
+Tahoe vs LINCS p2 (CROSS-LAB),hterthpne,False,,asc,0.08319103717803955,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),j82,False,,mcf10a,0.043019868433475494,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),katoiii,False,,asc,0.07281036674976349,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),lovo,False,,skl,0.04058537259697914,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),loximvi,False,,huvec,0.0826769769191742,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),ls180,False,,hme1,0.0750676840543747,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),miapaca2,False,,cd34,0.05486192926764488,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),ncih1573,False,,mcf10a,0.06176958605647087,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),ncih1792,False,,asc,0.070095494389534,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),ncih2030,False,,hme1,0.03418618068099022,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),ncih23,False,,hepg2,0.046656083315610886,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),ncih2347,False,,skbr3,0.07443846017122269,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),ncih460,False,,neu,0.04222995787858963,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),ncih661,False,,npc,0.029300285503268242,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),panc0327,False,,hepg2,0.03027486242353916,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),panc1,False,,hme1,0.03368880972266197,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),rko,False,,skl,0.04462836682796478,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),rpmi7951,False,,hs578t,0.04976486414670944,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),shp77,False,,skbr3,0.03461635112762451,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),skmel2,False,,a375,0.02530292421579361,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),snu1,False,,asc,0.04187715798616409,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),snu423,False,,asc,0.11497338861227036,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),sw1088,False,,huvec,0.04743744805455208,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),sw1271,False,,mdamb231,0.017503011971712112,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),sw1417,False,,hepg2,0.049866050481796265,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),sw48,False,,mcf7,0.03314879164099693,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),sw480,False,,ht29,0.055220577865839005,-1,22,False
+Tahoe vs LINCS p2 (CROSS-LAB),sw900,False,,neu,0.04331269860267639,-1,22,False

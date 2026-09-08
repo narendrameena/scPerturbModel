@@ -615,10 +615,11 @@ strongest quartile of compounds transfers *at* the within-laboratory ceiling,
 the weakest at 36%.
 
 The result is a property of laboratories rather than of a killing assay. Repeating
-the analysis on transcription gives **46%** (LINCS phase 1 vs phase 2 within-lab
-r = 0.061; Tahoe vs LINCS cross-lab 0.032), and the identity check behaves the
-same way: 16 of 16 name-matched lines are reciprocal best matches within the
-Broad, but only 3 of 6 across laboratories.
+the analysis on transcription gives **27.3%** (LINCS phase 1 vs phase 2 within-lab
+r = 0.034; Tahoe vs LINCS cross-lab 0.012), and the identity check behaves the
+same way: 15 of 16 name-matched lines are reciprocal best matches within the
+Broad, but only 2 of 6 across laboratories. *(Corrected 2026-09-08; the earlier
+46% / 0.061 / 16 of 16 came from a keying bug — see `docs/number_audit.md`.)*
 
 ### The same omission inflates another group's statistic, in another modality
 
@@ -1042,7 +1043,7 @@ figure characterises the metric's resolution, not the rate of identity problems.
 CCLE expression is also a single snapshot from one institution, so it cannot
 compare two laboratories' cultures against each other.
 
-*Transcriptional arm.* Its within-laboratory ceiling is only r ≈ 0.06, so the 46%
+*Transcriptional arm.* Its within-laboratory ceiling is only r ≈ 0.034-0.044, so the 27.3%
 reproducible fraction is a ratio of two small numbers and is correspondingly
 uncertain. It agrees with the viability arm, which is the substantive point, but
 should not be quoted to two significant figures.
