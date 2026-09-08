@@ -89,8 +89,25 @@ context-count scaling experiment (§2).
   mostly uses. Rejected as the primary metric because it confounds
   context-specificity with the compound's own reproducibility: a weak or noisy
   compound scores "context-specific" for the wrong reason.
-- *Disattenuated transfer* (cross-context r ÷ replicate r). Kept as a reported
-  cross-check; it is arguably the most defensible published-style metric.
+- *Disattenuated transfer* (cross-context r ÷ replicate r). Intended as a
+  reported cross-check; it is arguably the most defensible published-style
+  metric.
+
+  > **⚠ This cross-check was not actually being produced (found 2026-09-08).**
+  > `compare_context_metrics.py` crashed with a `KeyError` on any condition whose
+  > line was the only one in its group — such conditions have no
+  > leave-one-context-out mean, so the residual loop skipped them while the
+  > pairing loop still looked them up. The committed
+  > `context_metric_mechanism_ranks.csv` was **empty (0 rows)**, and nothing
+  > flagged that an analysis had silently produced nothing.
+  >
+  > With the guard added, it yields **4 mechanism classes** — enough to run but
+  > far too few to compare rankings: the reported correlations at that *n* are
+  > ρ = 0.000 (*p* = 1.00) and ρ = −1.000, neither meaningful. All three metrics
+  > do place the same four classes at the context-specific end (JAK/STAT,
+  > adrenoceptor agonist, DNA synthesis/repair, cyclooxygenase), which is weakly
+  > reassuring and nothing more. **The cross-check should be described as
+  > attempted and uninformative, not as supporting the choice of metric.**
 
 **Known weakness, stated rather than hidden.** A compound that does nothing has
 a near-zero numerator *and* denominator and lands at 0 by default. LINCS phase 1

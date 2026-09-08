@@ -658,3 +658,42 @@ it names this exact collision on the pre-fix source and passes on the fixed tree
 Writing the detector required care: an f-string like `f"eval{suf}.csv"` parses
 into the constants `"eval"` and `".csv"`, and treating the bare extension as a
 filename makes twelve unrelated scripts appear to collide.
+
+## A silently empty analysis, found 2026-09-08
+
+`compare_context_metrics.py` crashed on re-run with
+`KeyError: np.int64(25625)`. The cause: a condition whose cell line is the only
+one in its group has no leave-one-context-out mean, so the residual loop skips it
+via `continue` — but the pairing loop below still looks it up in `resid`.
+
+The crash is not the interesting part. **The committed
+`context_metric_mechanism_ranks.csv` was empty — 0 rows.** This script exists to
+provide the cross-check that `docs/methodology_rationale.md` §5 cites in defence
+of using CDI over published-style metrics, and it had been producing nothing at
+all. Nothing flagged it: an empty table is not a crash, and no test asserted the
+file was non-empty.
+
+With the guard added it yields **4 mechanism classes** — enough to run, far too
+few to compare rankings. The correlations at that *n* are ρ = 0.000 (*p* = 1.00)
+and ρ = −1.000, neither meaningful. All three metrics do put the same four classes
+at the context-specific end (JAK/STAT, adrenoceptor agonist, DNA synthesis/repair,
+cyclooxygenase), which is weakly reassuring and nothing more.
+`methodology_rationale.md` now describes the cross-check as **attempted and
+uninformative** rather than as supporting the choice of metric.
+
+## Cascades cleared, values confirmed
+
+Re-running `drug_context_dependence.py` and `prism_context_genetics.py` made four
+critical tables stale in turn. All regenerated, and every number held:
+
+* `drug_context_dependence.csv` re-ran **byte-identical** (367 × 14, no column changed).
+* The mechanism comparison reproduces exactly again — LINCS-1 vs PRISM
+  **+0.279, *p* = 0.022, n = 67** — now for the second independent regeneration.
+* `cdi_vs_target_genetics.csv` reproduces its corrected values (+0.113, −0.228, +0.135).
+
+## Other changes this batch
+
+`tcga_anchoring_survival.csv`: component C2 dropped one cancer type (31 → 30) and
+its *z* moved 0.629 → 0.959, *p* 0.529 → 0.338. Non-significant either way, and
+this table is not quoted — `RESULTS.md`'s survival numbers come from the
+*adjusted* analysis, a different table. No claim moves.

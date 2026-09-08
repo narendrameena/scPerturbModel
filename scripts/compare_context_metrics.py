@@ -114,7 +114,11 @@ def main():
             v = gc.i.to_numpy(); pl = gc.plate.to_numpy()
             for a in range(len(v)):
                 for b in range(a + 1, len(v)):
-                    if pl[a] != pl[b]:
+                    # A condition whose line is the only one in its group has
+                    # no leave-one-context-out mean, so the loop above skips it
+                    # and `resid` has no entry. It must be skipped here too:
+                    # looking it up raises KeyError and kills the run.
+                    if pl[a] != pl[b] and v[a] in resid and v[b] in resid:
                         cov += float(np.mean(resid[v[a]] * resid[v[b]])); npair += 1
         if npair < MIN_PAIRS:
             continue
