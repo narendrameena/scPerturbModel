@@ -3434,3 +3434,81 @@ pip install -e . && perturbdesign plan --contexts 50 --perturbations 500
 
 See `docs/related_work_perturbation_models.md` for how these results sit
 against published methods, and `docs/data_notes.md` for verified dataset facts.
+
+## 49. The precision law, tested on 8,427 compounds — and partly refuted
+
+§46 rests on a scaling law: the interaction is a covariance over replicate pairs,
+so its standard error should fall as **pairs^−1/2** and as nothing else. The
+five-atlas validation asserts that law rather than testing it, and "it is a
+standard power calculation" is only a defence if the standard calculation's
+assumptions actually hold here.
+
+LINCS phase 1 tests it directly. Every compound is an independent instance of the
+same estimation problem at a different sample size, and bootstrapping each
+compound's own pairs gives its empirical standard error without appealing to the
+formula at all. **8,427 compounds, 20 to 1,010,815 pairs — a 50,541-fold range.**
+
+| | slope of log SE on log pairs |
+|---|---|
+| predicted by the formula | **−0.500** |
+| **measured** | **−0.370 [−0.376, −0.364]** |
+
+*r* = −0.791, *P* < 10⁻³⁰⁰. **−0.5 is outside the 95% interval, so the law as
+stated is refuted.**
+
+### The cause is identifiable, and it is a real defect
+
+The formula counts pairs as independent observations. They are not. A condition
+measured on *k* plates yields *k*(*k*−1)/2 pairs but only *k* independent
+profiles, and pairs sharing a profile are correlated. That gives two limiting
+predictions:
+
+| assumption | predicted slope |
+|---|---:|
+| every pair independent (what §46 assumes) | −0.500 |
+| only profiles independent (full dependence) | −0.250 |
+| **measured** | **−0.370** |
+
+The measured value sits almost exactly midway, which is what partial dependence
+predicts. This is not noise or a fitting artefact — it is the formula assuming an
+effective sample size the design does not provide.
+
+### What survives and what does not
+
+**Survives.** The *ordering* of atlases by resolvability, because the error is
+systematic and monotone: every design is affected in the same direction. §46's 5/5
+is unaffected — it was already shown robust to deflating every observed share
+fivefold, and the five atlases differ by two orders of magnitude in what they can
+resolve. The qualitative prescriptions survive too: one replicate still yields
+zero pairs, contexts still buy more than cells, and the budget optimum is still
+"more replicates, fewer cells each" under every exponent between −0.25 and −0.50.
+
+**Does not survive.** The absolute floors, and any prescription quoting a specific
+replicate count. Recomputing the budget optimiser under each exponent:
+
+| exponent | optimum for Tahoe's 95.6M cells |
+|---|---|
+| −0.500 (assumed) | 8 replicates × 226 cells |
+| **−0.370 (measured)** | **5 replicates × 362 cells** |
+| −0.250 (worst case) | 3 replicates × 603 cells |
+
+The paper's headline recommendation moves from eight replicates to five. Every
+statement of the form "*N* replicates would have sufficed" is therefore reported
+with the exponent it assumes, and the calculator should be read as giving an
+order-of-magnitude floor rather than a precise threshold — which §46's calibration
+already said on other grounds (power below the threshold reaches 75% on some
+designs).
+
+### Why this is reported rather than repaired
+
+The obvious repair is to refit the exponent to −0.37 and carry on. That is not
+done here, for two reasons. The exponent is estimated on one platform, and there
+is no reason to expect the degree of pair dependence to be identical on another —
+it depends on how many plates each condition sits on, which varies by design.
+And a formula fitted to the data it is then validated against stops being a
+prospective calculation, which is the paper's entire claim. The honest position is
+that the law's *form* is wrong in a known direction, the direction is bounded
+between −0.25 and −0.5, and prescriptions should be quoted across that range.
+
+*Script:* `scripts/floor_calibration.py`. *Figure:*
+`results/figures/00_manuscript/floor_calibration/`.

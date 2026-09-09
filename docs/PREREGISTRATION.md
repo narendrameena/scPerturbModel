@@ -120,6 +120,32 @@ atlases.** One miss out of three is consistent with the 83–100% power and 0–
 false-positive rates measured in §46's calibration and will not be claimed as a
 success either; it will be reported as one miss.
 
+### A named, dated target (added 2026-09-09)
+
+Part B above applies to whatever appears next, which is honest but leaves nothing
+to check on a fixed schedule. This adds a target that is already public, already
+maintained, and certain to update: **the scPerturb collection itself.**
+
+scPerturb is actively curated and grows. RESULTS.md §48 scored its 38 RNA/protein
+datasets and found **1** that can support a context × perturbation interaction
+estimate. Registered here, before any new release is examined:
+
+| # | Prediction | Falsified if |
+|---|---|---|
+| **B5** | Among the next **10** datasets added to scPerturb after 2026-09-09, **at most 1** will have both ≥2 contexts and ≥2 replicates per condition | 2 or more do |
+| **B6** | The proportion of the *whole* collection supporting the estimate will remain **below 10%** | it rises to 10% or above |
+
+Both are checkable by anyone against a public resource on a fixed schedule, using
+`scripts/atlas_design_benchmark.py` unmodified. B5 is the informative one: the
+§48 rate is 1/38 (2.6%), so 2 or more in 10 would be a fourfold increase and real
+evidence that the field's designs are changing — which would be good news for the
+field and a refutation of this paper's framing.
+
+*Note on what this is worth.* These predict the field's behaviour, not the
+calculation's correctness. They test whether the problem this paper describes is
+persistent or was a snapshot. A failure would date the paper rather than falsify
+its method.
+
 ### The sharper, riskier prediction
 
 The binary test above is easy to pass when an atlas is far from its threshold.

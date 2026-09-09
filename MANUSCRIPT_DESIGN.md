@@ -19,21 +19,26 @@ result set in `RESULTS.md`; method choices justified in
 
 ## Abstract
 
-Perturbation atlases now profile thousands of compounds across dozens of cellular
+Perturbation atlases profile thousands of compounds across dozens of cellular
 contexts to learn how context shapes drug response, and are scaled by cell count.
-We show that whether an atlas can measure context-dependence at all is fixed by
-its design, and give the calculation. Because the quantity is a covariance
-between independent replicates, its precision is set by the number of replicate
-**pairs**; a condition measured once contributes nothing however deeply it is
-sequenced. Given only context, perturbation and replicate counts, the calculation
-predicts which of five published atlases resolved an interaction and which could
-not, correctly in all five, using one shared noise constant and no per-atlas
-tuning. Its premise holds where tested: 2% of Tahoe-100M's cells retain 92% of a
-known interaction, while 10% of its contexts destroy precision. Applied to all 38
-scPerturb datasets, **one can support the estimate at all**; among ten drug
-screens, three use more than one context and one of those replicates a condition.
-Tahoe-100M spent 95.6 million cells and needed six replicates per condition
-rather than more cells. We release the calculation as a tool and pre-register it prospectively.
+Tahoe-100M sequenced 95.6 million cells and still cannot resolve the interaction
+it was built to measure; **the same budget, spent as five replicates of 362 cells
+rather than two of 1,810, would have detected an effect several times smaller than
+its own.** Whether an atlas can measure context-dependence is fixed by its design,
+not its scale. Because the quantity is a covariance between independent
+replicates, its precision is set by the number of replicate **pairs**: a condition
+measured once contributes nothing however deeply it is sequenced. From context,
+perturbation and replicate counts alone, the calculation predicts which of five
+published atlases resolved an interaction and which could not, correctly in all
+five, with one shared noise constant and no per-atlas tuning. Testing its
+precision law directly on 8,427 LINCS compounds across a 50,000-fold range of
+sample size shows it is **partly wrong** — precision improves as pairs^−0.37, not
+the assumed pairs^−0.50, because pairs within a condition share profiles — which
+shifts the recommended replicate count but not the direction of any prescription.
+The premise holds where tested: 2% of Tahoe-100M's cells retain 92% of a known
+interaction, while 10% of its contexts destroy precision. Applied to all 38
+scPerturb datasets, **one can support the estimate at all**. We release the
+calculation as a tool and pre-register it.
 
 ---
 
@@ -53,9 +58,14 @@ context rather than shared across contexts — is an interaction term, and
 interaction terms have detection limits. Whether a given atlas can estimate one is
 a property of how it was built, decidable before any data is collected. That
 calculation is not published anywhere we can find, and the designs of the field's
-atlases suggest it is not being done: Tahoe-100M spends 95.6 million cells and
-replicates 13.5% of its conditions; Spear-ATAC replicates almost everything across
-three cell lines and cannot resolve an interaction at all.
+atlases suggest it is not being done. Tahoe-100M spends 95.6 million cells and
+replicates 13.5% of its conditions, which leaves it a detection floor of 0.0169
+against a true interaction of 0.005 — it misses its own effect by 3.4×. The same
+95.6 million cells spread as eight replicates of 226 cells give a floor of 0.0016,
+which would have resolved it with 3× margin. Nothing about the biology or the
+budget changed; only how the cells were spread. Spear-ATAC, at the other extreme,
+replicates almost everything across three cell lines and still cannot resolve an
+interaction, because three contexts is too few however often each is repeated.
 
 We give the calculation, validate it against five published atlases whose outcomes
 we measured independently, test its central premise by subsampling, apply it to
@@ -172,6 +182,23 @@ Files are also not studies: scPerturb distributes `ReplogleWeissman2022` and
 `TianKampmann2019` as per-context files, so single-context datasets are 34/38
 (89%) per file and 17/22 (77%) per study. The qualifying count is one under either
 unit.
+
+**Independent convergent evidence.** While this work was in preparation, Shen
+(Research Square, 2026-09-01, `rs-10846736`) reported a leakage-safe
+leave-one-cell-line-out benchmark on Tahoe-100M and reached a compatible
+conclusion by a different route: across 107 replicated drugs the context-specific
+residual has a median repeat reliability of 0.067, and model skill tracks that
+ceiling (ρ = 0.76), so prediction is "bounded primarily by the reproducibility of
+the target signal". That is the same diagnosis as ours for Tahoe specifically, and
+it is reassuring that two independent analyses reach it.
+
+The contribution here is what that study does not do. It **measures** reliability
+post hoc, on one atlas, from data already collected; we **predict** resolvability
+from three design integers before any data exists, validate that prediction across
+five atlases and 38 datasets, and release it as a calculator an atlas builder can
+run while the design is still changeable. Shen's conclusion — that benchmarks
+should report repeatability ceilings — is a diagnostic recommendation; ours is a
+prescriptive one, and the two are complementary rather than competing.
 
 **Prospective test.** Predictions about scPerturb's ATAC collection were
 registered publicly and pushed *before* the unseen archives were downloaded
