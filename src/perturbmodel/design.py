@@ -52,29 +52,66 @@ def n_pairs(n_ctx, n_pert, n_rep):
     return int(n_ctx * n_pert * n_rep * (n_rep - 1) / 2)
 
 
-def interaction_se(n_ctx, n_pert, n_rep, snr, n_feat=2000):
-    """Standard error of the estimated interaction variance.
+# Fraction of the pair-average variance carried by the first-order (per-profile)
+# term. The estimator is a U-statistic of order 2: averaging over pairs of k
+# profiles, its variance is a/k + b/k^2, not b'/n_pairs. The two terms give
+# different scaling laws -- SE ~ k^-1/2 if the first dominates, SE ~ n_pairs^-1/2
+# if the second does -- and RESULTS.md sec.49 measured the real exponent at
+# -0.370 in pair units, almost exactly midway, so BOTH terms matter at realistic
+# design sizes. Assuming only the second (the original formula) understates the
+# standard error whenever k is small, which is exactly the regime an atlas
+# builder is in.
+#
+# U_FIRST_ORDER is calibrated once, out of sample, on LINCS phase 1 and is fixed
+# thereafter. It is a property of how correlated two pairs sharing a profile are,
+# which is a feature of the estimator rather than of any dataset.
+U_FIRST_ORDER = 0.1013   # LINCS phase 1, fitted on half the compounds, validated on the other half (§49)
 
-    The estimator averages ``n_pairs`` products of two independent noisy
-    measurements. Each product has variance dominated by the noise term
-    ``(1 + 1/snr^2)^2`` when the signal is small relative to noise, and the
-    average of ``n_feat`` weakly dependent features contributes a further
-    ``1/sqrt(n_feat)``.
+
+def n_profiles(n_ctx, n_pert, n_rep):
+    """Independent replicate profiles, the U-statistic's actual sample size.
+
+    A condition measured on ``n_rep`` plates contributes ``n_rep`` profiles and
+    ``n_rep(n_rep-1)/2`` pairs. The pairs are not independent of one another --
+    two pairs sharing a profile are correlated -- so the pair count overstates
+    the information available.
+    """
+    return int(n_ctx * n_pert * max(n_rep, 0))
+
+
+def interaction_se(n_ctx, n_pert, n_rep, snr, n_feat=2000,
+                   u_first_order=None):
+    """Standard error of the estimated interaction share.
+
+    The estimator averages products of independent replicate measurements. Each
+    product has variance dominated by ``(1 + 1/snr^2)`` when the signal is small,
+    and averaging ``n_feat`` weakly dependent features contributes ``1/sqrt``.
+
+    The sample-size term is a U-statistic variance, ``a/k + b/k^2`` for ``k``
+    profiles, rather than ``1/n_pairs``. With ``u_first_order = 0`` this reduces
+    exactly to the original ``1/sqrt(n_pairs)`` form, so the change is opt-in and
+    the old behaviour is recoverable.
     """
     p = n_pairs(n_ctx, n_pert, n_rep)
     if p <= 0:
         return np.inf
+    k = n_profiles(n_ctx, n_pert, n_rep)
+    u = U_FIRST_ORDER if u_first_order is None else u_first_order
+    # var ∝ u/k + (1-u)/p ; u = 0 recovers the pair-only assumption
+    var = (u / max(k, 1)) + ((1.0 - u) / p)
     return float((1.0 + 1.0 / max(snr, 1e-6) ** 2)
-                 / np.sqrt(p * max(n_feat, 1)))
+                 * np.sqrt(var / max(n_feat, 1)))
 
 
-def min_detectable_share(n_ctx, n_pert, n_rep, snr, n_feat=2000, z=1.96):
+def min_detectable_share(n_ctx, n_pert, n_rep, snr, n_feat=2000, z=1.96,
+                         u_first_order=None):
     """Smallest interaction share this design can distinguish from zero.
 
     Expressed as a fraction of reproducible variance, so it is comparable with
     the indices this literature reports.
     """
-    se = interaction_se(n_ctx, n_pert, n_rep, snr, n_feat)
+    se = interaction_se(n_ctx, n_pert, n_rep, snr, n_feat,
+                        u_first_order=u_first_order)
     return float(min(z * se, 1.0))
 
 
@@ -98,10 +135,11 @@ def captured_fraction(d_model, n_ctx, slope=0.05, intercept=0.7):
 
 
 def required_replicates(target_share, n_ctx, n_pert, snr, n_feat=2000,
-                        max_rep=12):
+                        max_rep=12, u_first_order=None):
     """Replicates per condition needed to detect an interaction of that size."""
     for r in range(2, max_rep + 1):
-        if min_detectable_share(n_ctx, n_pert, r, snr, n_feat) <= target_share:
+        if min_detectable_share(n_ctx, n_pert, r, snr, n_feat,
+                                u_first_order=u_first_order) <= target_share:
             return r
     return None
 

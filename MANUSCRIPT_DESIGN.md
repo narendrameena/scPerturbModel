@@ -22,23 +22,23 @@ result set in `RESULTS.md`; method choices justified in
 Perturbation atlases profile thousands of compounds across dozens of cellular
 contexts to learn how context shapes drug response, and are scaled by cell count.
 Tahoe-100M sequenced 95.6 million cells and still cannot resolve the interaction
-it was built to measure; **the same budget, spent as five replicates of 362 cells
-rather than two of 1,810, would have detected an effect several times smaller than
+it was built to measure; **the same budget, spent as six replicates of 301 cells
+rather than two of 1,810, would have detected an effect three times smaller than
 its own.** Whether an atlas can measure context-dependence is fixed by its design,
 not its scale. Because the quantity is a covariance between independent
-replicates, its precision is set by the number of replicate **pairs**: a condition
+replicates, its precision is set by replication rather than depth: a condition
 measured once contributes nothing however deeply it is sequenced. From context,
 perturbation and replicate counts alone, the calculation predicts which of five
 published atlases resolved an interaction and which could not, correctly in all
 five, with one shared noise constant and no per-atlas tuning. Testing its
-precision law directly on 8,427 LINCS compounds across a 50,000-fold range of
-sample size shows it is **partly wrong** — precision improves as pairs^−0.37, not
-the assumed pairs^−0.50, because pairs within a condition share profiles — which
-shifts the recommended replicate count but not the direction of any prescription.
-The premise holds where tested: 2% of Tahoe-100M's cells retain 92% of a known
-interaction, while 10% of its contexts destroy precision. Applied to all 38
-scPerturb datasets, **one can support the estimate at all**. We release the
-calculation as a tool and pre-register it.
+precision law on 8,427 LINCS compounds across a 50,000-fold range of sample size
+refuted its original form — pairs within a condition share profiles, so the
+estimator is a U-statistic whose variance is `a/k + b/k²`, not `b/pairs`; the
+corrected form is fitted on half the compounds, validated on the other half, and
+leaves all five verdicts intact. The premise holds where tested: 2% of
+Tahoe-100M's cells retain 92% of a known interaction, while 10% of its contexts
+destroy precision. Applied to all 38 scPerturb datasets, **one can support the
+estimate at all**. We release the calculation as a tool and pre-register it.
 
 ---
 
@@ -61,8 +61,8 @@ calculation is not published anywhere we can find, and the designs of the field'
 atlases suggest it is not being done. Tahoe-100M spends 95.6 million cells and
 replicates 13.5% of its conditions, which leaves it a detection floor of 0.0169
 against a true interaction of 0.005 — it misses its own effect by 3.4×. The same
-95.6 million cells spread as eight replicates of 226 cells give a floor of 0.0016,
-which would have resolved it with 3× margin. Nothing about the biology or the
+95.6 million cells spread as six replicates of 301 cells give a floor of 0.0018,
+which would have resolved it with nearly 3× margin. Nothing about the biology or the
 budget changed; only how the cells were spread. Spear-ATAC, at the other extreme,
 replicates almost everything across three cell lines and still cannot resolve an
 interaction, because three contexts is too few however often each is repeated.

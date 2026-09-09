@@ -100,3 +100,46 @@ replicate counts it reports are therefore an **upper bound on usable
 replicates**, and the count of datasets supporting the estimate is an upper bound
 too. The direction of §48's claim is conservative under this bias; the specific
 number is not exact.
+
+
+---
+
+## 2026-09-09 — Amendment to a frozen artefact, declared
+
+`docs/PREREGISTRATION.md` froze `src/perturbmodel/design.py` by SHA-256. **That
+file has been modified**, and the test that checks the hash caught it. Declaring
+the change rather than re-freezing quietly:
+
+**What changed.** `interaction_se` now uses the U-statistic variance
+`u/k + (1−u)/n_pairs` instead of `1/n_pairs`, with `U_FIRST_ORDER = 0.1013`.
+See `RESULTS.md` §49: the original form was refuted on 8,427 LINCS compounds
+(measured slope −0.370 against a predicted −0.500), and the replacement is fitted
+on half those compounds and validated on the other half.
+
+| | SHA-256 |
+|---|---|
+| frozen at registration | `fd2a8814cb39a606baf7d2cb0b493d5473a9551c628779b814a1322fa555799d` |
+| after this amendment | `93632f85ff39afb49290d7f96d4c587e68dbae13c58ea611a206c85dba6d8b01` |
+
+**Why this does not compromise the registration.**
+
+* **Part A already settled**, on 2026-09-08, under the original frozen version.
+  Its outcome stands and is not revisited.
+* **The change was driven by LINCS calibration data**, which is not the target of
+  any registered prediction. No Part B atlas, and no scPerturb dataset named in
+  B5/B6, influenced it.
+* **The change is a strict generalisation.** `u_first_order=0.0` reproduces the
+  original numbers exactly, so any registered prediction can be re-scored under
+  either version and both are available.
+* **It does not move any registered prediction.** The five-atlas verdicts are
+  unchanged (5/5, across the same snr range), and B5/B6 depend on design
+  parameters — contexts, replicates — that the variance formula does not touch.
+
+**How Part B is scored from here.** Under the amended version, with the original
+reported alongside wherever the two differ. Both hashes are recorded above, so
+either can be reconstructed.
+
+**The honest cost.** A registration is worth less once its artefacts move, however
+good the reason. The mitigation is that the change is declared, dated, hash-
+pinned in both directions, and reversible by a single argument — not that it is
+harmless.

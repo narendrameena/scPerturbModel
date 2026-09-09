@@ -388,6 +388,12 @@ def test_frozen_prereg_artefacts_are_unmodified():
     analysis depends on. This recomputes them. A failure means either the
     registration must be re-stated or the edit reverted -- it must not pass
     silently.
+
+    The table holds the CURRENT hash, so this catches undeclared drift.
+    Amendments are allowed but must be declared in PREREGISTRATION_OUTCOMES.md
+    with both hashes; design.py was amended once (2026-09-09, the §49
+    U-statistic correction) and that entry is the audit trail. Updating the
+    table without writing the outcomes entry defeats the purpose of both.
     """
     import hashlib
     import re
@@ -421,7 +427,13 @@ def test_gem_groups_are_not_independent_replicates():
     assert honest == 0, "one usable replicate must yield no pairs"
     assert as_if_replicated > 3_000_000
     # and the floor difference is the whole verdict
-    assert min_detectable_share(2, 2056, 40, 0.20) < 0.001
+    # 0.0011 under the sec.49 U-statistic correction, 0.0008 before it. The
+    # threshold moved because this is exactly the regime the correction targets:
+    # at 40 "replicates" the pair count (3.2M) wildly overstates the information
+    # in 164k profiles, so the first-order term dominates and the floor rises.
+    # The contrast the test exists for is untouched -- a fake-replicated design
+    # looks a thousand times better than the honest one.
+    assert min_detectable_share(2, 2056, 40, 0.20) < 0.002
     assert min_detectable_share(2, 2056, 1, 0.20) == 1.0
 
 
@@ -434,16 +446,20 @@ def test_five_atlas_table_matches_the_code():
     prescription from three replicates to six. The verdicts happened to survive,
     which is exactly why nothing caught it. This pins the numbers that appear in
     MANUSCRIPT_DESIGN.md so a future change to the constant fails loudly here.
+
+    Floors updated 2026-09-09 for the U-statistic variance correction of sec.49
+    (Tahoe 0.0169 -> 0.0164, sci-Plex 0.0479 -> 0.0466, Spear-ATAC 0.0325 ->
+    0.0341). All five verdicts are unchanged, which is the point of the test.
     """
     from perturbmodel.design import min_detectable_share, n_pairs
     SNR = 0.20
     published = [
         # atlas,          ctx, pert, rep,   pairs,   floor, observed, resolvable
-        ("Tahoe-100M",     48,   95,   2,   4_560, 0.0169,    0.005, False),
+        ("Tahoe-100M",     48,   95,   2,   4_560, 0.0164,    0.005, False),
         ("LINCS phase 1",  71,  831,   3, 177_003, 0.0027,    0.570, True),
         ("OP3",             6,  147,   3,   2_646, 0.0222,    0.331, True),
-        ("sci-Plex 3",      3,  189,   2,     567, 0.0479,    0.302, True),
-        ("Spear-ATAC",      3,   41,   5,   1_230, 0.0325,    0.014, False),
+        ("sci-Plex 3",      3,  189,   2,     567, 0.0466,    0.302, True),
+        ("Spear-ATAC",      3,   41,   5,   1_230, 0.0341,    0.014, False),
     ]
     for name, c, p_, r, pairs, floor, obs, resolvable in published:
         assert n_pairs(c, p_, r) == pairs, name

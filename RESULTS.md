@@ -3512,3 +3512,50 @@ between −0.25 and −0.5, and prescriptions should be quoted across that range
 
 *Script:* `scripts/floor_calibration.py`. *Figure:*
 `results/figures/00_manuscript/floor_calibration/`.
+
+### The correction, fitted out of sample
+
+The refutation above identifies the defect precisely enough to repair it. The
+estimator is a **U-statistic of order 2**: averaging a product over pairs drawn
+from *k* profiles, its variance is
+
+    Var ∝ u/k + (1 − u)/n_pairs
+
+not `1/n_pairs`. The first term is the contribution of a single profile's
+deviation, shared by every pair containing it; the second is the pair-specific
+term the original formula assumed was everything. Setting *u* = 0 recovers the
+original exactly, so the change is strictly a generalisation.
+
+*u* was fitted on **half the LINCS compounds and validated on the other half**,
+which are disjoint sets:
+
+| | held-out log-RMSE |
+|---|---:|
+| original, pairs only | 0.4553 |
+| **U-statistic, *u* = 0.101** | **0.4278** |
+
+It predicts unseen compounds better, and moves the implied slope from −0.500 to
+−0.425 against an empirical −0.369 — so it recovers roughly **half** the gap. The
+remainder is unmodelled dependence (plate structure, unequal profile counts across
+contexts) and is left as a stated limitation rather than absorbed into more free
+parameters.
+
+**Nothing in §46 changes.** The floors move by at most 5% at realistic designs and
+every verdict is unchanged:
+
+| atlas | old floor | corrected | observed | verdict |
+|---|---:|---:|---:|---|
+| Tahoe-100M | 0.0169 | 0.0164 | 0.005 | not resolvable ✓ |
+| LINCS phase 1 | 0.0027 | 0.0027 | 0.57 | resolvable ✓ |
+| OP3 | 0.0222 | 0.0222 | 0.331 | resolvable ✓ |
+| sci-Plex 3 | 0.0479 | 0.0466 | 0.302 | resolvable ✓ |
+| Spear-ATAC | 0.0325 | 0.0341 | 0.014 | not resolvable ✓ |
+
+**5/5, and still 5/5 across the same snr range 0.10–0.30.** Tahoe still needs six
+replicates. The budget optimum moves from 8 × 226 cells to **6 × 301** — between
+the value the original formula gave and the one the raw −0.37 exponent implied,
+which is what a partial correction should do.
+
+The correction is carried as `perturbmodel.design.U_FIRST_ORDER`, a single module
+constant with the fit recorded beside it, and every function takes
+`u_first_order=0.0` to reproduce the original behaviour on demand.

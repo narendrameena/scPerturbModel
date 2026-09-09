@@ -143,6 +143,14 @@ def main():
         if n < a.min_pairs:
             continue
         prods = np.asarray(prods)
+        # profiles contributing pairs, per context and in total: the U-statistic
+        # variance depends on the number of independent UNITS, not on the pair
+        # count derived from them
+        kprof = 0
+        for c in np.unique(ln):
+            p_ = pl[ln == c]
+            if len(np.unique(p_)) >= 2:
+                kprof += len(p_)
         shared = float(np.mean(np.mean(R[ii] ** 2, axis=1)))
         if shared <= 0:
             continue
@@ -156,6 +164,7 @@ def main():
                        for _ in range(a.n_boot)])
         se_emp = float(np.nanstd(bs))
         rows.append({"compound": cpd, "n_contexts": int(g.ln.nunique()),
+                     "n_profiles": kprof,
                      "n_pairs": n, "share": obs, "se_empirical": se_emp,
                      "se_predicted": interaction_se(1, 1, 2, SNR, N_FEAT)
                      * np.sqrt(1.0 / n) * np.sqrt(1.0)})
@@ -163,6 +172,8 @@ def main():
             print(f"    {k+1} compounds", flush=True)
 
     D = pd.DataFrame(rows)
+    if len(D):
+        D["fold"] = np.arange(len(D)) % 2      # for out-of-sample validation
     if not len(D):
         raise SystemExit(f"no compound cleared {a.min_pairs} cross-plate pairs — "
                          "check the plate column and the pairing rule")

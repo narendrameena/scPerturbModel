@@ -191,8 +191,16 @@ designs are common (§48: 23 of 38).
 
 ### Frozen artefacts
 
+The table below carries the **current** hash of each artefact, so the test in
+`tests/test_celldrug.py` fails on any *undeclared* drift. Declared amendments are
+recorded in `docs/PREREGISTRATION_OUTCOMES.md` with both the old and new hash;
+`design.py` was amended once, on 2026-09-09, for the U-statistic correction of
+`RESULTS.md` §49. Its registration-time hash was
+`fd2a8814cb39a606baf7d2cb0b493d5473a9551c628779b814a1322fa555799d` and passing
+`u_first_order=0.0` reproduces that version's numbers exactly.
+
 | file | SHA-256 |
 |---|---|
-| `src/perturbmodel/design.py` | `fd2a8814cb39a606baf7d2cb0b493d5473a9551c628779b814a1322fa555799d` |
+| `src/perturbmodel/design.py` | `93632f85ff39afb49290d7f96d4c587e68dbae13c58ea611a206c85dba6d8b01` |
 | `src/perturbmodel/atlas_meta.py` | `d456516ff4fe81424fca7529daaab190a8ef2f58abd89d0b3632b7c45a6419da` |
 | `scripts/frozen_prospective_test.py` | `49c33236770a28a88cf4895ba4fd2d67f1a32cafc4886c0837acdbbb7bec9503` |
