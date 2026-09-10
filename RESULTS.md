@@ -3435,7 +3435,41 @@ pip install -e . && perturbdesign plan --contexts 50 --perturbations 500
 See `docs/related_work_perturbation_models.md` for how these results sit
 against published methods, and `docs/data_notes.md` for verified dataset facts.
 
-## 49. The precision law, tested on 8,427 compounds — and partly refuted
+## 49. WITHDRAWN — the precision law was never actually tested
+
+> **⚠ WITHDRAWN 2026-09-10. Do not cite any number in this section.** The section
+> below reported a refutation of the pairs^−1/2 precision law and a U-statistic
+> correction fitted to it. **Both are void.**
+>
+> `scripts/floor_calibration.py` bootstraps the pair-products **i.i.d.**
+> (`prods[rng.integers(0, n, n)]`), which forces `SE ≡ scale/√n_pairs` as an
+> algebraic identity. Regressing log SE on log pairs therefore returns −0.5 plus
+> the drift of the per-compound scale, and that is exactly what it returned:
+> −0.5 + 0.1299 = **−0.3701**, matching the reported slope to four decimals. **A
+> bootstrap that assumes pair independence cannot produce evidence against pair
+> independence.** What the −0.370 measured is that noisier compounds tend to have
+> more pairs (*r* = +0.41 between log scale and log pairs).
+>
+> The correction fitted to it was also malformed. `var = u/k + (1−u)/p` *deflates*
+> the variance at `n_rep = 2` — where each profile sits in exactly one pair, so no
+> two pairs can share a profile and the first-order term must be identically zero.
+> Both atlases whose verdict is "not resolvable" live at `n_rep = 2`. A genuine
+> order-2 U-statistic variance *adds* a term; it does not scale the pair term down.
+> `U_FIRST_ORDER` is reverted to 0.
+>
+> **The law is therefore neither refuted nor validated — it is untested.** Every
+> quantitative output of `perturbdesign` depends on it, so those outputs should be
+> read as ordinal (one replicate yields nothing; replicates beat cells; contexts
+> beat cells) rather than as calibrated thresholds.
+>
+> **How to test it properly:** resample **profiles** or **conditions** with
+> replacement and rebuild the pair set from them, rather than resampling pairs.
+> That bootstrap can express pair dependence, so its slope is informative about it.
+>
+> The original text is kept below, struck through, as §16's readout-decoupling
+> claim was.
+
+## ~~49. The precision law, tested on 8,427 compounds — and partly refuted~~
 
 §46 rests on a scaling law: the interaction is a covariance over replicate pairs,
 so its standard error should fall as **pairs^−1/2** and as nothing else. The
@@ -3513,7 +3547,15 @@ between −0.25 and −0.5, and prescriptions should be quoted across that range
 *Script:* `scripts/floor_calibration.py`. *Figure:*
 `results/figures/00_manuscript/floor_calibration/`.
 
-### The correction, fitted out of sample
+### ~~The correction, fitted out of sample~~ — WITHDRAWN with the rest of §49
+
+> **⚠ This subsection is void.** `u` was fitted to the artefact described above,
+> and the form it was fitted into (`u/k + (1−u)/p`) deflated the variance at
+> `n_rep = 2` where the term must be zero. `U_FIRST_ORDER` is 0; the formula's
+> shape has been corrected to the additive `u/k + 1/p` so that a future attempt
+> cannot repeat the sign error, and a regression test now asserts that a
+> first-order term can never reduce the standard error. The held-out RMSE
+> comparison below is also not reproducible from any committed script.
 
 The refutation above identifies the defect precisely enough to repair it. The
 estimator is a **U-statistic of order 2**: averaging a product over pairs drawn

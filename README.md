@@ -30,8 +30,8 @@ cell count never enters. Run the calculation before building.
 ```bash
 pip install -e .
 
-perturbdesign plan --contexts 48 --perturbations 1100 --replicates 2 \
-                   --replicated-fraction 0.135 --target 0.005
+perturbdesign --target 0.005 plan --contexts 48 --perturbations 1100 \
+              --replicates 2 --replicated-fraction 0.135
 perturbdesign audit atlas.h5ad          # reads obs, reports the columns used
 perturbdesign budget --cells 95600000 --contexts 48 --perturbations 1100
 ```

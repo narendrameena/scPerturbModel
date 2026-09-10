@@ -427,13 +427,10 @@ def test_gem_groups_are_not_independent_replicates():
     assert honest == 0, "one usable replicate must yield no pairs"
     assert as_if_replicated > 3_000_000
     # and the floor difference is the whole verdict
-    # 0.0011 under the sec.49 U-statistic correction, 0.0008 before it. The
-    # threshold moved because this is exactly the regime the correction targets:
-    # at 40 "replicates" the pair count (3.2M) wildly overstates the information
-    # in 164k profiles, so the first-order term dominates and the floor rises.
-    # The contrast the test exists for is untouched -- a fake-replicated design
-    # looks a thousand times better than the honest one.
-    assert min_detectable_share(2, 2056, 40, 0.20) < 0.002
+    # 0.00064. This was briefly loosened to 0.002 on 2026-09-09 to accommodate
+    # the U-statistic correction of sec.49, which is now withdrawn as an
+    # artefact; the original threshold is restored.
+    assert min_detectable_share(2, 2056, 40, 0.20) < 0.001
     assert min_detectable_share(2, 2056, 1, 0.20) == 1.0
 
 
@@ -447,19 +444,22 @@ def test_five_atlas_table_matches_the_code():
     which is exactly why nothing caught it. This pins the numbers that appear in
     MANUSCRIPT_DESIGN.md so a future change to the constant fails loudly here.
 
-    Floors updated 2026-09-09 for the U-statistic variance correction of sec.49
-    (Tahoe 0.0169 -> 0.0164, sci-Plex 0.0479 -> 0.0466, Spear-ATAC 0.0325 ->
-    0.0341). All five verdicts are unchanged, which is the point of the test.
+    Floors were briefly changed on 2026-09-09 for a U-statistic "correction" and
+    reverted on 2026-09-10 when that correction was found to rest on an artefact
+    (sec.49). For one day this test was the drifted object -- it had been updated
+    to match code that was wrong, while the manuscript it exists to protect was
+    right. The lesson is that pinning code against prose only works if the prose
+    is checked too; the test cannot tell which side moved.
     """
     from perturbmodel.design import min_detectable_share, n_pairs
     SNR = 0.20
     published = [
         # atlas,          ctx, pert, rep,   pairs,   floor, observed, resolvable
-        ("Tahoe-100M",     48,   95,   2,   4_560, 0.0164,    0.005, False),
+        ("Tahoe-100M",     48,   95,   2,   4_560, 0.0169,    0.005, False),
         ("LINCS phase 1",  71,  831,   3, 177_003, 0.0027,    0.570, True),
         ("OP3",             6,  147,   3,   2_646, 0.0222,    0.331, True),
-        ("sci-Plex 3",      3,  189,   2,     567, 0.0466,    0.302, True),
-        ("Spear-ATAC",      3,   41,   5,   1_230, 0.0341,    0.014, False),
+        ("sci-Plex 3",      3,  189,   2,     567, 0.0479,    0.302, True),
+        ("Spear-ATAC",      3,   41,   5,   1_230, 0.0325,    0.014, False),
     ]
     for name, c, p_, r, pairs, floor, obs, resolvable in published:
         assert n_pairs(c, p_, r) == pairs, name
@@ -631,3 +631,30 @@ def test_no_two_scripts_write_the_same_table():
     clashes = {t: sorted(w) for t, w in writers.items() if len(w) > 1}
     assert not clashes, "table written by more than one script:\n  " + "\n  ".join(
         f"{t}: {', '.join(w)}" for t, w in sorted(clashes.items()))
+
+
+
+def test_a_first_order_term_can_never_reduce_the_standard_error():
+    """A variance term for pair dependence must inflate, never deflate.
+
+    This is the invariant the withdrawn sec.49 correction violated. It used
+    `var = u/k + (1-u)/p`, a convex mixture, which at n_rep = 2 returned a
+    SMALLER standard error than the uncorrected form -- impossible, because at
+    two replicates each profile sits in exactly one pair, so no two pairs share
+    a profile and the first-order term must be identically zero. Both atlases
+    the paper calls unresolvable live at n_rep = 2, so the error moved exactly
+    the numbers it should not have.
+
+    A genuine order-2 U-statistic variance ADDS a term (u/k + 1/p). Any future
+    attempt at this correction must satisfy this test.
+    """
+    from perturbmodel.design import interaction_se
+    base = interaction_se(48, 95, 2, 0.20, u_first_order=0.0)
+    for u in (0.001, 0.01, 0.1013, 0.5, 1.0):
+        for r in (2, 3, 4, 8):
+            b = interaction_se(48, 95, r, 0.20, u_first_order=0.0)
+            got = interaction_se(48, 95, r, 0.20, u_first_order=u)
+            assert got >= b - 1e-12, (
+                f"u={u}, n_rep={r}: first-order term reduced the SE "
+                f"({got:.6f} < {b:.6f}). A dependence correction cannot make an "
+                f"estimator more precise.")

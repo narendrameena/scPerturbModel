@@ -1,5 +1,15 @@
 #!/usr/bin/env python3
-"""Does the predicted detection floor hold empirically? 2,834 compounds, real data.
+"""⚠ WITHDRAWN 2026-09-10 — THIS TEST DOES NOT MEASURE WHAT IT CLAIMS.
+
+The bootstrap below resamples pair-products i.i.d., which forces
+SE = scale/sqrt(n_pairs) as an identity. The reported slope of -0.370 is
+-0.5 plus the drift of the per-compound scale (+0.1299), exact to four decimals.
+A bootstrap that assumes pair independence cannot detect pair dependence.
+
+Do not quote any number this script produces. To make it informative, resample
+PROFILES or CONDITIONS and rebuild the pair set from them. See RESULTS.md §49.
+
+Does the predicted detection floor hold empirically? 2,834 compounds, real data.
 
 RESULTS.md sec.46 validates the design calculation against five published atlases:
 five binary outcomes, retrospective, on atlases this project chose. Two objections

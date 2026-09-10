@@ -52,20 +52,26 @@ def n_pairs(n_ctx, n_pert, n_rep):
     return int(n_ctx * n_pert * n_rep * (n_rep - 1) / 2)
 
 
-# Fraction of the pair-average variance carried by the first-order (per-profile)
-# term. The estimator is a U-statistic of order 2: averaging over pairs of k
-# profiles, its variance is a/k + b/k^2, not b'/n_pairs. The two terms give
-# different scaling laws -- SE ~ k^-1/2 if the first dominates, SE ~ n_pairs^-1/2
-# if the second does -- and RESULTS.md sec.49 measured the real exponent at
-# -0.370 in pair units, almost exactly midway, so BOTH terms matter at realistic
-# design sizes. Assuming only the second (the original formula) understates the
-# standard error whenever k is small, which is exactly the regime an atlas
-# builder is in.
+# Weight of a first-order (per-profile) variance term, for pairs that share a
+# profile and are therefore correlated. Kept as a parameter so the correction can
+# be tested properly later, with a form that is at least the right shape.
+# REVERTED to 0.0 on 2026-09-10. It was briefly set to 0.1013, fitted to what
+# RESULTS.md §49 called a refutation of the pairs^-1/2 law. That refutation was an
+# artefact: floor_calibration.py bootstraps PAIRS i.i.d., which forces
+# SE = sd/sqrt(n_pairs) by construction, so the regression returns -0.5 plus any
+# drift in compound-level noise scale (-0.5 + 0.1299 = -0.3701, exact to four
+# decimals). The instrument could not express pair dependence, so it could not
+# have detected it.
 #
-# U_FIRST_ORDER is calibrated once, out of sample, on LINCS phase 1 and is fixed
-# thereafter. It is a property of how correlated two pairs sharing a profile are,
-# which is a feature of the estimator rather than of any dataset.
-U_FIRST_ORDER = 0.1013   # LINCS phase 1, fitted on half the compounds, validated on the other half (§49)
+# The fitted correction was also malformed: var = u/k + (1-u)/p DEFLATES the
+# variance at n_rep = 2, where each condition contributes exactly one pair and no
+# two pairs can share a profile, so the first-order term must be identically zero.
+# A genuine order-2 U-statistic variance ADDS a term (u/k + 1/p); it does not
+# scale the pair term down.
+#
+# Left at 0.0, which is the original pairs-only form. That form is now UNTESTED
+# rather than validated -- see §49 as rewritten.
+U_FIRST_ORDER = 0.0
 
 
 def n_profiles(n_ctx, n_pert, n_rep):
@@ -97,8 +103,13 @@ def interaction_se(n_ctx, n_pert, n_rep, snr, n_feat=2000,
         return np.inf
     k = n_profiles(n_ctx, n_pert, n_rep)
     u = U_FIRST_ORDER if u_first_order is None else u_first_order
-    # var ∝ u/k + (1-u)/p ; u = 0 recovers the pair-only assumption
-    var = (u / max(k, 1)) + ((1.0 - u) / p)
+    # var ∝ u/k + 1/p. ADDITIVE, not a convex mixture: a first-order term
+    # models correlation between pairs that share a profile, which can only make
+    # the estimator LESS precise. The withdrawn sec.49 form used (1-u)/p, which
+    # deflated the variance at n_rep = 2 -- where each profile sits in exactly
+    # one pair, so the term must be identically zero. u = 0 recovers the
+    # pair-only assumption exactly, and is the default.
+    var = (u / max(k, 1)) + (1.0 / p)
     return float((1.0 + 1.0 / max(snr, 1e-6) ** 2)
                  * np.sqrt(var / max(n_feat, 1)))
 

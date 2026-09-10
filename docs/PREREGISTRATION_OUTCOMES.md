@@ -143,3 +143,36 @@ either can be reconstructed.
 good the reason. The mitigation is that the change is declared, dated, hash-
 pinned in both directions, and reversible by a single argument — not that it is
 harmless.
+
+
+---
+
+## 2026-09-10 — Second amendment, and the registered artefact cannot be restored
+
+The amendment declared on 2026-09-09 was made on the strength of `RESULTS.md`
+§49, which is **now withdrawn**: the refutation it rested on was an artefact of an
+i.i.d. pair bootstrap, and the correction fitted to it deflated the variance at
+`n_rep = 2` where the corrected term must be zero. `U_FIRST_ORDER` is reverted
+to 0.
+
+`src/perturbmodel/design.py` is therefore on its **third** hash:
+
+| | SHA-256 |
+|---|---|
+| at registration (2026-09-07) | `fd2a8814cb39a606baf7d2cb0b493d5473a9551c628779b814a1322fa555799d` |
+| first amendment (2026-09-09) | `93632f85ff39afb49290d7f96d4c587e68dbae13c58ea611a206c85dba6d8b01` |
+| **after reverting (2026-09-10)** | `bbf3b6875a2720379b758c69090e16fd6a23dfe95d4716d670134a55826965c6` |
+
+**The registration-time artefact cannot be restored by reverting the constant.**
+The added `n_profiles` helper and the commentary explaining the episode remain in
+the file, deliberately — deleting them would erase the record of what happened.
+Numerically the module is now equivalent to its registered state
+(`min_detectable_share` reproduces `0.0169 / 0.0027 / 0.0222 / 0.0479 / 0.0325`),
+but it is not byte-identical and cannot be made so without destroying the audit
+trail.
+
+**The honest cost, restated and now larger.** A frozen artefact has been modified
+twice in three days, the first time on the strength of a result that was not real.
+The registration's remaining value is that Part A settled before any of this, and
+that every change is declared with hashes in both directions. That is worth
+something. It is worth less than a registration whose artefacts never moved.

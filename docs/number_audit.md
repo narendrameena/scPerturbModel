@@ -861,3 +861,111 @@ The infrastructure that makes this repeatable is now in place: `check_freshness.
 with a `--critical` scope gating the test suite, `docs/source_data/` holding the
 tables behind quoted numbers, and tests for loop-variable shadowing, filename
 collisions, and frozen pre-registration artefacts.
+
+---
+
+# Three-agent audit, 2026-09-10 — and the withdrawal of §49
+
+Three independent agents audited the design paper on separate lenses — statistical
+validity, claim–evidence match, and referee-demand completeness — then
+cross-examined each other's findings. Roughly 50 findings; the ones that changed
+the paper are below.
+
+## 1. The 5/5 validation does not beat a design-blind null — WITHDRAWN as evidence
+
+**Found independently by two agents**, and verified:
+
+* **72 of 120** permutations of the five floors across the five atlases also
+  score 5/5 — exactly `3 × 4!`, every permutation except those handing LINCS's
+  0.0027 to Tahoe or Spear-ATAC. The permutation *p*-value on "correct in all
+  five" is **≈0.6**: the observed result is the *modal* outcome of the null.
+* **Any constant floor in (0.014, 0.302)** — a 21.6-fold window using no design
+  information at all — reproduces all five verdicts.
+* The five measured shares are bimodal, {0.005, 0.014} against
+  {0.302, 0.331, 0.570}, so almost any scalar separates them.
+* The `snr = 0.20` sweep showing 5/5 across 0.10–0.30 is a measure of how easily
+  that constant lands inside the gap, not evidence that it was not chosen. The
+  figure legend read this backwards.
+
+A third agent found the project had **predicted this in advance**:
+`docs/methodology_rationale.md` §9 rejects analytic power calculations because
+"the assumption would be doing all the work, and reviewers would rightly discount
+it."
+
+**Action.** "Five of five, from three integers each, before any data is examined"
+is replaced in the manuscript by the permutation null, the constant-floor window
+and an explicit statement of what the table does and does not establish. The
+weight moves to the three claims that need no calibrated constant: the identity
+(one replicate → zero pairs → not separable at any effect size), the field survey,
+and the subsampling experiment.
+
+## 2. §49 was an artefact, and its correction was malformed — both WITHDRAWN
+
+`scripts/floor_calibration.py` bootstraps pair-products **i.i.d.**, which forces
+`SE ≡ scale/√n_pairs` as an algebraic identity. Regressing log SE on log pairs
+therefore returns −0.5 plus the drift of the per-compound scale:
+
+    −0.5 + 0.1299 = −0.3701   (exact to four decimals; the reported slope)
+
+**A bootstrap that assumes pair independence cannot produce evidence against pair
+independence.** The −0.370 measured only that noisier compounds tend to have more
+pairs (*r* = +0.41).
+
+The correction fitted to it was independently wrong. `var = u/k + (1−u)/p` is a
+convex mixture, so it *deflated* the variance at `n_rep = 2` — where each profile
+sits in exactly one pair, no two pairs share a profile, and the first-order term
+must be identically zero. Both atlases whose verdict is "not resolvable" live at
+`n_rep = 2`, so the error moved exactly the numbers it should not have.
+
+**Action.** `U_FIRST_ORDER` reverted to 0; the formula's *shape* corrected to the
+additive `u/k + 1/p`, verified equivalent to the pre-correction module over 8,820
+parameter combinations (worst relative difference 3×10⁻¹⁶); §49 struck through and
+kept; the script banners itself do-not-quote; `floor_calibration.csv` removed from
+`docs/source_data/`. A new regression test asserts a first-order term can never
+reduce the standard error — the invariant the withdrawn form violated.
+
+**The law is now neither refuted nor validated. It is untested**, and every
+quantitative output of `perturbdesign` depends on it, so those outputs are ordinal
+rather than calibrated.
+
+## 3. Freshness is not correctness
+
+For 23 hours the code was wrong and the manuscript was right, purely because
+nobody had updated the manuscript. One agent inferred wrongness from staleness and
+called the manuscript stale; it was stale *and correct*.
+
+**`check_freshness.py` would have driven the manuscript toward the wrong number.**
+A staleness checker has no way to know which side of a divergence moved, or that
+the fresh artefact is the broken one. This sits alongside "Two generations of
+corrections, and which won" above as the second case where the tooling's verdict
+and the truth came apart.
+
+## 4. The freshness checker was blind to every figure the paper cites
+
+`manuscript_figures.py` calls `save_figure(fig, f"fig{i}", ...)`, whose only string
+literal is `"fig"`. That resolved to a nonexistent directory, so **`fig1`–`fig10`
+were invisible to the checker** while it reported the repository clean. Fixed by
+falling back to prefix matching; the fix immediately surfaced 15 previously hidden
+stale bundles from other f-string-named scripts.
+
+## 5. Smaller fixes made
+
+* The README's documented command errored out — `--target` is a global option and
+  was documented after the subcommand. Corrected in the README and the CLI
+  docstring.
+* The gem-group test's threshold, loosened to 0.002 on 2026-09-09 to accommodate
+  the U correction, restored to 0.001.
+* `design.py` is now on its **third** hash since the pre-registration froze it;
+  recorded in `PREREGISTRATION_OUTCOMES.md` with all three, and the manuscript's
+  Limitations now says a frozen artefact that moved twice in two days is close to
+  not being frozen.
+
+## Still open, not yet fixed
+
+Spear-ATAC's observed 0.014 has no committed source and decides a headline verdict
+(both agents). `perturbdesign audit` uses median replicates, reporting 0 pairs for
+10 datasets with up to 18,007 — "1 of 38" survives, since all ten are
+single-context, but the released tool would mislead a real user. No comparison to
+scPower or other published design tools. `n_feat` assumes independent genes;
+measured effective counts are 6–63× smaller. Packaging: no LICENSE, `h5py`/`pandas`
+undeclared while `torch` is declared and unused.

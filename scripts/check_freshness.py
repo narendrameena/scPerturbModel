@@ -188,8 +188,19 @@ def module_deps(modules: set) -> list[tuple[Path, str | None, float]]:
 
 
 def resolve_figures(name: str) -> list[Path]:
-    """A save_figure name to the PNG it writes, wherever the bundle landed."""
-    return sorted(FIGROOT.rglob(f"{name}/{name}.png"))
+    """A save_figure name to the PNG it writes, wherever the bundle landed.
+
+    `manuscript_figures.py` calls `save_figure(fig, f"fig{i}", ...)`, whose only
+    string literal is "fig". Matching that exactly resolved to a directory that
+    does not exist, so fig1..fig10 -- every figure the design paper cites -- were
+    invisible to this checker while it reported the repository clean. Treat a
+    name that matches no bundle exactly as a prefix instead.
+    """
+    exact = sorted(FIGROOT.rglob(f"{name}/{name}.png"))
+    if exact:
+        return exact
+    return sorted(p for p in FIGROOT.rglob("*/*.png")
+                  if p.parent.name.startswith(name) and p.stem == p.parent.name)
 
 
 def resolve(pattern: str) -> list[Path]:

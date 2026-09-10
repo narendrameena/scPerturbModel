@@ -70,3 +70,13 @@ Matched ceiling 0.044 vs cross-lab 0.012 → **reproducible fraction 27.3%**
 
 The pre-fix version of this table reported 46%, within-lab 0.061 and 16/16, from
 profiles keyed (line, last-line-seen) instead of (line, compound).
+
+
+### `floor_calibration.csv` — REMOVED 2026-09-10
+
+This table backed `RESULTS.md` §49, which is withdrawn: its bootstrap resampled
+pair-products i.i.d., forcing `SE = scale/√n_pairs` as an identity, so the slope
+it reported could not be evidence about pair dependence. No manuscript number now
+depends on it, so it is removed from this directory rather than kept as a fresh
+copy of a void result. The generating script survives with a do-not-quote banner
+and instructions for making the test informative (resample profiles, not pairs).

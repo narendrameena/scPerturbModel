@@ -19,26 +19,22 @@ result set in `RESULTS.md`; method choices justified in
 
 ## Abstract
 
-Perturbation atlases profile thousands of compounds across dozens of cellular
-contexts to learn how context shapes drug response, and are scaled by cell count.
-Tahoe-100M sequenced 95.6 million cells and still cannot resolve the interaction
-it was built to measure; **the same budget, spent as six replicates of 301 cells
-rather than two of 1,810, would have detected an effect three times smaller than
-its own.** Whether an atlas can measure context-dependence is fixed by its design,
-not its scale. Because the quantity is a covariance between independent
-replicates, its precision is set by replication rather than depth: a condition
-measured once contributes nothing however deeply it is sequenced. From context,
-perturbation and replicate counts alone, the calculation predicts which of five
-published atlases resolved an interaction and which could not, correctly in all
-five, with one shared noise constant and no per-atlas tuning. Testing its
-precision law on 8,427 LINCS compounds across a 50,000-fold range of sample size
-refuted its original form — pairs within a condition share profiles, so the
-estimator is a U-statistic whose variance is `a/k + b/k²`, not `b/pairs`; the
-corrected form is fitted on half the compounds, validated on the other half, and
-leaves all five verdicts intact. The premise holds where tested: 2% of
-Tahoe-100M's cells retain 92% of a known interaction, while 10% of its contexts
-destroy precision. Applied to all 38 scPerturb datasets, **one can support the
-estimate at all**. We release the calculation as a tool and pre-register it.
+Perturbation atlases profile thousands of compounds across dozens of contexts to
+learn how context shapes drug response, and are scaled by cell count. Tahoe-100M
+sequenced 95.6 million cells, 1,810 per condition, yet an atlas-wide index cannot
+resolve the interaction it is quoted for; the same cells split into eight
+replicates of 226 rather than spent on depth give a floor of 0.0016 against a true
+effect of 0.005. Whether an atlas can measure context-dependence is fixed by its
+design, not its scale. The quantity is a covariance between independent
+replicates, so a condition measured once contributes no pair however deeply it is
+sequenced. That much is an identity. How precision scales with pair count beyond
+it we do not establish: our test resampled pairs as independent, so it could not
+detect dependence among them, and the five atlases we audit cannot settle it,
+their measured interactions being bimodal. The premise we test directly: 2% of
+Tahoe's cells retain 92% of a biologically specified interaction, while 10% of its
+contexts destroy precision. Of 38 scPerturb datasets, one can support the estimate
+at all; 23 have no replicated condition. We release the calculation as a tool and
+pre-register it.
 
 ---
 
@@ -61,8 +57,8 @@ calculation is not published anywhere we can find, and the designs of the field'
 atlases suggest it is not being done. Tahoe-100M spends 95.6 million cells and
 replicates 13.5% of its conditions, which leaves it a detection floor of 0.0169
 against a true interaction of 0.005 — it misses its own effect by 3.4×. The same
-95.6 million cells spread as six replicates of 301 cells give a floor of 0.0018,
-which would have resolved it with nearly 3× margin. Nothing about the biology or the
+95.6 million cells spread as eight replicates of 226 cells give a floor of 0.0016,
+which would have resolved it with 3× margin. Nothing about the biology or the
 budget changed; only how the cells were spread. Spear-ATAC, at the other extreme,
 replicates almost everything across three cell lines and still cannot resolve an
 interaction, because three contexts is too few however often each is repeated.
@@ -99,11 +95,29 @@ any of them found:
 | sci-Plex 3 | 567 | 0.0479 | 0.302 | resolvable | resolvable |
 | Spear-ATAC | 1,230 | 0.0325 | 0.014 | **not resolvable** | not resolvable |
 
-**Five of five**, from three integers each, before any data is examined. A
-**single shared noise constant** is used for all five rather than a per-atlas
-value: five free parameters fitting five binary outcomes would prove nothing.
-The result holds for any shared constant between 0.10 and 0.30, a threefold
-range, degrading to 4/5 at 0.35.
+The calculation is **not contradicted** by any of the five. That is the honest
+statement, and it is weaker than it looks, so we state the limitation rather than
+let a referee find it. The five measured interactions are bimodal — {0.005, 0.014}
+against {0.302, 0.331, 0.570} — with a 21.6-fold empty interval between them, so
+**any constant floor in (0.014, 0.302) reproduces the same five verdicts using no
+design information at all**, and **72 of the 120 permutations of these five floors
+across these five atlases also score five of five**. The permutation *p*-value on
+"correct in all five" is ≈0.6: it is the modal outcome of the natural null, not a
+surprising one.
+
+Two further caveats. The single shared noise constant `snr = 0.20` multiplies all
+five floors together, and the range over which five of five survives (0.10–0.30)
+is a measure of how easily that constant can be chosen to land inside the gap,
+not evidence that it was not chosen. And for Tahoe and Spear-ATAC the "observed"
+and "actual" columns are the same measurement read twice — the CI including zero
+*is* the not-resolvable verdict.
+
+**What this table does and does not establish.** It does not establish that the
+floor's *structure* — its dependence on contexts, perturbations and replicates —
+carries information, because four of the five verdicts survive detaching each
+floor from its own atlas. The claims that do not depend on it are the identity
+(one replicate gives zero pairs, so the interaction is not separable at any effect
+size or cell count), the field survey, and the subsampling experiment below.
 
 The prescription follows directly. **Tahoe needed six replicates per
 condition, not two** — at two its floor is 0.0169 against a true 0.005, and even a
@@ -354,9 +368,14 @@ covariance estimator.
 38-dataset survey addresses the selection concern for the design parameters but
 not for the measured shares, which exist only for the five.
 
-**One informative prospective test.** Part A of the pre-registration is *n* = 1.
-The standing registration (Part B) is a commitment, not a result, and cannot be
-credited until qualifying atlases appear.
+**One informative prospective test, and a registration whose artefacts moved.**
+Part A of the pre-registration is *n* = 1. Part B is a commitment, not a result.
+And the registration froze `design.py` by hash on 2026-09-07; that file was
+amended on 2026-09-09 to adopt a variance correction and again on 2026-09-10 to
+withdraw it, the first change made on the strength of a result that turned out to
+be an artefact. Both moves are declared with hashes in both directions, and Part A
+settled before either. But a frozen artefact that moved twice in two days is close
+to not being frozen, and the registration is worth correspondingly less.
 
 **The snr constant is not measured.** It is fixed at 0.20 and shown to be
 insensitive over 0.10–0.30, but it is a stand-in for per-condition noise that a

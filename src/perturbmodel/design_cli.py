@@ -19,7 +19,8 @@ rather than assuming an answer.
 Examples
 --------
     perturbdesign plan --contexts 50 --perturbations 1100 --replicates 2
-    perturbdesign plan --contexts 50 --perturbations 1100 --target 0.02
+    perturbdesign --target 0.02 plan --contexts 50 --perturbations 1100
+        (--target, --snr and --model-dim are GLOBAL and precede the subcommand)
     perturbdesign audit atlas.h5ad
     perturbdesign budget --cells 100000000 --contexts 50 --perturbations 1100
 """
