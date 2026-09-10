@@ -20,21 +20,21 @@ result set in `RESULTS.md`; method choices justified in
 ## Abstract
 
 Perturbation atlases profile thousands of compounds across dozens of contexts to
-learn how context shapes drug response, and are scaled by cell count. Whether an
-atlas can measure context-dependence is fixed by its design, not its scale: the
-quantity is a covariance between independent replicates, so a condition measured
-once contributes no pair however deeply it is sequenced. That identity is
-decisive — of 38 scPerturb datasets, **23 have no replicated condition and one can
-support the estimate at all**, and among ten drug screens, where context-dependence
-is the whole question, three use more than one context and one of those replicates
-a condition. Cell count is not the binding constraint: 2% of Tahoe-100M's cells
-retain 92% of a biologically specified interaction, while 10% of its contexts
-destroy precision. We also measure, on sub-designs of PRISM, how fast precision
-actually improves with design size, and find it slower than the standard power
-calculation assumes — `pairs^−0.32` against `pairs^−0.50` — so the calculation
-should be read as ordering designs rather than as calibrating thresholds. We
-release it as a tool, with that limitation stated, and pre-register it against
-atlases not yet built.
+learn how context shapes drug response, and are scaled by cell count. We ask what a
+given design can actually measure. For the covariance estimator this literature
+uses, a condition measured once contributes no replicate pair, and of 38 scPerturb
+datasets **14 have no usable pair and one can support the estimate at all**; among
+ten drug screens, where context-dependence is the whole question, three use more
+than one context and one of those replicates a condition. That is a statement
+about a widely used estimator, not about the quantity: we show by construction that
+a block cross-validation estimator, which draws independence from disjoint sets of
+contexts and perturbations rather than from repeats, **does** recover the
+interaction from singly-measured conditions on PRISM, at 22–59× its own null. Where
+replicate pairs are the instrument, precision improves more slowly than the
+standard power calculation assumes — `pairs^−0.30` measured against `pairs^−0.50` —
+with perturbations behaving as predicted and contexts falling short. We release the
+calculation as a tool for the estimator it describes, bounded by what it does not
+cover, and pre-register it.
 
 ---
 

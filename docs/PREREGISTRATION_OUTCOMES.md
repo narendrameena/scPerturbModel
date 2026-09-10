@@ -197,3 +197,68 @@ retained, so the registered scoring rule still evaluates identically.
 |---|---|
 | at registration | `d456516ff4fe81424fca7529daaab190a8ef2f58abd89d0b3632b7c45a6419da` |
 | after this amendment | `c34819f0829b85ac11b7653c2edeffd9e65bcd5d59ae1e745cca87e9dcdaf4ae` |
+
+
+---
+
+## 2026-09-10 — **PART B, ASSERTION 4 IS FALSIFIED**
+
+The registration's strongest and most falsifiable commitment
+(`PREREGISTRATION.md`, Part B, "The sharper, riskier prediction"):
+
+> **For any eligible atlas with one replicate per condition, the measured
+> interaction share will not be separable from zero by a permutation test**,
+> regardless of how many cells it sequenced. … **a single well-powered
+> counterexample, an unreplicated atlas that nonetheless resolves a reproducible
+> interaction, kills the premise.**
+
+**That counterexample exists, and it was produced on this project's own data.**
+
+An adversarial audit built a leak-free bi-cross-validation estimator: contexts and
+perturbations are split into disjoint blocks, so a held-out cell appears in no term
+used to predict it. Independence comes from disjoint blocks rather than from
+repeats, and the null expectation is exactly zero when the interaction is zero —
+the same independence argument the paper uses for replicate pairs.
+
+On PRISM, **one detection plate at a time — zero replicate pairs by this project's
+own rule** — 468 conditions × 278 lines:
+
+| | k = 5 | k = 20 | k = 40 |
+|---|---:|---:|---:|
+| single plate | +0.0868 | +0.1103 | +0.1204 |
+| null (main effects preserved, real noise) | +0.0015 | +0.0037 | +0.0056 |
+| ratio | 59× | 30× | 22× |
+
+Reproduced independently on all three plates (+0.1092, +0.1109, +0.1135), with a
+row-shuffled null at −0.0003. It recovers 43–60% of the three-plate
+cross-replicate ground truth.
+
+I reimplemented this independently rather than take it on report. With **one
+observation per cell**: Var(θ) = 0 gives z = −0.2 (correctly null); Var(θ) = 0.05
+gives **z = +22.1**; Var(θ) = 0.20 gives **z = +156.5**. Detection holds at every
+rank tested, including full rank (z = +7.4).
+
+**The "however many cells" clause is separately false.** Holding Var(θ) fixed and
+lowering noise as depth rises: z = +1.7 → +3.9 → +24.2 → **+41.0**. Cells enter
+through the noise, and the noise enters.
+
+### What the claim should have been
+
+*With a saturated interaction model and no structural assumption, one observation
+per cell does not identify the interaction variance.* That is true, standard, and
+worth saying — it is exactly §21's correct statement about the mixed model. What
+was written instead — "not separable at any effect size or cell count" — is a
+property of **one estimator**, presented as a property of the **quantity**.
+
+The paper supplies the refutation itself: §41 and §43 measure the interaction to be
+low-dimensional (13 of 48 directions in Tahoe, 4 of 14 in LINCS), and it is
+precisely that structure a block-based estimator exploits. The identity is broken
+by a headline result three sections earlier.
+
+### Why this is recorded rather than quietly restated
+
+A pre-registration whose central prediction is falsified, by the registrant, and
+reported, is the registration working. The alternative — restating the claim
+narrowly and not mentioning that the broad version was registered and refuted —
+would make the registration decorative. Assertion 4 is **falsified**. The design
+paper's core claim narrows accordingly, and the narrowing is large.

@@ -3729,3 +3729,89 @@ each SE with roughly 11% relative error, which the fit absorbs as residual scatt
 
 *Script:* `scripts/exchange_rate_test.py`. *Figure:*
 `results/figures/00_manuscript/exchange_rate/`.
+
+## 51. The identity is not an identity — the central claim, refuted
+
+Every version of this paper has rested on one sentence: *one replicate per
+condition yields zero cross-replicate pairs, so the interaction is not separable
+from noise at any effect size or cell count.* It was presented as arithmetic,
+pre-registered as the project's most falsifiable commitment, and survived every
+audit because nobody attacked something so obvious.
+
+**It is false.** The counterexample was produced on this project's own data.
+
+### The construction
+
+A leak-free bi-cross-validation estimator. Contexts and perturbations are split
+into disjoint blocks, so a held-out cell appears in no term used to predict it.
+Independence comes from **disjoint blocks rather than from repeats** — the same
+independence argument the replicate-pair estimator uses, obtained differently. Its
+expectation is exactly zero when the interaction is zero.
+
+On PRISM, **one detection plate at a time — zero replicate pairs by our own rule**,
+468 conditions × 278 lines:
+
+| | *k* = 5 | *k* = 20 | *k* = 40 |
+|---|---:|---:|---:|
+| single plate | +0.0868 | +0.1103 | +0.1204 |
+| null, main effects preserved | +0.0015 | +0.0037 | +0.0056 |
+| **ratio** | **59×** | **30×** | **22×** |
+
+Reproduced on all three plates independently (+0.1092 / +0.1109 / +0.1135);
+row-shuffled null −0.0003; recovers 43–60% of the three-plate ground truth. A
+second estimator with no low-rank assumption — dose pairs within one plate — gives
++0.065 against a null of +0.007.
+
+Reimplemented independently, on a synthetic unreplicated table with **one
+observation per cell**: Var(θ) = 0 → *z* = −0.2 (correctly null); Var(θ) = 0.05 →
+***z* = +22.1**; Var(θ) = 0.20 → ***z* = +156.5**. Detected at every rank tested,
+including full rank.
+
+**The "however many cells" clause fails separately.** Holding Var(θ) fixed and
+lowering noise as depth rises: *z* = +1.7 → +3.9 → +24.2 → **+41.0**. Cells enter
+through the noise, and the noise enters the estimator.
+
+### What the claim should have been
+
+> With a **saturated** interaction model and **no structural assumption**, one
+> observation per cell does not identify the interaction variance separately from
+> the residual.
+
+True, standard, and worth saying — it is exactly what §21 says correctly about the
+mixed model, where context×perturbation and residual enter the likelihood
+identically. What was written instead is a property of **one estimator** stated as
+a property of the **quantity**.
+
+**The paper supplied its own refutation.** §41 and §43 measure the interaction to
+be low-dimensional — 13 of 48 directions in Tahoe, 4 of 14 in LINCS. Structure is
+exactly what a block estimator exploits. The identity is broken by a headline
+result three sections earlier, and nobody connected them.
+
+### What survives
+
+* **The survey.** 1 of 38 datasets supports the *replicate-pair* estimate. That is
+  now a statement about a widely used estimator rather than about measurability,
+  which is narrower and still worth reporting — the field does compute this index
+  on these datasets.
+* **The design calculation**, for the estimator it describes. It remains correct
+  arithmetic for covariance-over-pairs; it is no longer a bound on what an atlas
+  can learn.
+* **The pre-registration**, which did its job: Part B assertion 4 is recorded as
+  **falsified** in `PREREGISTRATION_OUTCOMES.md`.
+
+### What does not
+
+"Whether an atlas can measure context-dependence is fixed by its design" —
+in the strong form. Design fixes what *this* estimator can do. A better estimator
+changes the answer, and one exists.
+
+### The honest reading
+
+The strongest defensible version of the paper's argument is a different argument
+than the one it makes. On Tahoe's single-cell data the audit could not build a
+clean replicate-free test, because condition-level technical modes dominate: the
+plate-difference null (+0.0165) exceeded the single-plate signal (+0.0103). That is
+a real obstacle, and it is about **confounding by batch structure**, not about
+separability from noise. That is the argument the paper should make.
+
+*Verified independently by reimplementation; see `PREREGISTRATION_OUTCOMES.md`.*

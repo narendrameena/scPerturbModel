@@ -102,6 +102,17 @@ def interaction_share(sub):
     C, Rn, L = sub.shape
     if C < 3 or L < 3 or Rn < 2:
         return np.nan
+    # Numerator and denominator MUST average over the same cells. Before this
+    # fix, `inter` averaged pair products over cells finite in BOTH replicates
+    # (44.7% of PRISM) while `shared` averaged over cells finite in AT LEAST ONE
+    # (60.5% at n_rep=2, 63.7% at n_rep=3). The mismatch changes with n_rep, and
+    # that change WAS the measured replicate exponent: on a synthetic cube where
+    # contexts and replicates are interchangeable by construction, adding only
+    # PRISM's missingness mask manufactures a - c = -0.289 (P < 1e-30), nearly
+    # three times the effect this script originally reported. Restricting to
+    # cells finite in every replicate removes it.
+    complete = np.isfinite(sub).all(axis=1)          # conditions x lines
+    sub = np.where(complete[:, None, :], sub, np.nan)
     m = np.nanmean(sub, axis=1)                      # conditions x lines
     ok = np.isfinite(m)
     if ok.mean() < MIN_FINITE:
@@ -215,7 +226,8 @@ def fit(D, label):
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--n-draws", type=int, default=30)
+    ap.add_argument("--n-draws", type=int, default=40)
+    ap.add_argument("--seed", type=int, default=0)
     a = ap.parse_args()
     FIG.mkdir(parents=True, exist_ok=True)
     from perturbmodel.celldrug import load_prism
@@ -225,13 +237,13 @@ def main():
     print(f"  cube: {cube.shape[0]:,} conditions x {len(reps)} reps x "
           f"{cube.shape[2]} lines", flush=True)
 
-    rng = np.random.default_rng(0)
+    rng = np.random.default_rng(a.seed)
     print(f"\nsweeping the design grid ({a.n_draws} draws per cell) ...",
           flush=True)
     rows = run_grid(cube, len(lines), rng, a.n_draws, permute=False)
     print(f"  {len(rows)} usable grid cells", flush=True)
     print("control: same grid with the interaction destroyed ...", flush=True)
-    rows += run_grid(cube, len(lines), np.random.default_rng(1),
+    rows += run_grid(cube, len(lines), np.random.default_rng(a.seed + 1),
                      max(a.n_draws // 2, 10), permute=True)
     D = pd.DataFrame(rows)
     D.to_csv(TAB / "exchange_rate.csv", index=False)
