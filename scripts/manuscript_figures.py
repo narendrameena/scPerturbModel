@@ -248,7 +248,11 @@ def figure1():
         for i_, r in enumerate(tr.itertuples()):
             ax[5].text(i_, r.share + 0.012,
                        f"{r.share:.0%}\nn={r.n_pairs:,}\n"
-                       f"p={'0.97' if r.p_vs_null > 0.01 else f'{r.p_vs_null:.0e}'}",
+                       # was hard-coded to the string "0.97" for any p > 0.01, which printed a
+                       # p-value contradicting both the source table (0.1034) and the
+                       # manuscript text (P = 0.10). Format the actual value.
+                       f"p={r.p_vs_null:.2f}" if r.p_vs_null > 0.01
+                       else f"p={r.p_vs_null:.0e}",
                        ha="center", fontsize=6.2)
         ax[5].set_xticks(xx, [lab2[p] for p in tr.pairing], fontsize=7.5)
         ax[5].set_ylabel("interaction share (vs matched null)")

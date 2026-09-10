@@ -68,7 +68,7 @@ ATLASES = [
     ("LINCS phase 1",        71, 831,  3, 0.57),    # §34, 56.9-57.4%
     ("OP3",                   6, 147,  3, 0.331),   # §35 rerun
     ("sci-Plex 3",            3, 189,  2, 0.302),
-    ("Spear-ATAC",            3,  41,  5, 0.014),   # §35, ANOVA
+    ("Spear-ATAC",            3,  41,  5, 0.00305), # §35, atlas-wide index over all 2,174 features (atac_responsive.csv)
 ]
 TRUTH = {"Tahoe-100M": False, "LINCS phase 1": True, "OP3": True,
          "sci-Plex 3": True, "Spear-ATAC": False}

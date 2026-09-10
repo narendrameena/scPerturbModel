@@ -969,3 +969,75 @@ single-context, but the released tool would mislead a real user. No comparison t
 scPower or other published design tools. `n_feat` assumes independent genes;
 measured effective counts are 6–63× smaller. Packaging: no LICENSE, `h5py`/`pandas`
 undeclared while `torch` is declared and unused.
+
+## Gaps filled, 2026-09-10 (second pass)
+
+Working through the three-agent findings that were still open.
+
+**Spear-ATAC's observed share now has a source.** The published 0.014 appears in
+no committed table and decided a headline verdict. The traceable atlas-wide value
+from `atac_responsive.csv` is **0.00305** — the same *kind* of quantity the other
+four atlases contribute — and it preserves the verdict (0.00305 < floor 0.0325).
+Substituted with the table named. The alternative reading, 0.9156 on responsive
+features only, would flip it, but its own permutation *p* is 0.449, so
+"not resolvable" holds either way.
+
+**The released tool no longer tells nine datasets they are hopeless.**
+`describe()` used the *median* replicate count, which is 1 for an unbalanced atlas
+— most conditions measured once, a few many times. Nine of the 38 scPerturb
+datasets are in that state and were told "UNRESOLVABLE AT ANY EFFECT SIZE" while
+carrying up to **18,007** real pairs. `n_pairs_exact` now computes
+`Σ C(n_rep_i, 2)` and `audit` reports the discrepancy. **"1 of 38" is unchanged** —
+all nine are single-context, and every multi-context dataset gives identical exact
+and median counts.
+
+**The convergent-validity check is published.** It had been run, supports the
+paper, and appeared in no manuscript. On 111 LINCS compounds the published
+cross-context metric is **ρ = +0.936 with compound reproducibility** — it largely
+measures how reproducible a compound is, not how context-dependent — while CDI
+carries a much weaker version of the same dependence (+0.362, reported rather than
+denied) and agrees with the disattenuated metric at |ρ| = 0.81. This is the
+"does your index agree with the field's?" question, answered, in the paper's
+favour.
+
+**Counts corrected.** The premise-test readout pools across **50** lines (36
+MAPK-driven, 14 wild-type), not "~120" or "80 and 40" — those came from a 102-row
+metadata table rather than the atlas. "26 carry annotation, 23 never cover a
+condition twice" was conflating two disjoint groups: 11 of the 26, plus 12 with no
+annotation at all. "31 unit tests" is 27 in the file, 42 across the suite.
+
+**Magnitude corrected in three places.** "Discarding the replicate structure
+doubles the estimate" was retracted in §31 as *twentyfold* (0.46% → 9.2%) but
+survived in the section heading, a closing sentence and a figure legend.
+
+**A hard-coded p-value removed.** `manuscript_figures.py` printed the literal
+string `0.97` for any *p* > 0.01, contradicting both its source table (0.1034) and
+the manuscript text (*P* = 0.10).
+
+**Packaging.** MIT `LICENSE` added (declared in `CITATION.cff`, never present).
+`pip install -e .` gave a broken tool: `h5py` and `pandas` were undeclared while
+`torch` — ~2 GB, imported by no design module — was required. Core dependencies
+are now the six the calculator actually needs; model training moved to a `models`
+extra. The package description still advertised the superseded project.
+
+**Nature Methods sections added.** Data availability (with accessions for all
+eight sources), Code availability, References and Competing interests were absent
+entirely. Code availability states plainly that `results/` is untracked, so
+"every number is reproducible" means regenerable rather than archived, and
+recommends a Zenodo deposit at submission.
+
+**A second declared amendment.** `atlas_meta.py` was also frozen by the
+pre-registration; the exact-pair-count change is recorded with both hashes, along
+with why no registered prediction moves.
+
+### Still open, deliberately
+
+* **No replacement for the withdrawn 5/5.** One agent specified a 20-minute test on
+  cached PRISM data that would test the paper's actual title claim — whether
+  contexts and replicates are interchangeable at equal pair count. Not yet run.
+* **`n_feat` assumes independent genes.** Measured effective feature counts are
+  6–63× smaller (participation ratio 164 of 978 in LINCS, 132 of 2,000 in Tahoe),
+  so every floor is understated by 2.4–3.9×. The verdicts survive, but sci-Plex's
+  margin narrows from 6.5× to 1.7× and the survey's "detects 5%" step becomes
+  knife-edge.
+* **No comparison to scPower** or other published single-cell design tools.

@@ -3259,7 +3259,7 @@ of question, while the replication Tahoe lacked buys the question itself.
 
 ### The limitation this rests on
 
-The readout **pools across roughly 80 MAPK-driven and 40 wild-type lines**, so
+The readout **pools across 50 lines — 36 MAPK-driven and 14 wild-type**, so
 per-condition sampling noise averages out before the contrast is taken. A
 *per-condition* estimate — one (line, drug) pair on its own — would degrade under
 cell thinning far sooner, and this experiment does not measure how much sooner.

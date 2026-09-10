@@ -66,7 +66,7 @@ Transcription arm, corrected:
 | Tahoe vs LINCS p2 (cross-lab) | 0.022 | 172 |
 
 Matched ceiling 0.044 vs cross-lab 0.012 → **reproducible fraction 27.3%**
-(viability: 56%). Identity: 15/16 within the Broad, 2/6 across laboratories.
+(viability: 57.9%). Identity: 15/16 within the Broad, 2/6 across laboratories.
 
 The pre-fix version of this table reported 46%, within-lab 0.061 and 16/16, from
 profiles keyed (line, last-line-seen) instead of (line, compound).

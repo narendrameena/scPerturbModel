@@ -235,7 +235,7 @@ The result is a property of laboratories rather than of a killing assay, though
 transcription transfers considerably worse than viability. On the matched set —
 114 within-lab pairs sharing a (line, compound) with the 317 cross-lab pairs —
 the within-laboratory ceiling is *r* = 0.044 and cross-laboratory agreement
-0.012, a **reproducible fraction of 27.3%** against viability's 56%. The identity
+0.012, a **reproducible fraction of 27.3%** against viability's 57.9%. The identity
 check behaves the same way: within the Broad (LINCS phase 1 vs phase 2) **15 of
 16** name-matched lines are reciprocal best matches (median rank 1 of 26), but
 across laboratories only **2 of 6** (median rank 4 of 62).

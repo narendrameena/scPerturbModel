@@ -135,8 +135,20 @@ def describe(path):
             if len(v):
                 ptype = str(v.mode().iloc[0])
             break
+    # EXACT pair count, not the one implied by the median replicate count. An
+    # unbalanced atlas -- most conditions measured once, some many times -- has a
+    # median of 1 and therefore an implied zero pairs, while actually carrying
+    # thousands. Ten of the 38 scPerturb datasets are in exactly that state, with
+    # up to 18,007 real pairs, and the tool told each of them "UNRESOLVABLE AT ANY
+    # EFFECT SIZE". The median is kept for reporting; `n_pairs_exact` is what the
+    # calculation should use when it is available.
+    n_pairs_exact = None
+    if rc is not None and len(w) and keys:
+        per = w.groupby(keys, observed=True)["_r"].nunique()
+        n_pairs_exact = int((per * (per - 1) // 2).sum())
     return {"dataset": path.stem, "n_cells": int(len(o)),
             "context_col": cc, "pert_col": pc, "rep_col": rc,
             "pert_type": ptype,
             "n_contexts": n_ctx, "n_perturbations": n_pert,
-            "n_replicates": max(n_rep, 1)}
+            "n_replicates": max(n_rep, 1),
+            "n_pairs_exact": n_pairs_exact}

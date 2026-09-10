@@ -135,7 +135,7 @@ across draws is 0.084 against an effect of 0.10. Tahoe would have obtained the
 same answer from about 2 million cells, and the remaining budget spent on
 replicates would have moved it across its own detection threshold.
 
-The readout pools across ~120 lines, so per-condition sampling noise averages out
+The readout pools across 50 lines (36 MAPK-driven, 14 wild-type), so per-condition sampling noise averages out
 before the contrast is taken; a single-condition estimate would degrade under cell
 thinning sooner, and this experiment does not measure how much sooner.
 
@@ -167,8 +167,9 @@ tuning. As a check on the reader, our hand-entered row for sci-Plex 3 (3 context
 
 **One of thirty-eight can support a context × perturbation interaction estimate** —
 sci-Plex 3, at a floor of 0.048 against its measured 0.302. Twenty-six carry
-replicate-like annotation, but in 23 the replicates never cover the same condition
-twice, which yields no pair.
+replicate-like annotation; in 11 of those the replicates never cover the same
+condition twice, and a further 12 datasets carry no replicate annotation at all,
+giving 23 with no usable pair.
 
 A CRISPR screen in one cell line is single-context *by design*, and scoring it as
 a failed atlas would be unfair. Splitting by perturbation type leaves the claim
@@ -277,7 +278,7 @@ simulated data with a known share the corrected estimator recovers it (slope
 0.950, R² = 0.9995) and returns 0.008 from data containing none, while residual
 variance reports 72% and pooled-batch 41%.
 
-### The replicate structure exists, and discarding it doubles the estimate
+### The replicate structure exists, and discarding it inflates the estimate twentyfold
 
 Tahoe-100M's own design illustrates the cost of the calculation not being done.
 **13.5% of its (line, drug, dose) triples sit on more than one plate** — the
@@ -298,8 +299,37 @@ what the design calculation predicts from Tahoe's 4,560 pairs.
 
 This is the failure mode the calculation is meant to prevent. The atlas was built
 at a scale that made the question look answerable, the replicate structure needed
-to answer it was present but thin, and the convenient substitute for it inflates
-the answer twofold.
+to answer it was present but thin, and the convenient substitute for it inflates the answer twentyfold.
+
+### Does the index agree with the one the field already uses?
+
+A referee will ask, so we ran it. On 111 LINCS compounds measured on both, we
+compared our context-dependence index (CDI) against the metric this literature
+mostly uses — cross-context profile correlation — and against a disattenuated
+variant (cross-context *r* ÷ replicate *r*), which is arguably the most defensible
+published-style measure.
+
+| comparison | Spearman ρ | *n* |
+|---|---:|---:|
+| published cross-context *r* **vs compound reproducibility** | **+0.936** | 111 |
+| our CDI **vs compound reproducibility** | +0.362 | 111 |
+| our CDI vs disattenuated transfer | −0.806 | 94 |
+| disattenuated transfer vs reproducibility | −0.132 (n.s.) | 94 |
+
+**The published metric is 94% explained by how reproducible a compound is**, not by
+how context-dependent it is: a weak or noisy compound scores as "context-specific"
+because its profiles fail to correlate anywhere. That is the confound we built CDI
+to avoid, and it is the specific reason we did not adopt the published measure. Our
+index carries a much weaker version of the same dependence (ρ = +0.36), which we
+report rather than claim independence.
+
+Against the disattenuated metric — the one that controls for reproducibility — CDI
+agrees strongly (|ρ| = 0.81; the sign is negative because transfer is the inverse
+of context-dependence). So the two defensible measures concur, and both diverge
+from the naive one in the same direction.
+
+*Source:* `results/tables/context_metric_comparison.csv`, from
+`scripts/compare_context_metrics.py`.
 
 ### What this implies for models and benchmarks
 
@@ -400,7 +430,8 @@ registration is for.
 term estimated as a covariance between independent replicate estimates so noise
 contributes zero in expectation. β is estimated from other contexts, α from other
 perturbations and **within a replicate plate**. Implementation:
-`perturbmodel.celldrug`; 31 unit tests including recovery of a planted share and a
+`perturbmodel.celldrug`; 27 unit tests in `tests/test_celldrug.py` (42 across the
+suite), including recovery of a planted share and a
 null.
 
 **Design calculation.** Pair count `n_ctx × n_pert × n_rep(n_rep−1)/2`; standard
@@ -426,6 +457,53 @@ outcomes appended to `docs/PREREGISTRATION_OUTCOMES.md`.
 `docs/design_calculator.html`.
 
 ---
+
+## Data availability
+
+All datasets are public and none was generated for this study.
+
+| dataset | accession / source |
+|---|---|
+| Tahoe-100M | HuggingFace `tahoebio/Tahoe-100M`; doi:10.1101/2025.02.20.639398 |
+| LINCS phase 1 | GEO `GSE92742` |
+| LINCS phase 2 | GEO `GSE70138` |
+| scPerturb (38 RNA/protein, 6 ATAC) | figshare `24160713`, `24160968`; doi:10.1038/s41592-023-02144-y |
+| PRISM secondary screen | DepMap portal, 19Q4 |
+| GDSC1 / GDSC2 | Sanger GDSC release 8.4 |
+| CCLE expression, copy number, mutations | DepMap portal, 22Q2 |
+| Broad Repurposing Hub | `repurposing_drugs.txt`, 2020 release |
+
+## Code availability
+
+`https://github.com/narendrameena/scPerturbModel`, MIT licence. The design
+calculation is `src/perturbmodel/design.py`; the tool is `perturbdesign`
+(`pip install -e .`); the browser calculator is `docs/design_calculator.html`.
+Tables backing every quoted number are committed under `docs/source_data/`, and
+`scripts/check_freshness.py` verifies that no committed result predates the code
+or data that produced it.
+
+**A limitation of the release, stated plainly.** `results/` is not tracked in git —
+it is large and regenerable — so a reader who clones the repository gets the
+scripts and the source-data tables but not the figure bundles. The claim that
+every number is reproducible is true only in the sense that every number can be
+*regenerated*; the artefacts themselves are not all archived. A Zenodo deposit of
+`results/` should accompany submission.
+
+## References
+
+Cited in text by author and year; a formatted bibliography is not yet assembled.
+The works this paper depends on most directly are Peidli et al. 2024
+(*Nat Methods*, scPerturb), Zhang et al. 2025 (bioRxiv, Tahoe-100M), Srivatsan
+et al. 2020 (*Science*, sci-Plex), Subramanian et al. 2017 (*Cell*, CMap/LINCS),
+Nadig et al. 2025 (*Nat Genet*, TRADE), Ben-David et al. 2018 (*Nature*), Pierce
+et al. 2021 (*Nat Methods*, Spear-ATAC), Hoffman & Schadt 2016 (*BMC
+Bioinformatics*, variancePartition), Donoho & Jin 2004 (*Ann Statist*, Higher
+Criticism), Shen 2026 (Research Square `rs-10846736`) and Svensson et al. 2026
+(bioRxiv, Rhaister).
+
+## Competing interests
+
+The authors declare no competing interests.
 
 ## Figures
 
@@ -464,6 +542,7 @@ outcomes appended to `docs/PREREGISTRATION_OUTCOMES.md`.
 5. **Tahoe's replicate structure, and the cost of the substitute.** (a) 13.5% of
    (line, drug, dose) triples sit on more than one plate, falling to 5.4% once
    plate 14 — a designed replicate of plate 6 — is dropped under the training
-   convention. (b) True-replicate against cross-dose pairing versus a matched
-   null: the substitute doubles the reported interaction, 11.5% → 20.7%.
+   convention. (b) True-replicate, cross-dose and pooled pairings against a matched
+   null: the substitute inflates the reported interaction twentyfold,
+   0.46% → 9.2% (`fig1/tahoe_pairings.csv`).
    *Bundle:* `results/figures/00_manuscript/fig1/` (panels e–f).

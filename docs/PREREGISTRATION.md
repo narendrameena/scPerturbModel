@@ -205,5 +205,5 @@ frozen; both moves are recorded with hashes in `PREREGISTRATION_OUTCOMES.md`. It
 | file | SHA-256 |
 |---|---|
 | `src/perturbmodel/design.py` | `6195b1fa83fffcee336d08577cfb21ae8dad477af4c138304389f6ccf169fc1a` |
-| `src/perturbmodel/atlas_meta.py` | `d456516ff4fe81424fca7529daaab190a8ef2f58abd89d0b3632b7c45a6419da` |
+| `src/perturbmodel/atlas_meta.py` | `c34819f0829b85ac11b7653c2edeffd9e65bcd5d59ae1e745cca87e9dcdaf4ae` |
 | `scripts/frozen_prospective_test.py` | `49c33236770a28a88cf4895ba4fd2d67f1a32cafc4886c0837acdbbb7bec9503` |

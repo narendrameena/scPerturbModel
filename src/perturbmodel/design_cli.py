@@ -199,6 +199,14 @@ def cmd_audit(a):
         print("  replicate    <- NONE FOUND. Without an annotated replicate the "
               "interaction\n                  cannot be estimated at all; see "
               "the verdict below.")
+    exact = d.get("n_pairs_exact")
+    approx = n_pairs(d["n_contexts"], d["n_perturbations"], d["n_replicates"])
+    if exact is not None and exact != approx:
+        print(f"\n  NOTE: the median replicate count implies {approx:,} pairs, but "
+              f"this atlas\n  actually has {exact:,}. Unbalanced replication -- most "
+              f"conditions measured\n  once, some many times. The figures below use "
+              f"the median, so treat them as a\n  lower bound; the exact pair count "
+              f"is the one that matters.")
     a.contexts, a.perturbations = d["n_contexts"], d["n_perturbations"]
     a.replicates = d["n_replicates"]
     return cmd_plan(a)

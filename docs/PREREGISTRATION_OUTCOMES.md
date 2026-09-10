@@ -176,3 +176,24 @@ twice in three days, the first time on the strength of a result that was not rea
 The registration's remaining value is that Part A settled before any of this, and
 that every change is declared with hashes in both directions. That is worth
 something. It is worth less than a registration whose artefacts never moved.
+
+
+## 2026-09-10 (second entry) — `atlas_meta.py` amended, declared
+
+`describe()` gained an exact pair count (`n_pairs_exact`) alongside the existing
+median-based one. The median implies zero pairs for an unbalanced atlas — most
+conditions measured once, a few many times — and nine of the 38 scPerturb
+datasets are in that state, carrying up to 18,007 real pairs while the tool told
+each of them "UNRESOLVABLE AT ANY EFFECT SIZE".
+
+**This does not disturb any registered prediction.** Part A settled on 2026-09-08
+under the original file, and all nine affected datasets are single-context, so
+their verdicts are unchanged and the "1 of 38" headline is unaffected — I checked
+every multi-context dataset and the exact and median counts agree. B5/B6 depend on
+context and replicate counts, which the change does not touch. The median field is
+retained, so the registered scoring rule still evaluates identically.
+
+| | SHA-256 |
+|---|---|
+| at registration | `d456516ff4fe81424fca7529daaab190a8ef2f58abd89d0b3632b7c45a6419da` |
+| after this amendment | `c34819f0829b85ac11b7653c2edeffd9e65bcd5d59ae1e745cca87e9dcdaf4ae` |

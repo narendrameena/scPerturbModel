@@ -5,10 +5,18 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "perturbmodel"
 version = "0.1.0"
-description = "PyTorch models of single-cell perturbation responses (Tahoe-100M)"
+description = "Design calculation for single-cell perturbation atlases: what can your design resolve?"
 requires-python = ">=3.10"
-# runtime deps are managed via envs/environment.yml; keep this list minimal
-dependencies = ["numpy", "pyyaml", "torch"]
+# The design tool needs numpy/pandas/scipy/h5py; `perturbdesign audit` failed with
+# "audit needs h5py and pandas installed" on a clean `pip install -e .` because
+# neither was declared. torch was declared and is imported by no design module --
+# a ~2 GB dependency for a calculator. Model training deps live in the optional
+# extra so the tool installs light.
+dependencies = ["numpy>=1.24", "pandas>=2.0", "scipy>=1.10", "h5py>=3.8",
+                "matplotlib>=3.7", "pyyaml"]
+
+[project.optional-dependencies]
+models = ["torch>=2.0", "anndata>=0.10", "scanpy>=1.10"]
 
 [project.scripts]
 perturbdesign = "perturbmodel.design_cli:main"
