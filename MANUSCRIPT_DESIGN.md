@@ -20,21 +20,22 @@ result set in `RESULTS.md`; method choices justified in
 ## Abstract
 
 Perturbation atlases profile thousands of compounds across dozens of contexts to
-learn how context shapes drug response, and are scaled by cell count. Tahoe-100M
-sequenced 95.6 million cells, 1,810 per condition, yet an atlas-wide index cannot
-resolve the interaction it is quoted for; the same cells split into eight
-replicates of 226 rather than spent on depth give a floor of 0.0016 against a true
-effect of 0.005. Whether an atlas can measure context-dependence is fixed by its
-design, not its scale. The quantity is a covariance between independent
-replicates, so a condition measured once contributes no pair however deeply it is
-sequenced. That much is an identity. How precision scales with pair count beyond
-it we do not establish: our test resampled pairs as independent, so it could not
-detect dependence among them, and the five atlases we audit cannot settle it,
-their measured interactions being bimodal. The premise we test directly: 2% of
-Tahoe's cells retain 92% of a biologically specified interaction, while 10% of its
-contexts destroy precision. Of 38 scPerturb datasets, one can support the estimate
-at all; 23 have no replicated condition. We release the calculation as a tool and
-pre-register it.
+learn how context shapes drug response, and are scaled by cell count. Whether an
+atlas can measure context-dependence is fixed by its design, not its scale: the
+quantity is a covariance between independent replicates, so a condition measured
+once contributes no pair however deeply it is sequenced. That identity is
+decisive — of 38 scPerturb datasets, **23 have no replicated condition and one can
+support the estimate at all**. Beyond it, the standard power calculation for this
+estimator is wrong in a way we measure rather than assume. Sweeping sub-designs of
+PRISM across 72 (context × perturbation × replicate) cells, precision improves as
+pairs^−0.32, not the assumed pairs^−0.50, and the three design terms are **not
+interchangeable**: perturbations buy 88% of what the formula claims, contexts 44%,
+replicate pairs **24%** (*P* = 0.016). A replicate of an existing context shares
+that context's biology; a new context does not. This inverts the prescription the
+calculation naively yields — Tahoe-100M's budget optimum moves from eight
+replicates to two — while leaving the identity and the survey untouched. We
+release the calculation with its measured exchange rate rather than its assumed
+one.
 
 ---
 

@@ -3601,3 +3601,86 @@ which is what a partial correction should do.
 The correction is carried as `perturbmodel.design.U_FIRST_ORDER`, a single module
 constant with the fit recorded beside it, and every function takes
 `u_first_order=0.0` to reproduce the original behaviour on demand.
+
+## 50. The exchange rate the title asserts, measured — and it is not 1:1
+
+§46's calculation asserts that three design numbers enter precision through
+exactly one combination, `n_pairs = n_ctx × n_pert × n_rep(n_rep−1)/2`, with
+`SE ∝ n_pairs^−1/2`. Everything prescriptive in the paper follows: that a
+replicate and a context are worth the same at equal pair count, and that a budget
+should be spread rather than deepened. §46 tested the *verdicts* that formula
+produces; the 2026-09-10 audit showed those are reproduced by any constant floor
+in a 21-fold window, so they never tested the exchange rate. Nothing did.
+
+**Design.** PRISM's secondary screen is a 737 × 1,488 × 3 cube (lines × compounds
+× replicate detection plates) with a **scalar** readout, so `n_feat` drops out and
+the design terms are isolated. Sub-cubes were drawn at a grid of
+(n_ctx, n_pert, n_rep), the interaction share estimated on each with both main
+effects out of fold, and the standard error measured as the spread across **40
+draws per cell, 72 cells**. The resampling unit is the line and the compound —
+**pairs are never resampled**, which is the error that invalidated §49.
+
+### The formula's exchange rate is refuted on all three terms
+
+| term | measured exponent | formula says | buys |
+|---|---:|---:|---:|
+| perturbations | **−0.442** [−0.475, −0.409] | −0.500 | 88% |
+| contexts | **−0.222** [−0.256, −0.187] | −0.500 | 44% |
+| **replicate pairs** | **−0.121** [−0.195, −0.047] | −0.500 | **24%** |
+
+Aggregated on the pair count alone, `SE ∝ n_pairs^−0.317` [−0.353, −0.281], not
+−0.5.
+
+**Contexts and replicates are not interchangeable**: *a* − *c* = −0.101 ± 0.042,
+*z* = −2.41, **P = 0.016**. A second replicate of the same context shares that
+context's biology; a new context does not. The formula assumes they are the same
+thing and they are not.
+
+### Three checks that the result is real
+
+* **The control works.** Permuting the line axis independently within each
+  replicate destroys the line × condition interaction while preserving both main
+  effects: the mean share collapses from **0.384 to 0.084**. (A first attempt
+  permuted conditions within a line, which destroys the *shared* condition effect
+  instead and drove the estimate *up*, to 0.47 — recorded because it is the same
+  class of error as §49.)
+* **Not an artefact of a drifting estimand.** The mean share moves only 5.5%
+  across a 32-fold range of contexts (0.400 → 0.378). Repeating the fit on the
+  **coefficient of variation**, which is immune to that drift, gives −0.321
+  against −0.317 — indistinguishable.
+* **The finite-population confound runs the conservative way.** Draws share lines
+  at large `n_ctx`, deflating the measured SD by √((N−n)/(N−1)) — 0.885 at
+  n_ctx = 160 against 0.997 at 5. That makes the slope look *steeper* than truth.
+  Correcting it moves the context exponent from −0.222 to **−0.191**, i.e. further
+  from −0.5, not closer.
+
+### What this does to the paper's advice
+
+**It inverts the headline prescription.** Recomputing the budget optimum for
+Tahoe's 95.6 million cells with the replicate term at its measured exponent:
+
+| replicate exponent | optimum |
+|---|---|
+| −0.500 (assumed) | 8 replicates × 226 cells |
+| **−0.121 (measured)** | **2 replicates × 905 cells** |
+
+The paper argues for spreading a fixed budget into more replicates and fewer cells
+each. At the measured exchange rate, replicates buy about a quarter of what the
+formula assumes, and the optimum collapses to the smallest number that yields any
+pairs at all.
+
+**What survives, and it is the part that matters.** The identity is untouched:
+one replicate gives zero pairs, so the interaction is not separable at any effect
+size or cell count. The step from one replicate to two remains infinitely
+valuable — this measurement concerns the *marginal* value of the third, fourth and
+eighth. So "you must replicate" stands; "replicate as much as possible" does not.
+
+**Limitations.** One platform, a viability readout, and a scalar quantity; the
+exponents may differ for a transcriptional atlas where `n_feat` is in play. The
+grid spans 5–160 contexts and 10–400 perturbations, which brackets the five
+atlases but does not reach LINCS's 831 perturbations. And 40 draws per cell leaves
+each SE with roughly 11% relative error, which the fit absorbs as residual scatter
+(residual sd 0.176).
+
+*Script:* `scripts/exchange_rate_test.py`. *Figure:*
+`results/figures/00_manuscript/exchange_rate/`.
