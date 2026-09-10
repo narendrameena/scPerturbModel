@@ -25,17 +25,16 @@ atlas can measure context-dependence is fixed by its design, not its scale: the
 quantity is a covariance between independent replicates, so a condition measured
 once contributes no pair however deeply it is sequenced. That identity is
 decisive — of 38 scPerturb datasets, **23 have no replicated condition and one can
-support the estimate at all**. Beyond it, the standard power calculation for this
-estimator is wrong in a way we measure rather than assume. Sweeping sub-designs of
-PRISM across 72 (context × perturbation × replicate) cells, precision improves as
-pairs^−0.32, not the assumed pairs^−0.50, and the three design terms are **not
-interchangeable**: perturbations buy 88% of what the formula claims, contexts 44%,
-replicate pairs **24%** (*P* = 0.016). A replicate of an existing context shares
-that context's biology; a new context does not. This inverts the prescription the
-calculation naively yields — Tahoe-100M's budget optimum moves from eight
-replicates to two — while leaving the identity and the survey untouched. We
-release the calculation with its measured exchange rate rather than its assumed
-one.
+support the estimate at all**, and among ten drug screens, where context-dependence
+is the whole question, three use more than one context and one of those replicates
+a condition. Cell count is not the binding constraint: 2% of Tahoe-100M's cells
+retain 92% of a biologically specified interaction, while 10% of its contexts
+destroy precision. We also measure, on sub-designs of PRISM, how fast precision
+actually improves with design size, and find it slower than the standard power
+calculation assumes — `pairs^−0.32` against `pairs^−0.50` — so the calculation
+should be read as ordering designs rather than as calibrating thresholds. We
+release it as a tool, with that limitation stated, and pre-register it against
+atlases not yet built.
 
 ---
 
@@ -94,20 +93,20 @@ any of them found:
 | LINCS phase 1 | 177,003 | 0.0027 | 0.57 | resolvable | resolvable |
 | OP3 | 2,646 | 0.0222 | 0.331 | resolvable | resolvable |
 | sci-Plex 3 | 567 | 0.0479 | 0.302 | resolvable | resolvable |
-| Spear-ATAC | 1,230 | 0.0325 | 0.014 | **not resolvable** | not resolvable |
+| Spear-ATAC | 1,230 | 0.0325 | 0.00305 | **not resolvable** | not resolvable |
 
 The calculation is **not contradicted** by any of the five. That is the honest
 statement, and it is weaker than it looks, so we state the limitation rather than
-let a referee find it. The five measured interactions are bimodal — {0.005, 0.014}
+let a referee find it. The five measured interactions are bimodal — {0.00305, 0.005}
 against {0.302, 0.331, 0.570} — with a 21.6-fold empty interval between them, so
-**any constant floor in (0.014, 0.302) reproduces the same five verdicts using no
-design information at all**, and **72 of the 120 permutations of these five floors
+**any constant floor in (0.005, 0.302) — a 60-fold window — reproduces the same
+five verdicts using no design information at all**, and **72 of the 120 permutations of these five floors
 across these five atlases also score five of five**. The permutation *p*-value on
 "correct in all five" is ≈0.6: it is the modal outcome of the natural null, not a
 surprising one.
 
 Two further caveats. The single shared noise constant `snr = 0.20` multiplies all
-five floors together, and the range over which five of five survives (0.10–0.30)
+five floors together, and the range over which five of five survives (0.10–0.35)
 is a measure of how easily that constant can be chosen to land inside the gap,
 not evidence that it was not chosen. And for Tahoe and Spear-ATAC the "observed"
 and "actual" columns are the same measurement read twice — the CI including zero
@@ -123,8 +122,8 @@ size or cell count), the field survey, and the subsampling experiment below.
 The prescription follows directly. **Tahoe needed six replicates per
 condition, not two** — at two its floor is 0.0169 against a true 0.005, and even a
 third replicate only reaches 0.0097, still short. Spear-ATAC, at three cell lines
-and five replicates, sits at 0.0325 against a true 0.014 and would have needed
-eleven.
+and five replicates, sits at 0.0325 against a true 0.00305 and would have needed
+forty-nine — not a recoverable design at any practical replicate count.
 
 **The premise is testable and holds.** Binomially downsampling Tahoe's counts
 while keeping every condition, a biologically specified interaction — MEK

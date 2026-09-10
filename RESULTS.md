@@ -3602,7 +3602,52 @@ The correction is carried as `perturbmodel.design.U_FIRST_ORDER`, a single modul
 constant with the fit recorded beside it, and every function takes
 `u_first_order=0.0` to reproduce the original behaviour on demand.
 
-## 50. The exchange rate the title asserts, measured — and it is not 1:1
+## 50. The exchange rate, measured — the aggregate slope holds, the headline does not
+
+> **⚠ PARTIALLY WITHDRAWN 2026-09-10, hours after posting.** The claim that
+> contexts and replicates are **not interchangeable** (*a* − *c* = −0.101,
+> *P* = 0.016) **does not survive this section's own robustness check** and is
+> withdrawn.
+>
+> The section reports a coefficient-of-variation refit as the control for a
+> drifting estimand, and applies it *only to the aggregate pair-count fit*
+> (−0.321 against −0.317, reassuring). Applied to the coefficient that actually
+> carries the headline it reverses the conclusion:
+>
+> | fit | a (contexts) | c (replicate pairs) | *a* − *c* |
+> |---|---:|---:|---:|
+> | raw SE (as published) | −0.222 | −0.121 | **P = 0.016** |
+> | coefficient of variation | −0.206 | −0.189 | **P = 0.701** |
+>
+> On the drift-immune quantity, contexts and replicates are indistinguishable.
+> The reason is visible in the data and was not checked: **the estimand moves 7.8%
+> with `n_rep`** (mean share 0.369 at two replicates, 0.398 at three), *larger*
+> than the 5.5% context-axis drift that was controlled for. The SE scales with the
+> level, so part of the apparent flattening on the replicate axis is definitional.
+>
+> **The permutation control also fails by the criterion this script states.** Its
+> docstring says "if the law changes, the machinery is tracking signal rather than
+> variance." On the permuted grid the per-term exponents are a = −0.602,
+> b = −0.299, c = −0.226 — the law changes substantially. Only the mean-share
+> collapse (0.384 → 0.084) was reported, not the per-term fit, which is the
+> diagnostic the code itself nominates.
+>
+> **What survives.** The aggregate result: `SE ∝ n_pairs^−0.32` [−0.353, −0.281]
+> against an assumed −0.50, robust to the CV refit (−0.321). Precision does
+> improve more slowly than the formula claims. **What does not survive:** that
+> replicates specifically buy less than contexts, and therefore the inversion of
+> the budget prescription that was built on it. Tahoe's optimum is not
+> demonstrated to move from eight replicates to two.
+>
+> A referee simulation also showed the instrument reproduces this exact signature —
+> flat replicate exponent, significant *a* − *c* — from a **synthetic cube with no
+> shared context biology at all**, purely as a function of noise-to-signal ratio
+> (at ε/γ = 4: a = −0.402, c = −0.198, *P* < 0.001). So even the raw-SE version of
+> the signature is not identified as biology.
+>
+> The original text follows, struck through.
+
+## ~~50. The exchange rate the title asserts, measured — and it is not 1:1~~
 
 §46's calculation asserts that three design numbers enter precision through
 exactly one combination, `n_pairs = n_ctx × n_pert × n_rep(n_rep−1)/2`, with

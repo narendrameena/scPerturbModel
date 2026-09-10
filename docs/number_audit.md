@@ -1041,3 +1041,79 @@ with why no registered prediction moves.
   margin narrows from 6.5× to 1.7× and the survey's "detects 5%" step becomes
   knife-edge.
 * **No comparison to scPower** or other published single-cell design tools.
+
+---
+
+# Five-agent audit, 2026-09-10 — the referee's report, and §50 partially withdrawn
+
+Five agents with adversarial roles: a blind replicator, a dedicated attacker for
+§50, a git historian, a Nature Methods referee simulation, and one attacking only
+the claims that survived every previous audit. The referee reported first and its
+central finding is verified.
+
+## §50's headline is withdrawn, hours after posting
+
+**The interchangeability claim does not survive §50's own robustness check.** The
+section reports a coefficient-of-variation refit as its control for a drifting
+estimand — and applies it only to the aggregate pair-count fit, not to the
+coefficient carrying the headline:
+
+| fit | a (contexts) | c (replicate pairs) | *a* − *c* |
+|---|---:|---:|---:|
+| raw SE (as published) | −0.222 | −0.121 | **P = 0.016** |
+| coefficient of variation | −0.206 | −0.189 | **P = 0.701** |
+
+On the drift-immune quantity the two are indistinguishable. The cause was in the
+data and unchecked: **the estimand moves 7.8% with `n_rep`** (0.369 → 0.398),
+*larger* than the 5.5% context drift that was controlled for.
+
+**The permutation control also fails by this script's own stated criterion.** Its
+docstring says "if the law changes, the machinery is tracking signal rather than
+variance." Per-term on the permuted grid: a = −0.602, b = −0.299, c = −0.226 — the
+law changes. Only the mean-share collapse (0.384 → 0.084) was reported.
+
+**And the signature is not identified as biology.** The referee ran the unmodified
+`run_grid` and `interaction_share` on a synthetic cube with i.i.d. terms and *no
+shared context biology*, where the true law is `pairs^−0.5` by construction. At
+low noise the instrument correctly returns −0.5 on all three terms and calls the
+axes interchangeable. At ε/γ = 4 it manufactures exactly §50's signature —
+a = −0.402, c = −0.198, *P* < 0.001 — from data containing none of the mechanism
+invoked to explain it. **The instrument passes as a discriminator and fails as
+evidence for the biological story.**
+
+*What survives:* the aggregate, `SE ∝ n_pairs^−0.32` against an assumed −0.50,
+robust to the CV refit (−0.321). Precision does improve more slowly than the
+formula claims. *What does not:* that replicates specifically buy less than
+contexts, and the inversion of the budget prescription built on it.
+
+The script now reports all three fits — raw, CV per-term, and permuted per-term —
+so this failure mode cannot recur silently.
+
+## A correction that did not propagate, made this morning
+
+Spear-ATAC's observed share was replaced in `scripts/design_calculator.py`
+(0.014 → 0.00305, source-traced) and **not in the manuscript**, which continued to
+quote 0.014 in four places. Consequences: the required replicates at the corrected
+value are **49**, not eleven; and the bimodal gap the paper cites as its own
+strongest self-criticism is **60-fold**, not 21.6-fold. Propagated. This is the
+project's recorded failure mode, committed again, within hours of the audit that
+named it.
+
+## The sensitivity claim read backwards, in the code
+
+`design_calculator.py` printed "a 3-fold range, so the result is not a fitted
+parameter." The permutation null shows the opposite: a wide surviving range
+measures how easily one constant lands inside a 60-fold gap. It is the signature
+of an easy fit. The script now says so, in the output, next to the number. The
+range is also 0.10–0.35 rather than 0.10–0.30 after the Spear-ATAC correction.
+
+## The referee's verdict
+
+**Reject**, and the reasoning is worth recording verbatim in substance: the tool
+implements an exchange rate the paper's own final section refutes; the refutation
+does not survive its own control; and the manuscript carried three different
+prescriptions for the same atlas across abstract, Results and Discussion. Its
+summary — "this reads as a lab notebook of unusual quality, not as a paper" — is
+fair, and the recommended fix is the right one: measure the exchange rate on a
+transcriptional atlas with a real replicate axis (LINCS phase 1, `n_rep` 2–6),
+rebuild the calculator around the answer, reconcile every number, and resubmit.

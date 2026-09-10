@@ -242,8 +242,18 @@ def main():
           f"permuted {perm.mean_share.mean():.4f}"
           if len(perm) else "")
 
-    out, coef = fit(real, "REAL DATA")
+    out, coef = fit(real, "REAL DATA (raw SE)")
+    # The CV fit MUST be reported per-term, not only on the aggregate. Reporting
+    # it on the aggregate alone is how the withdrawn interchangeability claim
+    # survived to publication: a - c is P = 0.016 on raw SE and P = 0.70 on CV,
+    # and the estimand moves 7.8% with n_rep -- larger than the context drift the
+    # aggregate check was controlling for.
+    real_cv = real.assign(se=real.se / real.mean_share)
+    fit(real_cv, "REAL DATA (coefficient of variation -- the drift control)")
     if len(perm) > 6:
+        # Per-term, not just the mean-share collapse. This docstring's own
+        # criterion is that the LAW should not change; only reporting the
+        # collapse hid that it does.
         fit(perm, "PERMUTED CONTROL (interaction destroyed)")
 
     # level: is SE/predicted a single constant across the grid?

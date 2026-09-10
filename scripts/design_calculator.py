@@ -90,9 +90,12 @@ def snr_sensitivity():
     if len(good):
         print(f"   5/5 for a single shared snr across "
               f"{good.min():.2f}-{good.max():.2f} — a "
-              f"{good.max()/good.min():.0f}-fold range, so the result is not a "
-              f"fitted parameter")
-    return S
+              f"{good.max()/good.min():.0f}-fold range.")
+        print("   READ THIS THE RIGHT WAY ROUND. A wide surviving range measures how")
+        print("   easily one constant lands inside the gap between the two clusters of")
+        print("   observed shares (0.005 and 0.302, 60-fold apart). It is the signature")
+        print("   of an easy fit, NOT evidence that the constant is unfitted. See the")
+        print("   permutation null in §46: 72/120 reassignments also score 5/5.")
 
 
 def calibrate(args):
