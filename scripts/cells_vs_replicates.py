@@ -69,6 +69,11 @@ MAPK = ("BRAF", "KRAS", "NRAS")
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--n-boot", type=int, default=12)
+    # The seed was hardcoded, so a re-run was a determinism check and never a
+    # robustness check. §50's exponents were stable across seeds while its P
+    # value was not; the contexts-arm spread here is the analogue quantity and
+    # the one the manuscript leans on, so it must be seed-testable.
+    ap.add_argument("--seed", type=int, default=0)
     args = ap.parse_args()
     FIG.mkdir(parents=True, exist_ok=True)
 
@@ -116,7 +121,7 @@ def main():
             return np.nan
         return float(np.median(a) - np.median(b))
 
-    rng = np.random.default_rng(0)
+    rng = np.random.default_rng(args.seed)
     rows = []
     print("\n1. THINNING CELLS (all conditions kept)", flush=True)
     for frac in (1.0, 0.5, 0.25, 0.1, 0.05, 0.02):

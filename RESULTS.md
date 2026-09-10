@@ -3259,7 +3259,7 @@ of question, while the replication Tahoe lacked buys the question itself.
 
 ### The limitation this rests on
 
-The readout **pools across 50 lines — 36 MAPK-driven and 14 wild-type**, so
+The readout **pools across 47 lines — 34 MAPK-driven and 13 wild-type** after the script's own filters (50/36/14 before them), so
 per-condition sampling noise averages out before the contrast is taken. A
 *per-condition* estimate — one (line, drug) pair on its own — would degrade under
 cell thinning far sooner, and this experiment does not measure how much sooner.
@@ -3647,6 +3647,26 @@ constant with the fit recorded beside it, and every function takes
 >
 > The original text follows, struck through.
 
+### The corrected result, after fixing the missingness mismatch
+
+Numerator and denominator now average over the same cells. Three seeds at 40 draws:
+
+| term | exponent | formula says |
+|---|---:|---:|
+| perturbations | **−0.501** [−0.546, −0.455] | −0.500 — **exactly as predicted** |
+| contexts | −0.193 [−0.241, −0.145] | −0.500 |
+| replicate pairs | −0.245 [−0.349, −0.142] | −0.500 |
+| *a* − *c* | +0.053 ± 0.058 | **P = 0.37 — interchangeable** |
+
+The corrected finding is the opposite of the withdrawn one and is cleaner:
+**perturbations behave exactly as the power calculation predicts; contexts and
+replicates both fall short, and equally.** The formula is right about one axis and
+optimistic about the other two by roughly a factor of two. Seed 42 gives the same
+picture (a = −0.162, b = −0.483, c = −0.214, *P* = 0.32); seed 7 is the one
+disagreeing run (*P* = 0.014), so the interchangeability conclusion is stable at
+two of three seeds and should be read as "not resolved against" rather than
+"established".
+
 ## ~~50. The exchange rate the title asserts, measured — and it is not 1:1~~
 
 §46's calculation asserts that three design numbers enter precision through
@@ -3815,3 +3835,50 @@ a real obstacle, and it is about **confounding by batch structure**, not about
 separability from noise. That is the argument the paper should make.
 
 *Verified independently by reimplementation; see `PREREGISTRATION_OUTCOMES.md`.*
+
+## 52. The premise test does not discriminate — §47 qualified
+
+§47 is one of the few claims that survived every audit, and it does not survive
+being attacked directly. Its headline — *2% of Tahoe's cells retain 92% of a known
+interaction* — reproduces **bit-for-bit** on re-run, but reproducibility was never
+the question.
+
+**The readout cannot fail in the range tested.** Binomial thinning is unbiased for
+a gene-set mean, so retention stays near 100% at essentially any depth: at **0.03%
+of counts — 1.4 UMI across the entire 13-gene signature — it still returns 99%**.
+It breaks only near a 10,000-fold reduction. The 2% tick is nowhere near the
+boundary, so the experiment was never able to answer the question it was posed.
+
+**A null readout passes it.** Random 13 genes with permuted genotype labels give
+retention at 2% of median 1.03, IQR [0.72, 1.17] across 25 null draws. **The
+published 0.92 sits inside that null** — at its 7th percentile, i.e. if anything on
+the low side of no-signal.
+
+**The 92% is a four-draw artefact.** `args.n_boot // 3` = 4 draws for the cells
+arm against 12 for the contexts arm. Repeating the exact protocol 60 times: mean
+1.006, sd 0.094, with the published value at the **7th percentile**. At 40 draws
+it is **98.3%**.
+
+**The two arms are not on a common budget.** At the plotted 10% tick the contexts
+arm still holds **83% of the sequencing**, because its control set is rebuilt at
+full depth, against the cells arm's 10%. The "exchange rate" is between different
+currencies.
+
+**"10% of contexts" is four cell lines.** 26% of those draws return NaN and are
+silently dropped; the point estimate is −0.1327 on 12 draws and **−0.0867 on 400**.
+The spread increase is real but is the central limit theorem at *n* = 4, not a
+fact about Tahoe.
+
+### What survives
+
+The underlying §36 effect is real — MEK inhibitors do suppress the ERK-output
+signature further in MAPK-driven lines, permutation *z* = −2.95, *P* = 0.003. What
+does not survive is using its stability under thinning as evidence that cells are
+cheap: the readout is a pooled median over 47 lines and is insensitive to depth by
+construction, so the experiment demonstrates a property of the readout rather than
+of the atlas.
+
+The seed is now a command-line argument (it was hardcoded, so every "re-run" was a
+determinism check), and the counts corrected: the readout pools **47 lines (34
+MAPK, 13 wild-type)** after the script's own filters, not the 50/36/14 that was
+itself a correction of an earlier "~120".

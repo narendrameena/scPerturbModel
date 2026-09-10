@@ -135,7 +135,7 @@ across draws is 0.084 against an effect of 0.10. Tahoe would have obtained the
 same answer from about 2 million cells, and the remaining budget spent on
 replicates would have moved it across its own detection threshold.
 
-The readout pools across 50 lines (36 MAPK-driven, 14 wild-type), so per-condition sampling noise averages out
+The readout pools across 47 lines (34 MAPK-driven, 13 wild-type) that clear the script's own cell-count and matched-control filters, so per-condition sampling noise averages out
 before the contrast is taken; a single-condition estimate would degrade under cell
 thinning sooner, and this experiment does not measure how much sooner.
 
