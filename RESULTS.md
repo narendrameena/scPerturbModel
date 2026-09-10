@@ -3855,9 +3855,18 @@ published 0.92 sits inside that null** — at its 7th percentile, i.e. if anythi
 the low side of no-signal.
 
 **The 92% is a four-draw artefact.** `args.n_boot // 3` = 4 draws for the cells
-arm against 12 for the contexts arm. Repeating the exact protocol 60 times: mean
-1.006, sd 0.094, with the published value at the **7th percentile**. At 40 draws
-it is **98.3%**.
+arm against 12 for the contexts arm. Repeating the exact protocol 60 times gives
+mean 1.006, sd 0.094, with the published value at the **7th percentile**; at 40
+draws it is **98.3%**.
+
+> *Provenance of those three figures.* They come from the adversarial audit, not
+> from a run I completed myself — my own confirmation run at a second seed was
+> killed by a timeout before finishing and is being repeated. The
+> **structural** point needs no re-run and is checkable by reading the source:
+> `scripts/cells_vs_replicates.py` uses `args.n_boot // 3` = **4** draws for the
+> cells arm against **12** for the contexts arm, so the two arms' error bars were
+> never comparable and the headline rests on four numbers. The specific values
+> above should be treated as reported-not-reproduced until the repeat lands.
 
 **The two arms are not on a common budget.** At the plotted 10% tick the contexts
 arm still holds **83% of the sequencing**, because its control set is rebuilt at
