@@ -3859,14 +3859,27 @@ arm against 12 for the contexts arm. Repeating the exact protocol 60 times gives
 mean 1.006, sd 0.094, with the published value at the **7th percentile**; at 40
 draws it is **98.3%**.
 
-> *Provenance of those three figures.* They come from the adversarial audit, not
-> from a run I completed myself — my own confirmation run at a second seed was
-> killed by a timeout before finishing and is being repeated. The
-> **structural** point needs no re-run and is checkable by reading the source:
-> `scripts/cells_vs_replicates.py` uses `args.n_boot // 3` = **4** draws for the
-> cells arm against **12** for the contexts arm, so the two arms' error bars were
-> never comparable and the headline rests on four numbers. The specific values
-> above should be treated as reported-not-reproduced until the repeat lands.
+> *Independently confirmed 2026-09-11.* The audit's figures are corroborated by a
+> re-run I completed myself at a different seed and three times the draws
+> (`--seed 7 --n-boot 36`, i.e. 12 cells-arm draws against the default 4):
+>
+> | | published (seed 0, 4 draws) | confirmation (seed 7, 12 draws) |
+> |---|---:|---:|
+> | 10% of cells | 100% | 100% |
+> | 5% of cells | 107% | 101% |
+> | **2% of cells** | **92%** | **102%** |
+> | 10% of contexts, spread | 0.084 | 0.075 |
+>
+> At more draws the cells arm sits at **102%** — i.e. indistinguishable from full
+> retention, as the structural argument predicts. The published 92% is a
+> low-draw excursion, not a measured decay. The contexts arm's spread is large
+> under both seeds (0.084, 0.075) against an effect of ~0.10, so *that* half of
+> the comparison is qualitatively stable even though its point estimates move.
+>
+> The structural point needed no re-run and is checkable by reading the source:
+> `scripts/cells_vs_replicates.py:129` uses `args.n_boot // 3` for the cells arm
+> against `args.n_boot` at line 146, so at the default the two arms had **4 and 12**
+> draws and their error bars were never comparable.
 
 **The two arms are not on a common budget.** At the plotted 10% tick the contexts
 arm still holds **83% of the sequencing**, because its control set is rebuilt at
